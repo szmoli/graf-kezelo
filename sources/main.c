@@ -3,6 +3,7 @@
 
 #include "debugmalloc.h"
 #include "sdl_config.h"
+#include "graph.h"
 
 #include <stdio.h>
 #include <memory.h>
@@ -17,6 +18,10 @@ int main(int argc, char **argv) {
     if (init_sdl(window, renderer, window_surface) == -1) {
         return -1;
     }
+
+    Graph *graph = alloc_graph();
+    printf("%p\n", graph);
+    free_graph(graph);
 
     while (!quit) {
         SDL_Event event;
