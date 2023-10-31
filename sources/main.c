@@ -1,17 +1,17 @@
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 
-#include "constants.h"
 #include "debugmalloc.h"
-#include "sdl_config.h"
-#include "graph.h"
+
+#include "constants.h"
+#include "linked_list.h"
 
 #include <stdio.h>
 #include <memory.h>
 #include <stdbool.h>
 
 int main(int argc, char **argv) {
-    bool quit = false;
+    //bool quit = true; // while loop kilepes
     
     SDL_Window *window = SDL_CreateWindow("NHF", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
 
@@ -34,36 +34,45 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    int x = 0;
-    int y = 0;
-    int radius = 10;
+    // testing
 
+    // int hnd = 12;
+    // List_Node *hn = new_list_node(&hnd, sizeof(int));
+    Linked_List *ll = new_linked_list();
+    Vertex_Data *data1 = new_vertex_data(0);
+    Vertex_Data *data2 = new_vertex_data(1);
+    Vertex_Data *data3 = new_vertex_data(2);
+    Vertex_Data *data4 = new_vertex_data(3);
+    Vertex_Data *data5 = new_vertex_data(4);
+    Vertex_Data *data6 = new_vertex_data(5);
+    new_list_node(ll, data1);
+    new_list_node(ll, data2);
+    new_list_node(ll, data3);
+    new_list_node(ll, data4);
+    new_list_node(ll, data5);
+    new_list_node(ll, data6);
+
+    // TODO: nem mukodik
+    delete_list_node(get_list_node(ll, data3));
+
+    //append_list_node(ll, node1);
+    //append_list_node(ll, node2);
+    print_linked_list(ll);
     
+    // free_list_node(hn);
+    free_linked_list(ll);
 
-    while (!quit) {
-        SDL_Event event;
-        SDL_PollEvent(&event);
+    // testing end
 
-        switch (event.type) {
-            case SDL_QUIT:
-                quit = true;
-                quit_sdl(window, renderer);
-                break;
-            
-            default:
-                x++;
-                y++;
-                SDL_SetRenderDrawColor( renderer, 0xFF, 0xFF, 0xFF, 0xFF );
-                SDL_RenderClear( renderer );
-                SDL_Rect fillRect = { x - radius, y - radius, 2 * radius, 2 * radius };    
-                SDL_SetRenderDrawColor( renderer, 0xFF, 0x00, 0x00, 0xFF );
-                SDL_RenderFillRect( renderer, &fillRect );
-                SDL_SetRenderDrawColor( renderer, 0x00, 0x00, 0x00, 0xFF );
-                SDL_RenderDrawPoint(renderer, x, y);
-                SDL_RenderPresent(renderer);
-                break;
-        }
-    }
+    // while (!quit) {
+    //     SDL_Event event;
+    //     SDL_PollEvent(&event);
+    // }
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindowSurface(window);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
     
     return 0;
 }

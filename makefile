@@ -2,14 +2,24 @@ CC = gcc
 STANDARD = c99
 INCLUDES = -I ./headers -I ./includes/**
 LIBS = -L ./libraries -l SDL2
-SRC_PATH = ./sources/
-IN = $(SRC_PATH)main.c $(SRC_PATH)sdl_config.c $(SRC_PATH)graph.c
-OUT = build.exe
-CFLAGS = -std=$(STANDARD) -Wall -Werror $(INCLUDES) $(LIBS) 
+SRC_DIR = ./sources
+C_SOURCES = $(addprefix $(SRC_DIR)/, main.c linked_list.c)
+OBJ_DIR = ./objects
+C_OBJECTS = $(addprefix $(OBJ_DIR)/, main.o linked_list.o)
+BIN = build.exe
+C_FLAGS = -std=$(STANDARD) $(INCLUDES) $(LIBS) 
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(C_FLAGS) -c -o $@ $<
+
+$(C_OBJECTS): | $(OBJ_DIR)
+
+$(OBJ_DIR):
+	mkdir $(OBJ_DIR)
 
 # gcc main.c sdl_config.c -std=c99 -Wall -Werror -I .\includes\SDL2 -L .\libraries -l SDL2 -o gameszko.exe
-build:
-	$(CC) $(IN) $(CFLAGS) -o $(OUT)
+build: $(C_OBJECTS)
+	$(CC) $(C_FLAGS) $(C_OBJECTS) -o $(BIN)
 
 run:
-	$(OUT)
+	$(BIN)
