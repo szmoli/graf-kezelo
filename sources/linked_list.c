@@ -47,6 +47,9 @@ void free_list_node(List_Node *list_node) {
 */
 void new_list_node(Linked_List *linked_list, Vertex_Data *node_data) {
     List_Node *list_node = alloc_list_node();
+    node_data->list_node = list_node;
+    list_node->node_data = node_data;
+    list_node->next_node = NULL;
 
     if (linked_list->head_node == NULL) {
         linked_list->head_node = list_node;
@@ -56,9 +59,6 @@ void new_list_node(Linked_List *linked_list, Vertex_Data *node_data) {
         last_node->next_node = list_node;
         list_node->prev_node = last_node;
     }
-
-    list_node->node_data = node_data;
-    list_node->next_node = NULL;
 }
 
 // csak foglalja a memóriát, nem szabadítja fel!
@@ -75,7 +75,7 @@ int get_vertex_data_int(Vertex_Data *vertex_data) {
     2. lista mutató = NULL
 */
 void free_linked_list(Linked_List *linked_list) {
-    printf("%s:", __func__);
+    printf("%s:\n", __func__);
     List_Node *p = linked_list->head_node;
     List_Node *next_node = NULL;
 
@@ -144,15 +144,22 @@ void append_list_node(Linked_List *linked_list, List_Node *list_node) {
 
     felszabadítja a memóriát!
 */
-void delete_list_node(List_Node *list_node) {
-    printf("%s:", __func__);
+void delete_list_node(Linked_List *linked_list, List_Node *list_node) {
+    printf("%s:\n", __func__);
+    printf("prev_node: %d -> new_next_node: %d, deleted_node: %d\n", get_vertex_data_int(list_node->prev_node->node_data), get_vertex_data_int(list_node->next_node->node_data), get_vertex_data_int(list_node->node_data));
 
-    list_node->prev_node->next_node = list_node->next_node;
+    if (list_node->prev_node != NULL) {
+        list_node->prev_node->next_node = list_node->next_node;
+    } else {
+        list_node->next_node->prev_node = NULL;
+        linked_list->head_node = list_node->next_node;
+    }
+    
     free_list_node(list_node);
 }
 
 List_Node *get_list_node(Linked_List *linked_list, Vertex_Data *vertex_data) {
-    printf("%s:", __func__);
+    printf("%s:\n", __func__);
     List_Node *search = linked_list->head_node;
 
     while (search != NULL && search->node_data != vertex_data) {
@@ -169,10 +176,10 @@ List_Node *get_list_node(Linked_List *linked_list, Vertex_Data *vertex_data) {
 void print_linked_list(Linked_List *linked_list) {
     List_Node *p = linked_list->head_node;
     
-    printf("List: ");
+    printf("%s:\n", __func__);
 
     while (p != NULL) {
-        printf("%d -> ", *(int *) p->node_data);
+        printf("%d -> ", get_vertex_data_int(p->node_data));
         p = p->next_node;
     }
 
