@@ -42,29 +42,38 @@ int main(int argc, char **argv) {
     // int hnd = 12;
     // List_Node *hn = new_list_node(&hnd, sizeof(int));
     Linked_List *ll1 = new_linked_list();
+    
+    if (ll1 == NULL) printf("ll1 nem sikerult");
+    
     Linked_List *ll2 = new_linked_list();
-    // Vertex_Data *data1 = new_vertex_data(1);
-    // Vertex_Data *data2 = new_vertex_data(2);
-    // Vertex_Data *data3 = new_vertex_data(3);
-    // Vertex_Data *data4 = new_vertex_data(4);
+
+    if (ll2 == NULL) printf("ll2 nem sikerult");
+
+    array_push(arr, ll1);
+    array_push(arr, ll2);
+
+    Vertex_Data *data1 = new_vertex_data(1, 10, 100, 100);
+    Vertex_Data *data2 = new_vertex_data(2, 10, 200, 100);
+    // printf("vertex datak kesz\n");
+    // Vertex_Data *data3 = new_vertex_data(3, 10, 100, 100);
+    // Vertex_Data *data4 = new_vertex_data(4, 10, 100, 100);
     // Vertex_Data *data5 = new_vertex_data(5);
     // Vertex_Data *data6 = new_vertex_data(6);
 
 
-    // new_list_node(ll1, data1);
-    // new_list_node(ll2, data2);
+    // print_linked_list(ll1);
+    // print_linked_list(ll2);
+    // printf("cat\n");
 
-
-    // new_list_node(ll, data2);
-    // new_list_node(ll, data3);
+    new_list_node(ll1, data1);
+    // new_list_node(ll1, data3);
+    // new_list_node(ll1, data4);
+    new_list_node(ll1, data2);
     // new_list_node(ll, data4);
     // new_list_node(ll, data5);
     // new_list_node(ll, data6);
-    //print_dynamic_array(arr);
 
-
-    array_push(arr, ll1);
-    array_push(arr, ll2);
+    print_dynamic_array(arr); //TODO: nem mukodik a kibaszott kiiras meg fogok bolondulni geciiii
 
 
     //print_dynamic_array(arr);
@@ -79,6 +88,7 @@ int main(int argc, char **argv) {
     
     // // free_list_node(hn);
     destroy_dynamic_array(arr);
+    // printf("aaaaaaaaaaaaaaa\n");
 
 
 

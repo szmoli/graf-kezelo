@@ -3,9 +3,9 @@ STANDARD = c99
 INCLUDES = -I ./headers -I ./includes/**
 LIBS = -L ./libraries -l SDL2
 SRC_DIR = ./sources
-C_SOURCES = $(addprefix $(SRC_DIR)/, main.c linked_list.c dynamic_array.c)
+C_SOURCES = $(addprefix $(SRC_DIR)/, main.c linked_list.c dynamic_array.c graphics.c)
 OBJ_DIR = ./objects
-C_OBJECTS = $(addprefix $(OBJ_DIR)/, main.o linked_list.o dynamic_array.o)
+C_OBJECTS = $(addprefix $(OBJ_DIR)/, main.o linked_list.o dynamic_array.o graphics.o)
 BIN = build.exe
 C_FLAGS = -std=$(STANDARD) $(INCLUDES) $(LIBS) 
 
