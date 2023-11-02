@@ -66,9 +66,9 @@ int main(int argc, char **argv) {
     // printf("cat\n");
 
     new_list_node(ll1, data1);
-    // new_list_node(ll1, data3);
-    // new_list_node(ll1, data4);
     new_list_node(ll1, data2);
+    // new_list_node(ll1, data4);
+    // new_list_node(ll1, data2);
     // new_list_node(ll, data4);
     // new_list_node(ll, data5);
     // new_list_node(ll, data6);

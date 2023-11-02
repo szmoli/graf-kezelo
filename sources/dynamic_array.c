@@ -65,7 +65,7 @@ void destroy_dynamic_array(Dynamic_Array *dyn_array) {
 
 void print_dynamic_array(Dynamic_Array *dyn_array) {
     for (size_t i = 0; i < dyn_array->size; i++) {
+        printf("[] -> ");
         print_linked_list(dyn_array->array[i]);
-        printf("kitepem a hajam\n");
     }
 }

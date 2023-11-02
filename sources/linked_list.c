@@ -54,12 +54,13 @@ void new_list_node(Linked_List *linked_list, Vertex_Data *vertex_data) {
     if (linked_list->head_node == NULL) {
         linked_list->head_node = list_node;
         list_node->prev_node = NULL;
-        list_node->next_node = NULL;
     } else {
         List_Node *last_node = get_last_node(linked_list);
         last_node->next_node = list_node;
         list_node->prev_node = last_node;
     }
+
+    list_node->next_node = NULL;
 }
 
 /*
@@ -172,9 +173,10 @@ List_Node *get_list_node(Linked_List *linked_list, unsigned int id) {
 void print_linked_list(Linked_List *linked_list) {
     List_Node *p = linked_list->head_node;
     
-    printf("%s:\n", __func__);
+    //printf("%s:\n", __func__);
 
     while (p != NULL) {
+        // printf("current p: %p\n", p);
         printf("%d -> ", p->vertex_data->id);
         p = p->next_node;
     }
