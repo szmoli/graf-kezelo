@@ -55,9 +55,9 @@ int main(int argc, char **argv) {
     Vertex_Data *data1 = new_vertex_data(1, 10, 100, 100);
     Vertex_Data *data2 = new_vertex_data(2, 10, 200, 100);
     // printf("vertex datak kesz\n");
-    // Vertex_Data *data3 = new_vertex_data(3, 10, 100, 100);
-    // Vertex_Data *data4 = new_vertex_data(4, 10, 100, 100);
-    // Vertex_Data *data5 = new_vertex_data(5);
+    Vertex_Data *data3 = new_vertex_data(3, 10, 100, 100);
+    Vertex_Data *data4 = new_vertex_data(4, 10, 100, 100);
+    Vertex_Data *data5 = new_vertex_data(5, 10, 100, 100);
     // Vertex_Data *data6 = new_vertex_data(6);
 
 
@@ -67,9 +67,9 @@ int main(int argc, char **argv) {
 
     new_list_node(ll1, data1);
     new_list_node(ll1, data2);
-    // new_list_node(ll1, data4);
-    // new_list_node(ll1, data2);
-    // new_list_node(ll, data4);
+    new_list_node(ll1, data4);
+    new_list_node(ll2, data3);
+    new_list_node(ll2, data5);
     // new_list_node(ll, data5);
     // new_list_node(ll, data6);
 
