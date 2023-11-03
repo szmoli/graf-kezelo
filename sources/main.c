@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include <memory.h>
 #include <stdbool.h>
+#include <globals.h>
+
+unsigned int id = 0;
 
 int main(int argc, char **argv) {
     //bool quit = true; // while loop kilepes
@@ -52,12 +55,12 @@ int main(int argc, char **argv) {
     array_push(arr, ll1);
     array_push(arr, ll2);
 
-    Vertex_Data *data1 = new_vertex_data(1, 10, 100, 100);
-    Vertex_Data *data2 = new_vertex_data(2, 10, 200, 100);
+    Vertex_Data *data1 = new_vertex_data(10, 100, 100);
+    Vertex_Data *data2 = new_vertex_data(10, 200, 100);
     // printf("vertex datak kesz\n");
-    Vertex_Data *data3 = new_vertex_data(3, 10, 100, 100);
-    Vertex_Data *data4 = new_vertex_data(4, 10, 100, 100);
-    Vertex_Data *data5 = new_vertex_data(5, 10, 100, 100);
+    Vertex_Data *data3 = new_vertex_data(10, 100, 100);
+    Vertex_Data *data4 = new_vertex_data(10, 100, 100);
+    Vertex_Data *data5 = new_vertex_data(10, 100, 100);
     // Vertex_Data *data6 = new_vertex_data(6);
 
 

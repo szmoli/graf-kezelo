@@ -10,10 +10,10 @@ void destroy_vertex_data(Vertex_Data *vertex_data) {
 
     csak memóriát foglal!
 */
-Vertex_Data *new_vertex_data(unsigned int id, unsigned int radius, int x, int y) {
+Vertex_Data *new_vertex_data(unsigned int radius, int x, int y) {
     Vertex_Data *vertex_data = (Vertex_Data *) malloc(sizeof(Vertex_Data));
 
-    vertex_data->id = id;
+    vertex_data->id = id++;
     vertex_data->radius = radius;
     vertex_data->x = x;
     vertex_data->y = y;
@@ -32,8 +32,7 @@ Vertex_Data *new_vertex_data(unsigned int id, unsigned int radius, int x, int y)
 void destroy_list_node(List_Node *list_node) {
     if (list_node != NULL) {
         destroy_vertex_data(list_node->vertex_data);
-    }
-    
+    }    
 
     free(list_node);
     list_node = NULL;
