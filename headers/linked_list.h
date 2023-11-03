@@ -14,6 +14,7 @@ typedef struct Vertex_Data {
 } Vertex_Data;
 
 typedef struct List_Node {
+    unsigned int index;
     Vertex_Data *vertex_data;
     struct List_Node *prev_node;
     struct List_Node *next_node;
@@ -21,13 +22,12 @@ typedef struct List_Node {
 
 typedef struct Linked_List {
     int size;
-    unsigned int index;
     List_Node *head_node;
 } Linked_List;
 
 List_Node *alloc_list_node();
 void destroy_list_node(List_Node *list_node);
-void new_list_node(Linked_List *linked_list, Vertex_Data *vertex_data);
+void new_list_node(Linked_List *linked_list);
 Vertex_Data *alloc_vertex_data();
 void free_vertex_data(Vertex_Data *vertex_data);
 Vertex_Data *new_vertex_data(unsigned int radius, int x, int y);

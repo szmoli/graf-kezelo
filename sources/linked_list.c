@@ -21,6 +21,17 @@ Vertex_Data *new_vertex_data(unsigned int radius, int x, int y) {
     return vertex_data;
 }
 
+Vertex_Data *init_vertex_data() {
+    Vertex_Data *vertex_data = (Vertex_Data *) malloc(sizeof(Vertex_Data));
+
+    vertex_data->id = id++;
+    vertex_data->radius = 0;
+    vertex_data->x = 0;
+    vertex_data->y = 0;
+
+    return vertex_data;
+}
+
 /*
     pont törlése:
         1. megkeresi a nodeot az összes listában és eltávolítja belőlük
@@ -45,10 +56,10 @@ int get_vertex_data_int(Vertex_Data *vertex_data) {
 /*
     létrehoz egy új node-ot ami a megadott adatott tartalmazza
 */
-void new_list_node(Linked_List *linked_list, Vertex_Data *vertex_data) {
+void new_list_node(Linked_List *linked_list) {
     List_Node *list_node = (List_Node *) malloc(sizeof(List_Node));
     // node_data->list_node = list_node;
-    list_node->vertex_data = vertex_data;
+    list_node->vertex_data = init_vertex_data();
 
     if (linked_list->head_node == NULL) {
         linked_list->head_node = list_node;
@@ -97,6 +108,8 @@ Linked_List *new_linked_list() {
     if (linked_list == NULL) return NULL;
     
     linked_list->head_node = NULL;
+
+    new_list_node(linked_list);
 
     return linked_list;
 }
@@ -171,11 +184,13 @@ List_Node *get_list_node(Linked_List *linked_list, unsigned int id) {
 */
 void print_linked_list(Linked_List *linked_list) {
     List_Node *p = linked_list->head_node;
+
+    //printf("%p\n", linked_list->head_node);
     
     //printf("%s:\n", __func__);
 
     while (p != NULL) {
-        // printf("current p: %p\n", p);
+        //printf("current p: %p, next p: %p\n", p, p->next_node);
         printf("%d -> ", p->vertex_data->id);
         p = p->next_node;
     }

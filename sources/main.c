@@ -44,23 +44,23 @@ int main(int argc, char **argv) {
 
     // int hnd = 12;
     // List_Node *hn = new_list_node(&hnd, sizeof(int));
-    Linked_List *ll1 = new_linked_list();
+    // Linked_List *ll1 = new_linked_list();
     
-    if (ll1 == NULL) printf("ll1 nem sikerult");
+    // if (ll1 == NULL) printf("ll1 nem sikerult");
     
-    Linked_List *ll2 = new_linked_list();
+    // Linked_List *ll2 = new_linked_list();
 
-    if (ll2 == NULL) printf("ll2 nem sikerult");
+    // if (ll2 == NULL) printf("ll2 nem sikerult");
 
-    array_push(arr, ll1);
-    array_push(arr, ll2);
+    array_push(arr, new_linked_list());
+    array_push(arr, new_linked_list());
 
-    Vertex_Data *data1 = new_vertex_data(10, 100, 100);
-    Vertex_Data *data2 = new_vertex_data(10, 200, 100);
+    // Vertex_Data *data1 = new_vertex_data(10, 100, 100);
+    // Vertex_Data *data2 = new_vertex_data(10, 200, 100);
     // printf("vertex datak kesz\n");
-    Vertex_Data *data3 = new_vertex_data(10, 100, 100);
-    Vertex_Data *data4 = new_vertex_data(10, 100, 100);
-    Vertex_Data *data5 = new_vertex_data(10, 100, 100);
+    // Vertex_Data *data3 = new_vertex_data(10, 100, 100);
+    // Vertex_Data *data4 = new_vertex_data(10, 100, 100);
+    // Vertex_Data *data5 = new_vertex_data(10, 100, 100);
     // Vertex_Data *data6 = new_vertex_data(6);
 
 
@@ -68,19 +68,19 @@ int main(int argc, char **argv) {
     // print_linked_list(ll2);
     // printf("cat\n");
 
-    new_list_node(ll1, data1);
-    new_list_node(ll1, data2);
-    new_list_node(ll1, data4);
-    new_list_node(ll2, data3);
-    new_list_node(ll2, data5);
+    // new_list_node(ll1);
+    // new_list_node(ll1);
+    // new_list_node(ll1);
+    // new_list_node(ll2);
+    // new_list_node(ll2);
+
     // new_list_node(ll, data5);
     // new_list_node(ll, data6);
 
-    print_dynamic_array(arr); //TODO: nem mukodik a kibaszott kiiras meg fogok bolondulni geciiii
-
+    print_dynamic_array(arr);
+    // printf("debug\n");
 
     //print_dynamic_array(arr);
-    // // TODO: nem mukodik
     // delete_list_node(ll, data3->list_node);
     // delete_list_node(ll, data1->list_node);
     // // delete_list_node(data4->list_node);
