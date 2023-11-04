@@ -35,18 +35,74 @@ Vertex_Data *init_vertex_data() {
 /*
     pont törlése:
         1. megkeresi a nodeot az összes listában és eltávolítja belőlük
+            1. végigmegy a saját listáján az összes szomszédos pontját hozzáadja egy queue-hoz
+            2. végigmegy a queuen és az összes szomszédos pontjának a listájából poppolja magát majd eltávolítja a queueból
         2. array_pop() a saját indexére
         3. saját linked listjét felszabadítja, de a többi pontét nem!        
 
     felszabadítja a memóriát
 */
 void destroy_list_node(List_Node *list_node) {
-    if (list_node != NULL) {
-        destroy_vertex_data(list_node->vertex_data);
-    }    
+    printf("%s:\n", __func__);
 
-    free(list_node);
-    list_node = NULL;
+    Linked_List *queue = new_list_empty();
+
+    // print_linked_list(queue);
+
+    List_Node *p = list_node->next_node;
+
+    while (p != NULL) {
+        // printf("1.) %p -> %p\n", p, p->next_node);
+        // list_push(queue, p);
+        // printf("pushed\n");
+        // p = p->next_node;
+        // // printf("2.) %d -> %d\n", p->vertex_data->id, p->next_node->vertex_data->id);
+        // printf("asddsddd\n");
+
+        //printf("%d\n", p->vertex_data->id);
+        list_push(queue, copy_list_node(p));
+        p = p->next_node;
+        free(p->prev_node);
+    }
+
+    // list_push(queue, NULL);
+
+    // print_linked_list(queue);
+
+    p = queue->head_node;
+
+    while (queue->head_node != NULL) {
+        List_Node *p2 = adjacency_array->array[p->vertex_data->index]->head_node;
+
+        while (p2 != NULL) {
+            if (p2->vertex_data == p->vertex_data) {
+
+            }
+
+            p2 = p2->next_node;
+        }
+        
+        
+        p = p->next_node;
+    }
+    
+
+    // if (list_node != NULL) {
+    //     destroy_vertex_data(list_node->vertex_data);
+    // }    
+
+    // free(list_node);
+    // list_node = NULL;
+
+    //destroy_linked_list(queue);
+}
+
+void create_edge(List_Node *a, List_Node *b) {
+    Linked_List *list_a = adjacency_array->array[a->vertex_data->index];
+    Linked_List *list_b = adjacency_array->array[b->vertex_data->index];
+
+    list_push(list_a, copy_list_node(b));
+    list_push(list_b, copy_list_node(a));
 }
 
 int get_vertex_data_int(Vertex_Data *vertex_data) {
@@ -60,7 +116,31 @@ void new_list_node(Linked_List *linked_list) {
     List_Node *list_node = (List_Node *) malloc(sizeof(List_Node));
     // node_data->list_node = list_node;
     list_node->vertex_data = init_vertex_data();
+    list_node->vertex_data->list_node = list_node;
 
+    // if (linked_list->head_node == NULL) {
+    //     linked_list->head_node = list_node;
+    //     list_node->prev_node = NULL;
+    // } else {
+    //     List_Node *last_node = get_last_node(linked_list);
+    //     last_node->next_node = list_node;
+    //     list_node->prev_node = last_node;
+    // }
+
+    // list_node->next_node = NULL;
+
+    list_push(linked_list, list_node);
+}
+
+List_Node *copy_list_node(List_Node *list_node) {
+    List_Node *new_list_node = (List_Node *) malloc(sizeof(List_Node));
+
+    new_list_node->vertex_data = list_node->vertex_data;
+
+    return new_list_node;
+}
+
+void list_push(Linked_List *linked_list, List_Node *list_node) {
     if (linked_list->head_node == NULL) {
         linked_list->head_node = list_node;
         list_node->prev_node = NULL;
@@ -98,18 +178,31 @@ void destroy_linked_list(Linked_List *linked_list) {
 }
 
 /*
+    létrehoz egy új Linked_List-et egy egyedi head node-al.
+
+    csak foglalja a memóriát!
+*/
+Linked_List *new_list_with_head() {
+    Linked_List *linked_list = new_list_empty();
+
+    if (linked_list == NULL) return NULL;
+
+    new_list_node(linked_list);
+
+    return linked_list;
+}
+
+/*
     létrehoz egy új Linked_List-et üresen
 
     csak foglalja a memóriát!
 */
-Linked_List *new_linked_list() {
+Linked_List *new_list_empty() {
     Linked_List *linked_list = (Linked_List *) malloc(sizeof(Linked_List));
 
     if (linked_list == NULL) return NULL;
     
     linked_list->head_node = NULL;
-
-    new_list_node(linked_list);
 
     return linked_list;
 }
@@ -145,23 +238,18 @@ void append_list_node(Linked_List *linked_list, List_Node *list_node) {
 }
 
 /*
-    1. list_node->prev_node->next_node = list_node->next_node
-    2. free_node(list_node)
-
-    felszabadítja a memóriát!
+    eltávolítja a listából a lista elemet, de nem szabadítja fel, arra külön meg kell hívni a destroy_list_node()-ot
 */
-void remove_list_node(Linked_List *linked_list, List_Node *list_node) {
+void list_pop(Linked_List *linked_list, List_Node *list_node) {
     // printf("%s:\n", __func__);
     // printf("prev_node: %d -> new_next_node: %d, deleted_node: %d\n", get_vertex_data_int(list_node->prev_node->node_data), get_vertex_data_int(list_node->next_node->node_data), get_vertex_data_int(list_node->node_data));
 
     if (list_node->prev_node != NULL) {
         list_node->prev_node->next_node = list_node->next_node;
     } else {
-        list_node->next_node->prev_node = NULL;
+        if (list_node->next_node != NULL) list_node->next_node->prev_node = NULL;
         linked_list->head_node = list_node->next_node;
     }
-
-    destroy_list_node(list_node);
 }
 
 /*

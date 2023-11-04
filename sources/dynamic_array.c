@@ -26,7 +26,7 @@ void array_push(Dynamic_Array *dyn_array, Linked_List *linked_list) {
     // printf("kint:\n");
     // print_linked_list(linked_list);
     new_array[old_size] = linked_list;
-    linked_list->head_node->index = old_size;
+    linked_list->head_node->vertex_data->index = old_size;
 
     free(dyn_array->array);
     dyn_array->array = new_array; 
