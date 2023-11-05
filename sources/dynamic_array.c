@@ -4,7 +4,7 @@ Dynamic_Array *new_dynamic_array() {
     Dynamic_Array *new_array = (Dynamic_Array *) malloc(sizeof(Dynamic_Array));
 
     new_array->size = 0;
-    new_array->array = (Linked_List **) malloc(new_array->size * sizeof(Linked_List **));
+    new_array->array = (struct Linked_List **) malloc(new_array->size * sizeof(struct Linked_List **));
 
     return new_array;
 }
@@ -12,10 +12,10 @@ Dynamic_Array *new_dynamic_array() {
 /*
     TODO: hibakezelés
 */
-void array_push(Dynamic_Array *dyn_array, Linked_List *linked_list) {
+void array_push(Dynamic_Array *dyn_array, struct Linked_List *linked_list) {
     size_t old_size = dyn_array->size;
     dyn_array->size++;    
-    Linked_List **new_array = (Linked_List **) malloc(dyn_array->size * sizeof(Linked_List **));
+    struct Linked_List **new_array = (struct Linked_List **) malloc(dyn_array->size * sizeof(struct Linked_List **));
 
     for (size_t i = 0; i < old_size; i++) {
         // printf("i: [%d]\n", i);

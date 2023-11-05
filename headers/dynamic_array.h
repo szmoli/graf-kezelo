@@ -1,13 +1,13 @@
 #pragma once
 
-#include "linked_list.h"
-
 #include <stdlib.h>
 #include <memory.h>
 
+struct Linked_List;
+
 typedef struct Dynamic_Array {
     size_t size;
-    Linked_List** array;
+    struct Linked_List** array;
 } Dynamic_Array;
 
 Dynamic_Array *new_dynamic_array();

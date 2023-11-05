@@ -3,9 +3,9 @@
 
 #include "debugmalloc.h"
 
+#include "constants.h"
 #include "linked_list.h"
 #include "dynamic_array.h"
-#include "constants.h"
 
 #include <stdio.h>
 #include <memory.h>
