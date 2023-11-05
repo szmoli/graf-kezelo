@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     // testing
 
-    Dynamic_Array *adjacency_array = new_dynamic_array();
+    adjacency_array = new_dynamic_array();
 
     // int hnd = 12;
     // List_Node *hn = new_list_node(&hnd, sizeof(int));
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     print_linked_list(ll2);
     printf("init\n");
 
-    create_edge(adjacency_array, ll1->head_node, ll2->head_node);
+    create_edge(ll1->head_node, ll2->head_node);
     print_linked_list(ll1);
     print_linked_list(ll2);
     printf("create edge\n");
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
     // print_linked_list(ll2);
 
     //print_linked_list(ll);
-    destroy_list_node(adjacency_array, ll1->head_node);
+    destroy_list_node(ll1->head_node);
 
     printf("\n\n");
 

@@ -42,7 +42,7 @@ Vertex_Data *init_vertex_data() {
 
     felszabadítja a memóriát
 */
-void destroy_list_node(Dynamic_Array *arr, List_Node *list_node) {
+void destroy_list_node(List_Node *list_node) {
     printf("%s:\n", __func__);
 
     Linked_List *queue = new_list_empty();
@@ -72,7 +72,7 @@ void destroy_list_node(Dynamic_Array *arr, List_Node *list_node) {
     p = queue->head_node;
 
     while (queue->head_node != NULL) {
-        List_Node *p2 = arr->array[p->vertex_data->index]->head_node;
+        List_Node *p2 = adjacency_array->array[p->vertex_data->index]->head_node;
 
         while (p2 != NULL) {
             if (p2->vertex_data == p->vertex_data) {
@@ -97,9 +97,9 @@ void destroy_list_node(Dynamic_Array *arr, List_Node *list_node) {
     //destroy_linked_list(queue);
 }
 
-void create_edge(Dynamic_Array *arr, List_Node *a, List_Node *b) {
-    Linked_List *list_a = arr->array[a->vertex_data->index];
-    Linked_List *list_b = arr->array[b->vertex_data->index];
+void create_edge(List_Node *a, List_Node *b) {
+    Linked_List *list_a = adjacency_array->array[a->vertex_data->index];
+    Linked_List *list_b = adjacency_array->array[b->vertex_data->index];
 
     list_push(list_a, copy_list_node(b));
     list_push(list_b, copy_list_node(a));
@@ -157,7 +157,7 @@ void list_push(Linked_List *linked_list, List_Node *list_node) {
     1. lista bejárása és az összes node felszabadítása
     2. lista mutató = NULL
 */
-void destroy_linked_list(Dynamic_Array *arr, Linked_List *linked_list) {
+void destroy_linked_list(Linked_List *linked_list) {
     printf("%s:\n", __func__);
     List_Node *p = linked_list->head_node;
     List_Node *next_node = NULL;
@@ -166,12 +166,12 @@ void destroy_linked_list(Dynamic_Array *arr, Linked_List *linked_list) {
     while (p != NULL && p->next_node != NULL) {
         next_node = p->next_node;
         //printf("p = %d (%p), next_node = %d (%p)\n", get_vertex_data_int(p->vertex_data), p, get_vertex_data_int(next_node->vertex_data), next_node);
-        destroy_list_node(arr, p);
+        destroy_list_node(p);
         p = next_node;
     }
     
     //printf("p = %d (%p), next_node = (%p)\n", get_vertex_data_int(p->vertex_data), p, next_node);
-    destroy_list_node(arr, p);
+    destroy_list_node(p);
 
     free(linked_list);
     linked_list = NULL;
