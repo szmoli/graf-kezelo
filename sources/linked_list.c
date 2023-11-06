@@ -1,4 +1,8 @@
+#include "globals.h"
+#include "data_types.h"
 #include "linked_list.h"
+
+// extern Dynamic_Array *adjacency_array;
 
 void destroy_vertex_data(Vertex_Data *vertex_data) {
     free(vertex_data);
@@ -32,6 +36,29 @@ Vertex_Data *init_vertex_data() {
     return vertex_data;
 }
 
+Linked_List *get_linked_list(List_Node *list_node) {
+    size_t i = 0;
+
+    while (i < adjacency_array->size && adjacency_array->array[i]->head_node->vertex_data != list_node->vertex_data) {
+        i++;
+    }
+
+    return adjacency_array->array[i];
+
+    // for (i; i < adjacency_array->size; i++) {
+    //     printf("get_ll: %d, %d\n", list_node->vertex_data->id, adjacency_array->array[i]->head_node->vertex_data->id);
+
+    //     if (adjacency_array->array[i]->head_node->vertex_data == list_node->vertex_data) {
+    //         printf("get_ll: talalt\n\n");
+    //         ll = adjacency_array->array[i];
+    //         break;
+    //     }        
+    // }
+
+    // printf("fasz\n\n");
+    // return ll;
+}
+
 /*
     pont törlése:
         1. megkeresi a nodeot az összes listában és eltávolítja belőlük
@@ -42,48 +69,70 @@ Vertex_Data *init_vertex_data() {
 
     felszabadítja a memóriát
 */
-void destroy_list_node(Dynamic_Array *arr, List_Node *list_node) {
+void destroy_list_node(List_Node *list_node) {
     printf("%s:\n", __func__);
 
-    Linked_List *queue = new_list_empty();
+    Vertex_Data *vd = list_node->vertex_data;
+    Linked_List *queue = new_list_empty(); // FIFO
+    Linked_List *ll = get_linked_list(list_node);
 
     // print_linked_list(queue);
 
-    List_Node *p = list_node->next_node;
+    List_Node *p = ll->head_node;
+    List_Node *prev = NULL;
+
+    printf("start\n\n");
 
     while (p != NULL) {
-        // printf("1.) %p -> %p\n", p, p->next_node);
-        // list_push(queue, p);
-        // printf("pushed\n");
-        // p = p->next_node;
-        // // printf("2.) %d -> %d\n", p->vertex_data->id, p->next_node->vertex_data->id);
-        // printf("asddsddd\n");
+        printf("p: %d, prev: %d\n", p->vertex_data->id, prev != NULL ? prev->vertex_data->id : -1);
+        prev = p;
 
-        //printf("%d\n", p->vertex_data->id);
-        list_push(queue, copy_list_node(p));
+        if (p->vertex_data != list_node->vertex_data) {
+            list_push(queue, copy_list_node(p));
+        }
+
+        list_pop(ll, p);
+
         p = p->next_node;
-        free(p->prev_node);
+        // free(prev->vertex_data);
+        // free(prev);
     }
 
-    // list_push(queue, NULL);
+    // free(ll);
 
-    // print_linked_list(queue);
+    print_linked_list(queue);
+    printf("printed queue\n\n");
 
     p = queue->head_node;
+    prev = NULL;
 
-    while (queue->head_node != NULL) {
-        List_Node *p2 = arr->array[p->vertex_data->index]->head_node;
+    while (queue->head_node != NULL) { // queue bejárás
+        prev = p;
+        
+        Linked_List *llp = get_linked_list(p);
+        printf("queue bejaras: %d\n", p != NULL ? p->vertex_data->id : -1);
+        List_Node *p2 = llp->head_node;
+        List_Node *prev2 = NULL;
 
-        while (p2 != NULL) {
-            if (p2->vertex_data == p->vertex_data) {
 
-            }
-
+        while (p2 != NULL && p2->vertex_data != vd) { // queue eleméhez tartozó linked list bejárása
+            prev2 = p2;
             p2 = p2->next_node;
         }
         
+        // pop és free
+        if (prev2 == NULL && p2 != NULL) { // első elem
+            llp->head_node = p2->next_node;
+            free(p2);
+        } else if (prev2 != NULL && p2 != NULL) { // általános elem
+            prev2->next_node = p2->next_node;
+            free(p2);
+        }
         
         p = p->next_node;
+        list_pop(queue, prev);
+        printf("queue pop\n\n");
+        free(prev);
     }
     
 
@@ -97,9 +146,10 @@ void destroy_list_node(Dynamic_Array *arr, List_Node *list_node) {
     //destroy_linked_list(queue);
 }
 
-void create_edge(Dynamic_Array *arr, List_Node *a, List_Node *b) {
-    Linked_List *list_a = arr->array[a->vertex_data->index];
-    Linked_List *list_b = arr->array[b->vertex_data->index];
+void create_edge(List_Node *a, List_Node *b) {
+    Linked_List *list_a = get_linked_list(a);
+    Linked_List *list_b = get_linked_list(b);
+    printf("got linked lists\n\n");
 
     list_push(list_a, copy_list_node(b));
     list_push(list_b, copy_list_node(a));
@@ -116,7 +166,6 @@ void new_list_node(Linked_List *linked_list) {
     List_Node *list_node = (List_Node *) malloc(sizeof(List_Node));
     // node_data->list_node = list_node;
     list_node->vertex_data = init_vertex_data();
-    list_node->vertex_data->list_node = list_node;
 
     // if (linked_list->head_node == NULL) {
     //     linked_list->head_node = list_node;
@@ -143,35 +192,34 @@ List_Node *copy_list_node(List_Node *list_node) {
 void list_push(Linked_List *linked_list, List_Node *list_node) {
     if (linked_list->head_node == NULL) {
         linked_list->head_node = list_node;
-        list_node->prev_node = NULL;
     } else {
-        List_Node *last_node = get_last_node(linked_list);
-        last_node->next_node = list_node;
-        list_node->prev_node = last_node;
+        linked_list->tail_node->next_node = list_node;
     }
 
     list_node->next_node = NULL;
+    linked_list->tail_node = list_node;
 }
 
 /*
     1. lista bejárása és az összes node felszabadítása
     2. lista mutató = NULL
 */
-void destroy_linked_list(Dynamic_Array *arr, Linked_List *linked_list) {
+void destroy_linked_list(Linked_List *linked_list) {
     printf("%s:\n", __func__);
     List_Node *p = linked_list->head_node;
     List_Node *next_node = NULL;
     //printf("p = %d (%p), next_node = (%p)\n", p->vertex_data->id, p, next_node);
 
-    while (p != NULL && p->next_node != NULL) {
-        next_node = p->next_node;
-        //printf("p = %d (%p), next_node = %d (%p)\n", get_vertex_data_int(p->vertex_data), p, get_vertex_data_int(next_node->vertex_data), next_node);
-        destroy_list_node(arr, p);
-        p = next_node;
+    if (p != NULL) {
+        while (p->next_node != NULL) {
+            next_node = p->next_node;
+            //printf("p = %d (%p), next_node = %d (%p)\n", get_vertex_data_int(p->vertex_data), p, get_vertex_data_int(next_node->vertex_data), next_node);
+            destroy_list_node(p);
+            p = next_node;
+        }
     }
     
     //printf("p = %d (%p), next_node = (%p)\n", get_vertex_data_int(p->vertex_data), p, next_node);
-    destroy_list_node(arr, p);
 
     free(linked_list);
     linked_list = NULL;
@@ -203,38 +251,9 @@ Linked_List *new_list_empty() {
     if (linked_list == NULL) return NULL;
     
     linked_list->head_node = NULL;
+    linked_list->tail_node = NULL;
 
     return linked_list;
-}
-
-/*
-    1.  indulás: linked_list->head_node
-    2.  amíg search->next_node != NULL
-            search = search->next_node
-    3.  visszaadja search
-*/
-List_Node *get_last_node(Linked_List *linked_list) {
-    List_Node *search = linked_list->head_node;
-
-    while (search != NULL && search->next_node != NULL) {
-        search = search->next_node;
-    }
-
-    return search;
-}
-
-/*
-    1. last_node megkeres
-    2. last_node->next_node = list_node
-    3. new_node->prev_node = last_node
-    4. new_node->next_node = NULL
-*/
-void append_list_node(Linked_List *linked_list, List_Node *list_node) {
-    List_Node *last_node = get_last_node(linked_list);
-
-    last_node->next_node = list_node;
-    list_node->prev_node = last_node;
-    list_node->next_node = NULL;
 }
 
 /*
@@ -243,13 +262,31 @@ void append_list_node(Linked_List *linked_list, List_Node *list_node) {
 void list_pop(Linked_List *linked_list, List_Node *list_node) {
     // printf("%s:\n", __func__);
     // printf("prev_node: %d -> new_next_node: %d, deleted_node: %d\n", get_vertex_data_int(list_node->prev_node->node_data), get_vertex_data_int(list_node->next_node->node_data), get_vertex_data_int(list_node->node_data));
+    List_Node *prev = NULL;
+    List_Node *p = linked_list->head_node;
 
-    if (list_node->prev_node != NULL) {
-        list_node->prev_node->next_node = list_node->next_node;
-    } else {
-        if (list_node->next_node != NULL) list_node->next_node->prev_node = NULL;
-        linked_list->head_node = list_node->next_node;
+    while (p != NULL && p->vertex_data != list_node->vertex_data) {
+        printf("%d\n", p->vertex_data->id);
+        prev = p;
+        p = p->next_node;
     }
+    
+    if (prev == NULL && p != NULL) {
+        printf("head pop\n\n");
+        linked_list->head_node = p->next_node;
+    } else if (prev != NULL && p != NULL) {
+        prev->next_node = p->next_node;
+        printf("standard pop\n\n");
+    }
+
+    // if (list_node == linked_list->head_node) {
+    //     linked_list->head_node = list_node->next_node;
+    // } else {
+
+
+    //     // if (list_node->next_node != NULL) list_node->next_node->prev_node = NULL;
+    //     // linked_list->head_node = list_node->next_node;
+    // }
 }
 
 /*

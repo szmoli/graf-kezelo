@@ -1,3 +1,4 @@
+#include "data_types.h"
 #include "dynamic_array.h"
 
 Dynamic_Array *new_dynamic_array() {

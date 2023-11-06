@@ -4,6 +4,8 @@
 #include "debugmalloc.h"
 
 #include "constants.h"
+#include "globals.h"
+#include "data_types.h"
 #include "linked_list.h"
 #include "dynamic_array.h"
 
@@ -13,6 +15,7 @@
 #include <globals.h>
 
 unsigned int id = 0;
+Dynamic_Array *adjacency_array;
 
 int main(int argc, char **argv) {
     //bool quit = true; // while loop kilepes
@@ -40,7 +43,7 @@ int main(int argc, char **argv) {
 
     // testing
 
-    Dynamic_Array *adjacency_array = new_dynamic_array();
+    adjacency_array = new_dynamic_array();
 
     // int hnd = 12;
     // List_Node *hn = new_list_node(&hnd, sizeof(int));
@@ -54,6 +57,10 @@ int main(int argc, char **argv) {
 
     array_push(adjacency_array, new_list_with_head());
     array_push(adjacency_array, new_list_with_head());
+    printf("array size: %d\n", adjacency_array->size);
+
+    print_dynamic_array(adjacency_array);
+    printf("array print\n\n");
 
     // Vertex_Data *data1 = new_vertex_data(10, 100, 100);
     // Vertex_Data *data2 = new_vertex_data(10, 200, 100);
@@ -63,28 +70,26 @@ int main(int argc, char **argv) {
     // Vertex_Data *data5 = new_vertex_data(10, 100, 100);
     // Vertex_Data *data6 = new_vertex_data(6);
 
-    Linked_List *ll1 = new_list_with_head();
-    Linked_List *ll2 = new_list_with_head();
-    print_linked_list(ll1);
-    print_linked_list(ll2);
-    printf("init\n");
+    // Linked_List *ll1 = new_list_with_head();
+    // Linked_List *ll2 = new_list_with_head();
+    // print_linked_list(ll1);
+    // print_linked_list(ll2);
+    Linked_List *ll0 = adjacency_array->array[0];
+    Linked_List *ll1 = adjacency_array->array[1];
+    printf("linked lists\n\n");
 
-    create_edge(adjacency_array, ll1->head_node, ll2->head_node);
-    print_linked_list(ll1);
-    print_linked_list(ll2);
-    printf("create edge\n");
+    create_edge(ll0->head_node, ll1->head_node);
+    print_dynamic_array(adjacency_array);
+    printf("create edge\n\n");
 
     // new_list_node(ll1);
-    new_list_node(ll2);
-    print_linked_list(ll1);
-    print_linked_list(ll2);
-    printf("new list node\n");
+    // list_push(ll0, copy_list_node(ll1->head_node->next_node->next_node));
+    // print_dynamic_array(adjacency_array);
+    // printf("new list node\n\n");
 
-    list_pop(ll1, ll1->head_node);
-    print_linked_list(ll1);
-    print_linked_list(ll2);
-    printf("pop\n");
-    printf("\n\n");
+    // list_pop(ll0, ll0->head_node->next_node->next_node);
+    // print_dynamic_array(adjacency_array);
+    // printf("pop\n\n");
 
     // print_linked_list(ll1);
     // print_linked_list(ll2);
@@ -94,9 +99,9 @@ int main(int argc, char **argv) {
     // print_linked_list(ll2);
 
     //print_linked_list(ll);
-    destroy_list_node(adjacency_array, ll1->head_node);
-
-    printf("\n\n");
+    destroy_list_node(ll1->head_node);
+    print_dynamic_array(adjacency_array);
+    printf("destroy node\n\n");
 
     // print_linked_list(ll1);
     // print_linked_list(ll2);
@@ -126,6 +131,7 @@ int main(int argc, char **argv) {
     
     // // free_list_node(hn);
     destroy_dynamic_array(adjacency_array);
+    printf("destroy dynamic array\n\n");
     // printf("aaaaaaaaaaaaaaa\n");
 
 
