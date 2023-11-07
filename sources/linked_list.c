@@ -69,7 +69,7 @@ Linked_List *get_linked_list(List_Node *list_node) {
 
     felszabadítja a memóriát
 */
-void destroy_list_node(List_Node *list_node) {
+void destroy_vertex(List_Node *list_node) {
     printf("%s:\n", __func__);
 
     Vertex_Data *vd = list_node->vertex_data;
@@ -123,19 +123,31 @@ void destroy_list_node(List_Node *list_node) {
         // pop és free
         if (prev2 == NULL && p2 != NULL) { // első elem
             llp->head_node = p2->next_node;
-            free(p2);
+            destroy_list_node(p2);
         } else if (prev2 != NULL && p2 != NULL) { // általános elem
             prev2->next_node = p2->next_node;
-            free(p2);
+            destroy_list_node(p2);
         }
         
         p = p->next_node;
         list_pop(queue, prev);
         printf("queue pop\n\n");
-        free(prev);
+        destroy_list_node(prev);
     }
     
+    destroy_linked_list(queue);
 
+    p = ll->head_node;
+    prev = NULL;
+
+    while (p != NULL) {
+        prev = p;
+        p = p->next_node;
+        free(prev);
+    }
+
+    destroy_list_node(p);
+    
     // if (list_node != NULL) {
     //     destroy_vertex_data(list_node->vertex_data);
     // }    
@@ -144,6 +156,12 @@ void destroy_list_node(List_Node *list_node) {
     // list_node = NULL;
 
     //destroy_linked_list(queue);
+}
+
+void destroy_list_node(List_Node *list_node) {
+    destroy_vertex_data(list_node->vertex_data);
+    free(list_node);
+    list_node = NULL;
 }
 
 void create_edge(List_Node *a, List_Node *b) {

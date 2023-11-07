@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 List_Node *alloc_list_node();
-void destroy_list_node(List_Node *list_node);
+void destroy_vertex(List_Node *list_node);
 void new_list_node(Linked_List *linked_list);
 Vertex_Data *alloc_vertex_data();
 void free_vertex_data(Vertex_Data *vertex_data);
@@ -27,3 +27,4 @@ void list_pop(Linked_List *linked_list, List_Node *list_node);
 List_Node *copy_list_node(List_Node *list_node);
 void create_edge(List_Node *a, List_Node *b);
 Linked_List *get_linked_list(List_Node *list_node);
+void destroy_list_node(List_Node *list_node);

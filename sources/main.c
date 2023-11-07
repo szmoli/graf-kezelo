@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     // print_linked_list(ll2);
 
     //print_linked_list(ll);
-    destroy_list_node(ll1->head_node);
+    destroy_vertex(ll1->head_node);
     print_dynamic_array(adjacency_array);
     printf("destroy node\n\n");
 
