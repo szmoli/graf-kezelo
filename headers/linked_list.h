@@ -27,4 +27,4 @@ void list_pop(Linked_List *linked_list, List_Node *list_node);
 List_Node *copy_list_node(List_Node *list_node);
 void create_edge(List_Node *a, List_Node *b);
 Linked_List *get_linked_list(List_Node *list_node);
-void destroy_list_node(List_Node *list_node);
+void destroy_list_node(Linked_List *ll, List_Node *list_node);
