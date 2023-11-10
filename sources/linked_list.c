@@ -16,10 +16,10 @@
 /**
  * @brief Létrehoz egy új láncolt listát. Memóriát nem szabadítja fel, az a hívó dolga.
  * 
- * @return Linked_List* Mutató a létrehozott listára.
+ * @return List* Mutató a létrehozott listára.
  */
-Linked_List *new_list() {
-    Linked_List *list = (Linked_List *) malloc(sizeof(Linked_List));
+List *new_list() {
+    List *list = (List *) malloc(sizeof(List));
 
     list->head_node = NULL;
     list->tail_node = NULL;
@@ -43,7 +43,7 @@ List_Node *new_node(void *data) {
  * @param list A lista amihez hozzáfűz.
  * @param node A listaelem amit hozzáfűz.
  */
-void list_push(Linked_List *list, List_Node *node) {
+void list_push(List *list, List_Node *node) {
     node->next_node = NULL;
     
     if (list->head_node == NULL) list->head_node = node;
@@ -59,7 +59,7 @@ void list_push(Linked_List *list, List_Node *node) {
  * @param data Az adat, amit keres.
  * @return List_Node* Mutató a listaelemre, ha van találat. Ha nincs, akkor NULL.
  */
-List_Node *get_node(Linked_List *list, void *data) {
+List_Node *get_node(List *list, void *data) {
     List_Node *p = list->head_node;
     
     while (p != NULL) {
@@ -88,7 +88,7 @@ void destroy_node(List_Node *node) {
  * 
  * @param list A lista, amit felszabadít.
  */
-void destroy_list(Linked_List *list) {
+void destroy_list(List *list) {
     List_Node *p = list->head_node;
     List_Node *prev = NULL;
 
@@ -111,7 +111,7 @@ void destroy_list(Linked_List *list) {
  * @param list A lista, amiből eltávolít.
  * @param node A listaelem, amit eltávolít.
  */
-void list_pop(Linked_List *list, List_Node *node) {
+void list_pop(List *list, List_Node *node) {
     List_Node *p = list->head_node;
     List_Node *prev = NULL;
 
@@ -136,7 +136,7 @@ void list_pop(Linked_List *list, List_Node *node) {
  * @param list A lista, aminek elemeit kiírja.
  * @param mode A kiválasztott kiírási mód.
  */
-void print_list(Linked_List *list, PRINT_MODES mode) {
+void print_list(List *list, PRINT_MODES mode) {
     List_Node *p = list->head_node;
     // printf("%p\n", p);
 

@@ -9,6 +9,7 @@
 #include "debugmalloc.h"
 #include "typedefs.h"
 #include "linked_list.h"
+#include "dynamic_array.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -23,15 +24,25 @@ int main(void) {
     unsigned int id = 0;
 
     /**
-     * @var Linked_List *vertexes
+     * @var List *vertexes
      * @brief Lista az összes létező gráfpontról.
      * @details Amikor egy új pontot hozunk létre, azt ebben a listában tartjuk nyilván. Ha a felhasználó kitöröl egy pontot, az a listából is törlődik. A gráfot tároló adatstruktúra ennek a listának a tárolt pontjaira mutat, ha kitörlünk egy pontot, akkor azt a gráf adatstruktúrájából is kitöröljük.
      */
-    Linked_List *vertexes = new_list();
+    List *vertexes = new_list();
 
-    print_list(vertexes, VERTEX_DATA);
+    /**
+     * @var Array *adjacency_array
+     * @brief Egy dinamikus tömb, ami az összes ponthoz tartozó szomszédosságokat tárolja.
+     * @details Amikor egy új pontot hozunk létre, ehhez a tömbhöz hozzáadunk egy láncolt listát, aminek a legelején egy mutató van a létrehozott pontra. Ha ezt a pontot összekötjük egy másikkal, akkor mindkettőjük listájához hozzáadunk egy mutatót a másik pontra. Így tárolódnak el a szomszédosságok.
+     */
+    Array *adjacency_array = new_array();
+
+    
+
+    // print_list(vertexes, VERTEX_DATA);
 
     destroy_list(vertexes);
+    destroy_array(adjacency_array);
     
     return 0;
 }
