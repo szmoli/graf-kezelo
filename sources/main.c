@@ -15,6 +15,18 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+void new_vertex(Array *neighbour_arr, List *vertexes, Vertex_Data *data) {
+    Node *node = new_node(data);
+    // Vertex_Data **orig_data = (Vertex_Data **) malloc(sizeof(Vertex_Data *)); 
+    // orig_data = (Vertex_Data **) &(node->data); // pointer az eredeti adatra
+    Node *neighbour_node = new_node(&data);
+    List *neighbour_list = new_list();
+    
+    list_push(vertexes, node);
+    list_push(neighbour_list, neighbour_node);
+    array_push(neighbour_arr, neighbour_list);
+}
+
 int main(void) {
     /**
      * @var unsigned int id
@@ -25,7 +37,7 @@ int main(void) {
 
     /**
      * @var List *vertexes
-     * @brief Lista az összes létező gráfpontról.
+     * @brief Lista az összes létező gráfpontról (Vertex_Data).
      * @details Amikor egy új pontot hozunk létre, azt ebben a listában tartjuk nyilván. Ha a felhasználó kitöröl egy pontot, az a listából is törlődik. A gráfot tároló adatstruktúra ennek a listának a tárolt pontjaira mutat, ha kitörlünk egy pontot, akkor azt a gráf adatstruktúrájából is kitöröljük.
      */
     List *vertexes = new_list();
@@ -37,12 +49,27 @@ int main(void) {
      */
     Array *neighbour_arr = new_array();
 
-    
+    new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
+    //new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
 
+    print_list(neighbour_arr->array[0], VERTEX_DATA_POINTER);
+    print_list(vertexes, VERTEX_DATA);
+
+    //destroy_list(neighbour_arr->array[0]);
     // print_list(vertexes, VERTEX_DATA);
+    //printf("%p\n", vertexes->head_node->data);
 
+    Node *p = ((List *) neighbour_arr->array[0])->head_node;
+    Node *prev = NULL;
+    while (p != NULL) {
+        prev = p;
+        p = p->next_node;
+        destroy_node(prev, NONE);
+    }
+
+
+    destroy_array(neighbour_arr, LINKED_LIST);
     destroy_list(vertexes);
-    destroy_array(neighbour_arr);
-    
+    printf("buzi\n");
     return 0;
 }

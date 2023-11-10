@@ -76,9 +76,14 @@ Node *get_node(List *list, void *data) {
  * 
  * @param node A listaelem, amit felszabadít.
  */
-void destroy_node(Node *node) {
-    free(node->data);
+void destroy_node(Node *node, MODES mode) {
+    if (mode == FREE_NODE_DATA) {
+        free(node->data);
+        printf("data freed\n");
+    }
+    
     free(node);
+    printf("node freed\n");
     node = NULL;
 }
 
@@ -95,12 +100,12 @@ void destroy_list(List *list) {
     while (p != NULL) {
         prev = p;
         p = p->next_node;
-        destroy_node(prev);
+        destroy_node(prev, FREE_NODE_DATA);
     }
 
-    free(list);
     list->head_node = NULL;
     list->tail_node = NULL;
+    free(list);
     list = NULL;
 }
 
@@ -111,7 +116,7 @@ void destroy_list(List *list) {
  * @param list A lista, amiből eltávolít.
  * @param node A listaelem, amit eltávolít.
  */
-void list_pop(List *list, Node *node) {
+void list_pop(List *list, Node *node, MODES mode) {
     Node *p = list->head_node;
     Node *prev = NULL;
 
@@ -126,27 +131,27 @@ void list_pop(List *list, Node *node) {
         prev->next_node = p->next_node;
     }
 
-    destroy_node(node);
+    destroy_node(node, mode);
 }
 
 /**
- * @brief Kiírja a megadott lista elemeit a kiválasztott mód szerint. A kiírási módok a PRINT_MODES enumban találhatók.
- * @see PRINT_MODES
+ * @brief Kiírja a megadott lista elemeit a kiválasztott mód szerint. A kiírási módok a MODES enumban találhatók.
+ * @see MODES
  * 
  * @param list A lista, aminek elemeit kiírja.
  * @param mode A kiválasztott kiírási mód.
  */
-void print_list(List *list, PRINT_MODES mode) {
+void print_list(List *list, MODES mode) {
     Node *p = list->head_node;
     // printf("%p\n", p);
 
     while (p != NULL) {
         switch (mode) {
-            case INT:
-                printf("%u%s", *((int *)p->data), p->next_node == NULL ? "\n" : " -> ");
+            case VERTEX_DATA_POINTER:
+                printf("%u%s", *(int *)(*((Vertex_Data **) p->data)), p->next_node == NULL ? "\n" : " -> "); // hát ez nagyon szép lett
                 break;
             case VERTEX_DATA:
-                printf("%u%s", ((Vertex_Data *)p->data)->id, p->next_node == NULL ? "\n" : " -> ");
+                printf("%u%s", ((Vertex_Data *) p->data)->id, p->next_node == NULL ? "\n" : " -> ");
                 break;
         }
 
@@ -163,7 +168,7 @@ void print_list(List *list, PRINT_MODES mode) {
 Vertex_Data *new_vertex_data(unsigned int *id) {
     Vertex_Data *vertex_data = (Vertex_Data *) malloc(sizeof(Vertex_Data));
 
-    printf("id: %u\n", *id);
+    //printf("id: %u\n", *id);
 
     vertex_data->id = (*id)++;
 

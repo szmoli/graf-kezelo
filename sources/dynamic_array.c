@@ -7,6 +7,7 @@
  */
 
 #include "dynamic_array.h"
+#include "linked_list.h"
 
 /**
  * @brief Létrehoz egy új dinamikus tömböt, nulla hosszúsággal és egy üres tömbbel, majd visszaadja a memóriacímét. Nem szabadít fel memóriát!
@@ -27,9 +28,16 @@ Array *new_array() {
  * 
  * @param d_arr A felszabadítandó dianmikus tömb.
  */
-void destroy_array(Array *d_arr) {
+void destroy_array(Array *d_arr, MODES mode) {
     for (size_t i = 0; i < d_arr->size; i++) {
-        free(d_arr->array[i]);
+        switch (mode) {
+            case LINKED_LIST:
+                destroy_list(d_arr->array[i]);
+                break;
+            default:
+                free(d_arr->array[i]);
+                break;
+        }
     }
 
     free(d_arr->array);

@@ -11,12 +11,11 @@
 #include <stdlib.h>
 
 /**
- * @brief A print_list függvényhez tartozó üzemmódok.
- * @see print_list 
+ * @brief A függvényekhez tartozó üzemmódok.
  */
-typedef enum PRINT_MODES {
-    INT, VERTEX_DATA
-} PRINT_MODES;
+typedef enum MODES {
+    VERTEX_DATA, VERTEX_DATA_POINTER, LINKED_LIST, FREE_NODE_DATA, NONE
+} MODES;
 
 /**
  * @brief A gráf egy pontjához tartozó adatok 
