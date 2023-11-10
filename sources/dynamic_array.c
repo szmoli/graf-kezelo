@@ -1,3 +1,11 @@
+/**
+ * @file dynamic_array.c
+ * @author Szmoleniczki Ákos
+ * @brief Ez a fájl a dinamikus tömbök kezeléséhez szükséges függvényeket tartalmazza.
+ * @version 0.1
+ * @date 2023-11-10
+ */
+
 #include "dynamic_array.h"
 
 /**

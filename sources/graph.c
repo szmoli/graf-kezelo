@@ -1,19 +1,37 @@
 /**
- * @file main.c
+ * @file graph.c
  * @author Szmoleniczki Ákos
- * @brief Gráfkezelő program
+ * @brief Ez a fájl a gráfműveletekhez tartozó függvényeket tartalmazza.
  * @version 0.1
- * @date 2023-11-09
+ * @date 2023-11-10
  */
 
-#include "debugmalloc.h"
 #include "typedefs.h"
 #include "linked_list.h"
 #include "dynamic_array.h"
-
+#include "debugmalloc.h"
+#include <memory.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <stdio.h>
+
+/**
+ * @todo Befejezni ezt a függvényt. Kijavítani a hibákat. Dokumentációt írni.
+ * @brief 
+ * 
+ * @param neighbour_arr 
+ * @param vertexes 
+ * @param data 
+ */
+void new_vertex(Array *neighbour_arr, List *vertexes, Vertex_Data *data) {
+    Node *node = new_node(data);
+    Vertex_Data **orig_data = (Vertex_Data **) malloc(sizeof(Vertex_Data *));
+    orig_data = &(node->data);
+    Node *neighbour_node = new_node(orig_data);
+    List *neighbour_list = new_list();
+    
+    list_push(vertexes, node);
+    list_push(neighbour_list, neighbour_node);
+    array_push(neighbour_arr, neighbour_list);
+}
 
 int main(void) {
     /**
@@ -37,7 +55,7 @@ int main(void) {
      */
     Array *neighbour_arr = new_array();
 
-    
+    new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
 
     // print_list(vertexes, VERTEX_DATA);
 

@@ -28,17 +28,17 @@ typedef struct Vertex_Data {
 /**
  * @brief Láncolt lista egy eleme. Eltárol egy mutatót az adattagjára és egyet a következő listaelemre.
  */
-typedef struct List_Node {
+typedef struct Node {
     void *data;
-    struct List_Node *next_node;
-} List_Node;
+    struct Node *next_node;
+} Node;
 
 /**
  * @brief Láncolt lista. Eltárol egy mutatót az első és utolsó elemére. 
  */
 typedef struct List {
-    List_Node *head_node;
-    List_Node *tail_node;
+    Node *head_node;
+    Node *tail_node;
 } List;
 
 /**

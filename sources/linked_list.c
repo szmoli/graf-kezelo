@@ -29,10 +29,10 @@ List *new_list() {
  * @brief Létrehoz egy új listaelemet a megadott adat alapján. Memóriát nem szabadítja fel, az a hívó dolga.
  * 
  * @param data Mutató az adatra, amit a listaelem tartalmazni fog.
- * @return List_Node* Mutató a létrehozott listaelemre.
+ * @return Node* Mutató a létrehozott listaelemre.
  */
-List_Node *new_node(void *data) {
-    List_Node *node = (List_Node *) malloc(sizeof(List_Node));
+Node *new_node(void *data) {
+    Node *node = (Node *) malloc(sizeof(Node));
 
     node->data = data;
 }
@@ -43,7 +43,7 @@ List_Node *new_node(void *data) {
  * @param list A lista amihez hozzáfűz.
  * @param node A listaelem amit hozzáfűz.
  */
-void list_push(List *list, List_Node *node) {
+void list_push(List *list, Node *node) {
     node->next_node = NULL;
     
     if (list->head_node == NULL) list->head_node = node;
@@ -57,10 +57,10 @@ void list_push(List *list, List_Node *node) {
  * 
  * @param list A lista amiben keres.
  * @param data Az adat, amit keres.
- * @return List_Node* Mutató a listaelemre, ha van találat. Ha nincs, akkor NULL.
+ * @return Node* Mutató a listaelemre, ha van találat. Ha nincs, akkor NULL.
  */
-List_Node *get_node(List *list, void *data) {
-    List_Node *p = list->head_node;
+Node *get_node(List *list, void *data) {
+    Node *p = list->head_node;
     
     while (p != NULL) {
         if (p->data == data) return p;
@@ -76,7 +76,7 @@ List_Node *get_node(List *list, void *data) {
  * 
  * @param node A listaelem, amit felszabadít.
  */
-void destroy_node(List_Node *node) {
+void destroy_node(Node *node) {
     free(node->data);
     free(node);
     node = NULL;
@@ -89,8 +89,8 @@ void destroy_node(List_Node *node) {
  * @param list A lista, amit felszabadít.
  */
 void destroy_list(List *list) {
-    List_Node *p = list->head_node;
-    List_Node *prev = NULL;
+    Node *p = list->head_node;
+    Node *prev = NULL;
 
     while (p != NULL) {
         prev = p;
@@ -111,9 +111,9 @@ void destroy_list(List *list) {
  * @param list A lista, amiből eltávolít.
  * @param node A listaelem, amit eltávolít.
  */
-void list_pop(List *list, List_Node *node) {
-    List_Node *p = list->head_node;
-    List_Node *prev = NULL;
+void list_pop(List *list, Node *node) {
+    Node *p = list->head_node;
+    Node *prev = NULL;
 
     while (p != NULL && p != node) {
         prev = p;
@@ -137,7 +137,7 @@ void list_pop(List *list, List_Node *node) {
  * @param mode A kiválasztott kiírási mód.
  */
 void print_list(List *list, PRINT_MODES mode) {
-    List_Node *p = list->head_node;
+    Node *p = list->head_node;
     // printf("%p\n", p);
 
     while (p != NULL) {
