@@ -19,7 +19,7 @@ void new_vertex(Array *neighbour_arr, List *vertexes, Vertex_Data *data) {
     Node *node = new_node(data);
     // Vertex_Data **orig_data = (Vertex_Data **) malloc(sizeof(Vertex_Data *)); 
     // orig_data = (Vertex_Data **) &(node->data); // pointer az eredeti adatra
-    Node *neighbour_node = new_node(&data);
+    Node *neighbour_node = new_node(&(node->data));
     List *neighbour_list = new_list();
     
     list_push(vertexes, node);
@@ -50,26 +50,27 @@ int main(void) {
     Array *neighbour_arr = new_array();
 
     new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
+    new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
+    new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
     //new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
 
     print_list(neighbour_arr->array[0], VERTEX_DATA_POINTER);
+    print_list(neighbour_arr->array[1], VERTEX_DATA_POINTER);    
+    print_list(neighbour_arr->array[2], VERTEX_DATA_POINTER);    
+    printf("neighbour list printed\n\n");
+
+    destroy_array(neighbour_arr, LINKED_LIST); // itt baszodik el
+
     print_list(vertexes, VERTEX_DATA);
+    printf("vertexes printed\n\n");
 
     //destroy_list(neighbour_arr->array[0]);
     // print_list(vertexes, VERTEX_DATA);
     //printf("%p\n", vertexes->head_node->data);
 
-    Node *p = ((List *) neighbour_arr->array[0])->head_node;
-    Node *prev = NULL;
-    while (p != NULL) {
-        prev = p;
-        p = p->next_node;
-        destroy_node(prev, NONE);
-    }
 
-
-    destroy_array(neighbour_arr, LINKED_LIST);
     destroy_list(vertexes);
+    printf("vertexes destroyed\n\n");
     printf("buzi\n");
     return 0;
 }

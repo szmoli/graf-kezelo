@@ -76,11 +76,9 @@ Node *get_node(List *list, void *data) {
  * 
  * @param node A listaelem, amit felszabadít.
  */
-void destroy_node(Node *node, MODES mode) {
-    if (mode == FREE_NODE_DATA) {
-        free(node->data);
-        printf("data freed\n");
-    }
+void destroy_node(Node *node) {
+    free(node->data);
+    printf("data freed\n");
     
     free(node);
     printf("node freed\n");
@@ -100,7 +98,7 @@ void destroy_list(List *list) {
     while (p != NULL) {
         prev = p;
         p = p->next_node;
-        destroy_node(prev, FREE_NODE_DATA);
+        destroy_node(prev);
     }
 
     list->head_node = NULL;
@@ -116,7 +114,7 @@ void destroy_list(List *list) {
  * @param list A lista, amiből eltávolít.
  * @param node A listaelem, amit eltávolít.
  */
-void list_pop(List *list, Node *node, MODES mode) {
+void list_pop(List *list, Node *node) {
     Node *p = list->head_node;
     Node *prev = NULL;
 
@@ -131,7 +129,7 @@ void list_pop(List *list, Node *node, MODES mode) {
         prev->next_node = p->next_node;
     }
 
-    destroy_node(node, mode);
+    destroy_node(node);
 }
 
 /**
@@ -148,10 +146,10 @@ void print_list(List *list, MODES mode) {
     while (p != NULL) {
         switch (mode) {
             case VERTEX_DATA_POINTER:
-                printf("%u%s", *(int *)(*((Vertex_Data **) p->data)), p->next_node == NULL ? "\n" : " -> "); // hát ez nagyon szép lett
+                printf("%u (%p)%s", *(int *)(*((Vertex_Data **) p->data)), *((Vertex_Data *)(p->data)) ,p->next_node == NULL ? "\n" : " -> "); // hát ez nagyon szép lett
                 break;
             case VERTEX_DATA:
-                printf("%u%s", ((Vertex_Data *) p->data)->id, p->next_node == NULL ? "\n" : " -> ");
+                printf("%u (%p)%s", ((Vertex_Data *) p->data)->id, p->data ,p->next_node == NULL ? "\n" : " -> ");
                 break;
         }
 
