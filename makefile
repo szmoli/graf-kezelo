@@ -1,13 +1,13 @@
 CC = gcc
 STANDARD = c99
 INCLUDES = -I ./includes
-#LIBS = -L ./libraries -l SDL2
+LIBS = -L ./libraries -l SDL2
 SRC_DIR = ./sources
-C_SOURCES = $(addprefix $(SRC_DIR)/, main.c linked_list.c dynamic_array.c)
+C_SOURCES = $(addprefix $(SRC_DIR)/, main.c linked_list.c dynamic_array.c graph.c)
 OBJ_DIR = ./objects
-C_OBJECTS = $(addprefix $(OBJ_DIR)/, main.o linked_list.o dynamic_array.o)
+C_OBJECTS = $(addprefix $(OBJ_DIR)/, main.o linked_list.o dynamic_array.o graph.o)
 BIN = ./build.exe
-C_FLAGS = -std=$(STANDARD) $(INCLUDES)
+C_FLAGS = -std=$(STANDARD) $(INCLUDES) $(LIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(C_FLAGS) -c -o $@ $<

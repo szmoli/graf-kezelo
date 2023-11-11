@@ -6,12 +6,7 @@
  * @date 2023-11-10
  */
 
-#include "typedefs.h"
-#include "linked_list.h"
-#include "dynamic_array.h"
-#include "debugmalloc.h"
-#include <memory.h>
-#include <stdlib.h>
+#include "graph.h"
 
 /**
  * @todo Befejezni ezt a függvényt. Kijavítani a hibákat. Dokumentációt írni.
@@ -23,9 +18,9 @@
  */
 void new_vertex(Array *neighbour_arr, List *vertexes, Vertex_Data *data) {
     Node *node = new_node(data);
-    Node **orig_node = (Node **) malloc(sizeof(Node *));
-    orig_node = &(node);
-    Node *neighbour_node = new_node(orig_node);
+    // Vertex_Data **orig_data = (Vertex_Data **) malloc(sizeof(Vertex_Data *)); 
+    // orig_data = (Vertex_Data **) &(node->data); // pointer az eredeti adatra
+    Node *neighbour_node = new_node(&(node->data));
     List *neighbour_list = new_list();
     
     list_push(vertexes, node);
