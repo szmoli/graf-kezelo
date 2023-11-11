@@ -28,11 +28,11 @@ Array *new_array() {
  * 
  * @param d_arr A felszabadítandó dianmikus tömb.
  */
-void destroy_array(Array *d_arr, MODES mode) {
+void destroy_array(Array *d_arr, MODES mode, bool destroy_data) {
     for (size_t i = 0; i < d_arr->size; i++) {
         switch (mode) {
             case LINKED_LIST:
-                destroy_list(d_arr->array[i]);
+                destroy_list(d_arr->array[i], destroy_data);
                 break;
             default:
                 free(d_arr->array[i]);

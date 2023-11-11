@@ -76,9 +76,13 @@ Node *get_node(List *list, void *data) {
  * 
  * @param node A listaelem, amit felszabadít.
  */
-void destroy_node(Node *node) {
-    free(node->data);
-    printf("data freed\n");
+void destroy_node(Node *node, bool destroy_data) {
+    if (destroy_data) {
+        free(node->data);
+        printf("data freed\n");
+    } else {
+        node->data = NULL;
+    }
     
     free(node);
     printf("node freed\n");
@@ -91,14 +95,14 @@ void destroy_node(Node *node) {
  * 
  * @param list A lista, amit felszabadít.
  */
-void destroy_list(List *list) {
+void destroy_list(List *list, bool destroy_data) {
     Node *p = list->head_node;
     Node *prev = NULL;
 
     while (p != NULL) {
         prev = p;
         p = p->next_node;
-        destroy_node(prev);
+        destroy_node(prev, destroy_data);
     }
 
     list->head_node = NULL;
@@ -114,7 +118,7 @@ void destroy_list(List *list) {
  * @param list A lista, amiből eltávolít.
  * @param node A listaelem, amit eltávolít.
  */
-void list_pop(List *list, Node *node) {
+void list_pop(List *list, Node *node, bool destroy_data) {
     Node *p = list->head_node;
     Node *prev = NULL;
 
@@ -129,7 +133,17 @@ void list_pop(List *list, Node *node) {
         prev->next_node = p->next_node;
     }
 
-    destroy_node(node);
+    destroy_node(node, destroy_data);
+}
+
+void list_clear(List *list, bool destroy_data) {
+    Node *p = list->head_node;
+    Node *prev = NULL;
+
+    while (p != NULL) {
+        list_pop(list, p, destroy_data);
+        p = p->next_node;
+    }
 }
 
 /**

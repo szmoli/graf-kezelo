@@ -54,12 +54,12 @@ int main(void) {
     new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
     //new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
 
+    // list_clear(neighbour_arr->array[0]);
     print_list(neighbour_arr->array[0], VERTEX_DATA_POINTER);
     print_list(neighbour_arr->array[1], VERTEX_DATA_POINTER);    
     print_list(neighbour_arr->array[2], VERTEX_DATA_POINTER);    
     printf("neighbour list printed\n\n");
 
-    destroy_array(neighbour_arr, LINKED_LIST); // itt baszodik el
 
     print_list(vertexes, VERTEX_DATA);
     printf("vertexes printed\n\n");
@@ -69,7 +69,9 @@ int main(void) {
     //printf("%p\n", vertexes->head_node->data);
 
 
-    destroy_list(vertexes);
+    destroy_array(neighbour_arr, LINKED_LIST, false); // itt baszodik el
+    printf("destroyed array\n\n");
+    destroy_list(vertexes, true);
     printf("vertexes destroyed\n\n");
     printf("buzi\n");
     return 0;

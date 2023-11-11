@@ -14,7 +14,7 @@
  * @brief A függvényekhez tartozó üzemmódok.
  */
 typedef enum MODES {
-    VERTEX_DATA, VERTEX_DATA_POINTER, LINKED_LIST, FREE_NODE_DATA, NONE
+    VERTEX_DATA, VERTEX_DATA_POINTER, LINKED_LIST
 } MODES;
 
 /**
