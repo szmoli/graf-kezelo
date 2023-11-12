@@ -1,9 +1,5 @@
 /**
- * @file graph.c
- * @author Szmoleniczki Ákos
  * @brief Ez a fájl a gráfműveletekhez tartozó függvényeket tartalmazza.
- * @version 0.1
- * @date 2023-11-10
  */
 
 #include "graph.h"

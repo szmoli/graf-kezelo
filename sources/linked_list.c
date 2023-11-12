@@ -1,9 +1,5 @@
 /**
- * @file linked_list.c
- * @author Szmoleniczki Ákos
  * @brief Ez a fájl a láncolt listák kezeléséhez szükséges függvényeket tartalmazza.
- * @version 0.1
- * @date 2023-11-09 
  */
 
 #include "debugmalloc.h"
