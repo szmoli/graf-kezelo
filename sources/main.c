@@ -4,6 +4,7 @@
 
 #define SDL_MAIN_HANDLED
 
+#include "SDL2_gfxPrimitives.h"
 #include "debugmalloc.h"
 #include "typedefs.h"
 #include "linked_list.h"
@@ -49,6 +50,18 @@ int main(void) {
         SDL_PollEvent(&event);
 
         switch (event.type) {
+            case SDL_WINDOWEVENT:
+                switch (event.window.event) {
+                    case SDL_WINDOWEVENT_RESIZED:
+                        window_surface = SDL_GetWindowSurface(window);
+
+                        //printf("resizing: %dx%d\n", window_surface->w, window_surface->h);
+                        break;
+
+                    default:
+                        break;
+                }
+                break;
             case SDL_QUIT:
                 quit_sdl(&window, &renderer, &running);
                 break;
