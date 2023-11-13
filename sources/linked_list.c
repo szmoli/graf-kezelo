@@ -17,6 +17,7 @@
 List *new_list() {
     List *list = (List *) malloc(sizeof(List));
 
+    list->size = 0;
     list->head_node = NULL;
     list->tail_node = NULL;
 }
@@ -45,6 +46,7 @@ void list_push(List *list, Node *node) {
     if (list->head_node == NULL) list->head_node = node;
     if (list->tail_node != NULL) list->tail_node->next_node = node;
 
+    list->size++;
     list->tail_node = node;
 }
 
@@ -71,17 +73,18 @@ Node *get_node(List *list, void *data) {
  * @brief Felszabadít egy listaelemet és a hozzá tartozó adatot.
  * 
  * @param node A listaelem, amit felszabadít.
+ * @param destroy_data Felszabadítsa-e az adattagot is?
  */
 void destroy_node(Node *node, bool destroy_data) {
     if (destroy_data) {
         free(node->data);
-        printf("data freed\n");
+        //printf("data freed\n");
     } else {
         node->data = NULL;
     }
     
     free(node);
-    printf("node freed\n");
+    //printf("node freed\n");
     node = NULL;
 }
 
@@ -129,9 +132,18 @@ void list_pop(List *list, Node *node, bool destroy_data) {
         prev->next_node = p->next_node;
     }
 
+    list->size--;
+
     destroy_node(node, destroy_data);
 }
 
+/**
+ * @todo Kell ez egyáltalán?
+ * @brief 
+ * 
+ * @param list 
+ * @param destroy_data 
+ */
 void list_clear(List *list, bool destroy_data) {
     Node *p = list->head_node;
     Node *prev = NULL;
@@ -154,16 +166,35 @@ void print_list(List *list, MODES mode) {
     // printf("%p\n", p);
 
     while (p != NULL) {
-        switch (mode) {
-            case VERTEX_DATA_POINTER:
-                printf("%u (%p)%s", *(int *)(*((Vertex_Data **) p->data)), *((Vertex_Data *)(p->data)) ,p->next_node == NULL ? "\n" : " -> "); // hát ez nagyon szép lett
-                break;
-            case VERTEX_DATA:
-                printf("%u (%p)%s", ((Vertex_Data *) p->data)->id, p->data ,p->next_node == NULL ? "\n" : " -> ");
-                break;
-        }
+        // switch (mode) {
+        //     case VERTEX_DATA_POINTER:
+        //         printf("%u (%p)%s", *(int *)(*((Vertex_Data **) p->data)), *((Vertex_Data *)(p->data)), p->next_node == NULL ? "\n" : " -> "); // hát ez nagyon szép lett
+        //         break;
+        //     case VERTEX_DATA:
+        //         printf("%u (%p)%s", ((Vertex_Data *) p->data)->id, p->data, p->next_node == NULL ? "\n" : " -> ");
+        //         break;
+        // }
+
+        print_node(p, mode);
 
         p = p->next_node;
+    }
+}
+
+/**
+ * @brief Kiírja a megadott listaelem adattagját a megadott üzemmód szerint formázva.
+ * 
+ * @param node Listaelem
+ * @param mode Üzemmód
+ */
+void print_node(Node *node, MODES mode) {
+    switch (mode) {
+        case VERTEX_DATA_POINTER:
+            printf("%u (%p)%s", *(int *)(*((Vertex_Data **) node->data)), *((Vertex_Data *)(node->data)), node->next_node == NULL ? "\n" : " -> "); // hát ez nagyon szép lett
+            break;
+        case VERTEX_DATA:
+            printf("%u (%p)%s", ((Vertex_Data *) node->data)->id, node->data, node->next_node == NULL ? "\n" : " -> ");
+            break;
     }
 }
 
@@ -179,6 +210,7 @@ Vertex_Data *new_vertex_data(unsigned int *id) {
     //printf("id: %u\n", *id);
 
     vertex_data->id = (*id)++;
+    vertex_data->selected = false;
 
     return vertex_data;
 }

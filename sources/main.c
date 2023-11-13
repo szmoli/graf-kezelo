@@ -2,8 +2,7 @@
  * @brief Gráfkezelő program
  */
 
-#define SDL_MAIN_HANDLED
-
+#include "constants.h"
 #include "SDL2_gfxPrimitives.h"
 #include "debugmalloc.h"
 #include "typedefs.h"
@@ -15,6 +14,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <math.h>
+#include <ctype.h>
 
 int main(void) {
     /**
@@ -27,7 +28,7 @@ int main(void) {
      * @brief Lista az összes létező gráfpontról (Vertex_Data).
      * @details Amikor egy új pontot hozunk létre, azt ebben a listában tartjuk nyilván. Ha a felhasználó kitöröl egy pontot, az a listából is törlődik. A gráfot tároló adatstruktúra ennek a listának a tárolt pontjaira mutat, ha kitörlünk egy pontot, akkor azt a gráf adatstruktúrájából is kitöröljük.
      */
-    List *vertexes = new_list();
+    List *vertices = new_list();
 
     /**
      * @brief Egy dinamikus tömb, ami az összes ponthoz tartozó szomszédosságokat tárolja.
@@ -44,6 +45,14 @@ int main(void) {
         fprintf(stderr, "%s: config failed\n\n", __func__);
         return -1;
     }
+
+    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
+    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
+    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
+    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
+    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
+    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
+    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
 
     while (running) {
         SDL_Event event;
@@ -65,36 +74,61 @@ int main(void) {
             case SDL_QUIT:
                 quit_sdl(&window, &renderer, &running);
                 break;
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+                    case SDLK_v:
+                        new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
+                    default:
+                        break;
+                }
+            case SDL_MOUSEBUTTONDOWN:
+                Node *clicked_node = get_clicked_node(window_surface, &event, vertices);
+                clicked_node == NULL ? printf("no collision\n") : print_node(clicked_node, VERTEX_DATA);
+                // switch (expression) {
+                // case /* constant-expression */:
+                //     /* code */
+                //     break;
+                
+                // default:
+                //     break;
+                // }
+                break;
             default:
                 SDL_SetRenderDrawColor(renderer, 247, 243, 243, 255);
                 SDL_RenderClear(renderer);
+
+#ifdef DEBUG
+                    draw_main_circle(window_surface, renderer, 0, 0, 103, 120, 121, 123);
+#endif
+
+                set_vertices_coords(vertices, window_surface);
+                draw_vertices(vertices, window_surface, renderer, 90, 114, 97, 255);
+
                 SDL_RenderPresent(renderer);
                 break;
         }
     }
 
-    new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
-    new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
-    new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
-    //new_vertex(neighbour_arr, vertexes, new_vertex_data(&id));
+
+    //new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
 
     // list_clear(neighbour_arr->array[0]);
-    print_list(neighbour_arr->array[0], VERTEX_DATA_POINTER);
-    print_list(neighbour_arr->array[1], VERTEX_DATA_POINTER);    
-    print_list(neighbour_arr->array[2], VERTEX_DATA_POINTER);    
-    printf("neighbour list printed\n\n");
+    // print_list(neighbour_arr->array[0], VERTEX_DATA_POINTER);
+    // print_list(neighbour_arr->array[1], VERTEX_DATA_POINTER);    
+    // print_list(neighbour_arr->array[2], VERTEX_DATA_POINTER);    
+    // printf("neighbour list printed\n\n");
 
 
-    print_list(vertexes, VERTEX_DATA);
-    printf("vertexes printed\n\n");
+    // print_list(vertices, VERTEX_DATA);
+    // printf("vertices printed\n\n");
 
     //destroy_list(neighbour_arr->array[0]);
-    print_list(vertexes, VERTEX_DATA);
-    //printf("%p\n", vertexes->head_node->data);
+    // print_list(vertices, VERTEX_DATA);
+    //printf("%p\n", vertices->head_node->data);
 
 
     destroy_array(neighbour_arr, LINKED_LIST, false);
-    destroy_list(vertexes, true);
+    destroy_list(vertices, true);
     printf("program vege\n");
     return 0;
 }

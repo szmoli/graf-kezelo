@@ -1047,7 +1047,7 @@ RECURSIVE              = NO
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = includes/SDL2 includes/debugmalloc.h
+EXCLUDE                = includes/SDL2 includes/debugmalloc.h includes/SDL2_gfx sources/SDL2_framerate.c sources/SDL2_gfxPrimitives.c sources/SDL2_imageFilter.c sources/SDL2_rotozoom.c
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

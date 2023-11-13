@@ -23,3 +23,5 @@ void new_vertex(Array *neighbour_arr, List *vertexes, Vertex_Data *data) {
     list_push(neighbour_list, neighbour_node);
     array_push(neighbour_arr, neighbour_list);
 }
+
+//! @todo Megírni a többi gráfpont-kezelő függvényt

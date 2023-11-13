@@ -9,6 +9,15 @@
 #pragma once
 
 #include <stdlib.h>
+#include <stdbool.h>
+
+/**
+ * @brief 2D pont
+ */
+typedef struct Point {
+    int x; //! X koordináta
+    int y; //! Y koordináta
+} Point;
 
 /**
  * @brief A függvényekhez tartozó üzemmódok.
@@ -21,23 +30,26 @@ typedef enum MODES {
  * @brief A gráf egy pontjához tartozó adatok 
  */
 typedef struct Vertex_Data {
-    unsigned int id;
+    unsigned int id; //! Vertex ID
+    Point center; //! Vertex középpont
+    bool selected; //! Ki van-e választva?
 } Vertex_Data;
 
 /**
  * @brief Láncolt lista egy eleme. Eltárol egy mutatót az adattagjára és egyet a következő listaelemre.
  */
 typedef struct Node {
-    void *data;
-    struct Node *next_node;
+    void *data; //! Listaelem adattagja
+    struct Node *next_node; //! Következő listaelem
 } Node;
 
 /**
  * @brief Láncolt lista. Eltárol egy mutatót az első és utolsó elemére. 
  */
 typedef struct List {
-    Node *head_node;
-    Node *tail_node;
+    size_t size; //! Lista hossza
+    Node *head_node; //! Lista első eleme
+    Node *tail_node; //! Lista utolsó eleme
 } List;
 
 /**
@@ -45,6 +57,6 @@ typedef struct List {
  * 
  */
 typedef struct Array {
-    size_t size;
-    void **array;
+    size_t size; //! Tömb mérete
+    void **array; //! Maga a tömb
 } Array;

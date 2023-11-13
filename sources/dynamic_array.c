@@ -23,6 +23,10 @@ Array *new_array() {
  * @brief Felszabadítja a megadott dinamikus tömböt és annak összes elemét.
  * 
  * @param d_arr A felszabadítandó dianmikus tömb.
+ * @param mode A tömbelemek típusa
+ * @param destroy_data Felszabadítsa-e az adattagot is?
+ * 
+ * @see MODES
  */
 void destroy_array(Array *d_arr, MODES mode, bool destroy_data) {
     for (size_t i = 0; i < d_arr->size; i++) {
@@ -122,14 +126,12 @@ void array_delete(Array *d_arr, size_t index) {
 }
 
 /**
- * @todo Dokumentáció
- * @brief 
+ * @brief Kiírja a gráfot.
  * 
- * @param d_arr 
+ * @param d_arr A gráf, amit kiír
  */
 void print_array(Array *d_arr) {
     for (size_t i = 0; i < d_arr->size; i++) {
-        //printf("niga\n");
         printf("%d%s", *((int *) d_arr->array[i]), i == d_arr->size - 1 ? "\n" : ", ");
     }
 }
