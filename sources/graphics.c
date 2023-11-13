@@ -199,10 +199,11 @@ void select_node(Node* node) {
     ((Vertex_Data *) node->data)->selected = true;
 }
 
-void deselect_node(Node* node) {
-    ((Vertex_Data *) node->data)->selected = false;
+void deselect_original_node(Node* node) {
+    // ((Vertex_Data *) node->data)->selected = false;
+    ((Vertex_Data *) *((Vertex_Data **) node->data))->selected = false;
 }
 
 void toggle_node_selection(Node* node) {
-    ((Vertex_Data *) node->data)->selected = !((Vertex_Data *) node->data)->selected;
+    ((Vertex_Data *) node->data)->selected = !(((Vertex_Data *) node->data)->selected);
 }

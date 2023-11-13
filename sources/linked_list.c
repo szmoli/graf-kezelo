@@ -144,14 +144,27 @@ void list_pop(List *list, Node *node, bool destroy_data) {
  * @param list 
  * @param destroy_data 
  */
+// void list_clear(List *list, bool destroy_data) {
+//     Node *p = list->head_node;
+//     Node *prev = NULL;
+
+//     while (p != NULL) {
+//         list_pop(list, p, destroy_data);
+//         p = p->next_node;
+//     }
+// }
 void list_clear(List *list, bool destroy_data) {
     Node *p = list->head_node;
     Node *prev = NULL;
 
     while (p != NULL) {
-        list_pop(list, p, destroy_data);
+        prev = p;
         p = p->next_node;
+        destroy_node(prev, destroy_data);
     }
+
+    list->head_node = NULL;
+    list->tail_node = NULL;
 }
 
 /**
@@ -218,3 +231,27 @@ Vertex_Data *new_vertex_data(unsigned int *id) {
 Node *copy_node(Node *node) {
     return new_node(&(node->data));
 }
+
+/**
+ * @brief Bejárja a listát és az összes elemre meghívja a megadott függvényt.
+ * 
+ * @param list Lista változó
+ * @param func Megadott függvény
+ */
+void for_each(List *list, void (*function)(Node *)) {
+    Node *p = list->head_node;
+
+    while (p != NULL) {
+        (*function)(p);
+        //printf("faszom\n\n");
+        p = p->next_node;
+    }
+}
+// void for_each(List *list) {
+//     Node *p = list->head_node;
+
+//     while (p != NULL) {
+//         printf("a\n\n");
+//         p = p->next_node;
+//     }
+// }

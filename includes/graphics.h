@@ -19,5 +19,5 @@ int get_max_size(SDL_Surface *window_surface);
 Node *get_clicked_node(SDL_Surface *window_surface, SDL_Event *event, List *vertices);
 void print_node(Node *node, MODES mode);
 void select_node(Node* node);
-void deselect_node(Node* node);
+void deselect_original_node(Node* node);
 void toggle_node_selection(Node* node);

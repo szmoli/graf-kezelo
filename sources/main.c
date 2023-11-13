@@ -85,20 +85,23 @@ int main(void) {
             case SDL_MOUSEBUTTONDOWN:
                 Node *clicked_node = get_clicked_node(window_surface, &event, vertices);
 
+                //! @todo Befejezni a selection cuccokat.
                 if (clicked_node == NULL) {
+                    for_each(selected_vertices, deselect_original_node);
                     list_clear(selected_vertices, false);
                     printf("cleared selected_vertices\n\n");
                 } else {
-                    //! @todo Befejezni a selection cuccokat.
-                    select_node(clicked_node);
-
-                    if (!(((Vertex_Data *)clicked_node->data)->selected)) {
+                    if (!(((Vertex_Data *)clicked_node->data)->selected)) { // ha nem volt kiválasztva, akkor kiválasztjuk
+                        select_node(clicked_node);
                         Node *copied_clicked_node = copy_node(clicked_node);
+                        list_push(selected_vertices, copied_clicked_node);
                         printf("pushed\n\n");
+                    } else { // ha ki volt választva, akkor "nemkiválasztjuk"
+                        //! @todo befejezni ezt az ágat
                     }
                 }
 
-                print_list(selected_vertices, VERTEX_DATA_POINTER);
+                //print_list(selected_vertices, VERTEX_DATA_POINTER);
                 //clicked_node == NULL ? printf("no collision\n") : print_node(clicked_node, VERTEX_DATA);
                 // switch (expression) {
                 // case /* constant-expression */:
