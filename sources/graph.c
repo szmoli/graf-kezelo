@@ -16,7 +16,7 @@ void new_vertex(Array *neighbour_arr, List *vertexes, Vertex_Data *data) {
     Node *node = new_node(data);
     // Vertex_Data **orig_data = (Vertex_Data **) malloc(sizeof(Vertex_Data *)); 
     // orig_data = (Vertex_Data **) &(node->data); // pointer az eredeti adatra
-    Node *neighbour_node = new_node(&(node->data));
+    Node *neighbour_node = copy_node(node);
     List *neighbour_list = new_list();
     
     list_push(vertexes, node);

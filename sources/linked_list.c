@@ -155,6 +155,23 @@ void list_clear(List *list, bool destroy_data) {
 }
 
 /**
+ * @brief Kiírja a megadott listaelem adattagját a megadott üzemmód szerint formázva.
+ * 
+ * @param node Listaelem
+ * @param mode Üzemmód
+ */
+void print_node(Node *node, MODES mode) {
+    switch (mode) {
+        case VERTEX_DATA_POINTER:
+            printf("%u (%p)%s", *(int *)(*((Vertex_Data **) node->data)), *((Vertex_Data *)(node->data)), node->next_node == NULL ? "\n" : " -> "); // hát ez nagyon szép lett
+            break;
+        case VERTEX_DATA:
+            printf("%u (%p)%s", ((Vertex_Data *) node->data)->id, node->data, node->next_node == NULL ? "\n" : " -> ");
+            break;
+    }
+}
+
+/**
  * @brief Kiírja a megadott lista elemeit a kiválasztott mód szerint. A kiírási módok a MODES enumban találhatók.
  * @see MODES
  * 
@@ -182,23 +199,6 @@ void print_list(List *list, MODES mode) {
 }
 
 /**
- * @brief Kiírja a megadott listaelem adattagját a megadott üzemmód szerint formázva.
- * 
- * @param node Listaelem
- * @param mode Üzemmód
- */
-void print_node(Node *node, MODES mode) {
-    switch (mode) {
-        case VERTEX_DATA_POINTER:
-            printf("%u (%p)%s", *(int *)(*((Vertex_Data **) node->data)), *((Vertex_Data *)(node->data)), node->next_node == NULL ? "\n" : " -> "); // hát ez nagyon szép lett
-            break;
-        case VERTEX_DATA:
-            printf("%u (%p)%s", ((Vertex_Data *) node->data)->id, node->data, node->next_node == NULL ? "\n" : " -> ");
-            break;
-    }
-}
-
-/**
  * @brief Létrehoz egy új adattagot a gráf egy pontjához.
  * 
  * @param id A gráf éppen aktuális azonosítója.
@@ -215,3 +215,6 @@ Vertex_Data *new_vertex_data(unsigned int *id) {
     return vertex_data;
 }
 
+Node *copy_node(Node *node) {
+    return new_node(&(node->data));
+}

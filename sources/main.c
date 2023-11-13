@@ -29,6 +29,7 @@ int main(void) {
      * @details Amikor egy új pontot hozunk létre, azt ebben a listában tartjuk nyilván. Ha a felhasználó kitöröl egy pontot, az a listából is törlődik. A gráfot tároló adatstruktúra ennek a listának a tárolt pontjaira mutat, ha kitörlünk egy pontot, akkor azt a gráf adatstruktúrájából is kitöröljük.
      */
     List *vertices = new_list();
+    List *selected_vertices = new_list();
 
     /**
      * @brief Egy dinamikus tömb, ami az összes ponthoz tartozó szomszédosságokat tárolja.
@@ -83,7 +84,22 @@ int main(void) {
                 }
             case SDL_MOUSEBUTTONDOWN:
                 Node *clicked_node = get_clicked_node(window_surface, &event, vertices);
-                clicked_node == NULL ? printf("no collision\n") : print_node(clicked_node, VERTEX_DATA);
+
+                if (clicked_node == NULL) {
+                    list_clear(selected_vertices, false);
+                    printf("cleared selected_vertices\n\n");
+                } else {
+                    //! @todo Befejezni a selection cuccokat.
+                    select_node(clicked_node);
+
+                    if (!(((Vertex_Data *)clicked_node->data)->selected)) {
+                        Node *copied_clicked_node = copy_node(clicked_node);
+                        printf("pushed\n\n");
+                    }
+                }
+
+                print_list(selected_vertices, VERTEX_DATA_POINTER);
+                //clicked_node == NULL ? printf("no collision\n") : print_node(clicked_node, VERTEX_DATA);
                 // switch (expression) {
                 // case /* constant-expression */:
                 //     /* code */
@@ -94,15 +110,15 @@ int main(void) {
                 // }
                 break;
             default:
-                SDL_SetRenderDrawColor(renderer, 247, 243, 243, 255);
+                SDL_SetRenderDrawColor(renderer, BG_R, BG_G, BG_B, BG_ALPHA);
                 SDL_RenderClear(renderer);
 
 #ifdef DEBUG
-                    draw_main_circle(window_surface, renderer, 0, 0, 103, 120, 121, 123);
+                draw_main_circle(window_surface, renderer, 0, 0);
 #endif
 
                 set_vertices_coords(vertices, window_surface);
-                draw_vertices(vertices, window_surface, renderer, 90, 114, 97, 255);
+                draw_vertices(vertices, window_surface, renderer);
 
                 SDL_RenderPresent(renderer);
                 break;
@@ -128,6 +144,7 @@ int main(void) {
 
 
     destroy_array(neighbour_arr, LINKED_LIST, false);
+    destroy_list(selected_vertices, false);
     destroy_list(vertices, true);
     printf("program vege\n");
     return 0;

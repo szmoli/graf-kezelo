@@ -75,8 +75,6 @@ void transfrom_point(Point *point, SDL_Surface *window_surface) {
     point->y += half_y;
 }
 
-//! @todo Ne csak az ablak magasságtól függjenek a dolgok nagyságai, hanem a szélességtől, ha az kisebb, mint a magasság. 
-
 /**
  * @brief Visszaadja az ablak szélességét vagy magasságát attól függően, hogy melyik a nagyobb.
  * 
@@ -99,14 +97,14 @@ int get_max_size(SDL_Surface *window_surface) {
  * @param b Kék
  * @param a Alpha
  */
-void draw_main_circle(SDL_Surface *window_surface, SDL_Renderer *renderer, int x, int y, int r, int g, int b, int a) {
+void draw_main_circle(SDL_Surface *window_surface, SDL_Renderer *renderer, int x, int y) {
     int size = get_max_size(window_surface);
 
     int radius = (int) size * MAIN_CIRCLE_RADIUS_MULTIPLIER;
     Point center = { .x = x, .y = y };
     transfrom_point(&center, window_surface);
-    aacircleRGBA(renderer, center.x, center.y, radius, r, g, b, a);
-    filledCircleRGBA(renderer, center.x, center.y, radius * 0.05, r, g, b, a); // középpont
+    aacircleRGBA(renderer, center.x, center.y, radius, DEBUG_R, DEBUG_G, DEBUG_B, DEBUG_ALPHA); // kör
+    filledCircleRGBA(renderer, center.x, center.y, radius * 0.025, DEBUG_R, DEBUG_G, DEBUG_B, DEBUG_ALPHA); // középpont
 }
 
 /**
@@ -151,15 +149,24 @@ void set_vertices_coords(List *vertices, SDL_Surface *window_surface) {
  * @param vertices A pontokat tartalmazó lista
  * @see draw_main_circle
  */
-void draw_vertices(List *vertices, SDL_Surface *window_surface, SDL_Renderer *renderer, int r, int g, int b, int a) {
+void draw_vertices(List *vertices, SDL_Surface *window_surface, SDL_Renderer *renderer) {
     int size = get_max_size(window_surface);
     Node *p = vertices->head_node;
     int radius = (int) (size * VERTEX_CIRCLE_RADIUS_MULTIPLIER);
 
     while (p != NULL) {
         Point center = ((Vertex_Data *) p->data)->center;
-        filledCircleRGBA(renderer, center.x, center.y, radius, r, g, b, a);
+        bool selected = ((Vertex_Data *) p->data)->selected;
+        selected ? filledCircleRGBA(renderer, center.x, center.y, radius, SELECTED_R, SELECTED_G, SELECTED_B, SELECTED_ALPHA) : filledCircleRGBA(renderer, center.x, center.y, radius, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA);
         
+#ifdef DEBUG
+        int min_x = center.x - radius;
+        int max_x = center.x + radius;
+        int min_y = center.y - radius;
+        int max_y = center.y + radius;
+        rectangleRGBA(renderer, min_x, min_y, max_x, max_y, DEBUG_R, DEBUG_G, DEBUG_B, DEBUG_ALPHA);
+#endif
+
         p = p->next_node;
     }
 }
@@ -186,4 +193,16 @@ Node *get_clicked_node(SDL_Surface *window_surface, SDL_Event *event, List *vert
     }
 
     return p;
+}
+
+void select_node(Node* node) {
+    ((Vertex_Data *) node->data)->selected = true;
+}
+
+void deselect_node(Node* node) {
+    ((Vertex_Data *) node->data)->selected = false;
+}
+
+void toggle_node_selection(Node* node) {
+    ((Vertex_Data *) node->data)->selected = !((Vertex_Data *) node->data)->selected;
 }
