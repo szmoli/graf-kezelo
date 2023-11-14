@@ -41,6 +41,7 @@ int main(void) {
     SDL_Surface *window_surface = NULL;
     SDL_Renderer *renderer = NULL;
     bool running = true;
+    double zoom_multiplier = 1;
 
     if (!config_sdl(&window, &window_surface, &renderer)) {
         fprintf(stderr, "%s: config failed\n\n", __func__);
@@ -82,6 +83,7 @@ int main(void) {
                     default:
                         break;
                 }
+                break;
             case SDL_MOUSEBUTTONDOWN:
                 Node *clicked_node = get_clicked_node(window_surface, &event, vertices);
 
@@ -89,15 +91,17 @@ int main(void) {
                 if (clicked_node == NULL) {
                     for_each(selected_vertices, deselect_original_node);
                     list_clear(selected_vertices, false);
+                    print_list(selected_vertices, VERTEX_DATA_POINTER);
                     printf("cleared selected_vertices\n\n");
                 } else {
                     if (!(((Vertex_Data *)clicked_node->data)->selected)) { // ha nem volt kiválasztva, akkor kiválasztjuk
                         select_node(clicked_node);
                         Node *copied_clicked_node = copy_node(clicked_node);
                         list_push(selected_vertices, copied_clicked_node);
-                        printf("pushed\n\n");
+                        print_list(selected_vertices, VERTEX_DATA_POINTER);
                     } else { // ha ki volt választva, akkor "nemkiválasztjuk"
-                        //! @todo befejezni ezt az ágat
+                        deselect_node(clicked_node);
+                        //! @todo Kiszedni a kijelolt listából
                     }
                 }
 
@@ -111,6 +115,15 @@ int main(void) {
                 // default:
                 //     break;
                 // }
+                break;
+            case SDL_MOUSEWHEEL:
+                if (event.wheel.y > 0) { // up
+                    zoom_multiplier += ZOOM_STEP;
+                    printf("zoom: %lf\n", zoom_multiplier);
+                } else if (event.wheel.y < 0 && zoom_multiplier - ZOOM_STEP > 0) { // down
+                    zoom_multiplier -= ZOOM_STEP;
+                    printf("zoom: %lf\n", zoom_multiplier);
+                }
                 break;
             default:
                 SDL_SetRenderDrawColor(renderer, BG_R, BG_G, BG_B, BG_ALPHA);
