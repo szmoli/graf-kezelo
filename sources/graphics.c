@@ -97,11 +97,12 @@ int get_max_size(SDL_Surface *window_surface) {
  * @param b Kék
  * @param a Alpha
  */
-void draw_main_circle(SDL_Surface *window_surface, SDL_Renderer *renderer, int radius) {
+void draw_main_circle(SDL_Surface *window_surface, SDL_Renderer *renderer, int radius, Point center) {
     // int size = get_max_size(window_surface);
 
     // int radius = (int) size * MAIN_CIRCLE_RADIUS_MULTIPLIER;
-    Point center = { .x = MAIN_CIRCLE_X, .y = MAIN_CIRCLE_Y };
+    // Point center = { .x = MAIN_CIRCLE_X, .y = MAIN_CIRCLE_Y };
+
     transfrom_point(&center, window_surface);
     aacircleRGBA(renderer, center.x, center.y, radius, DEBUG_R, DEBUG_G, DEBUG_B, DEBUG_ALPHA); // kör
     filledCircleRGBA(renderer, center.x, center.y, radius * MAIN_CIRCLE_CENTER_RADIUS_MULTIPLIER, DEBUG_R, DEBUG_G, DEBUG_B, DEBUG_ALPHA); // középpont
@@ -113,7 +114,7 @@ void draw_main_circle(SDL_Surface *window_surface, SDL_Renderer *renderer, int r
  * @param vertices Pontok listája
  * @param window_surface Ablak felszín
  */
-void set_vertices_coords(List *vertices, SDL_Surface *window_surface, int max_size, double zoom_multiplier) {
+void set_vertices_coords(List *vertices, SDL_Surface *window_surface, int max_size, double zoom_multiplier, int x_offset, int y_offset) {
     double degree = (2 * PI) / vertices->size;
     size_t degree_multiplier = 1;
     Node *p = vertices->head_node;
@@ -123,20 +124,22 @@ void set_vertices_coords(List *vertices, SDL_Surface *window_surface, int max_si
         // int x = (int) (round(cos(degree * degree_multiplier))) * (round(window_surface->h * MAIN_CIRCLE_RADIUS_MULTIPLIER));
         // int y = (int) (round(sin(degree * degree_multiplier))) * (round(window_surface->h * MAIN_CIRCLE_RADIUS_MULTIPLIER));
 
-        double double_x = cos(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier);
-        double double_y = sin(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier);
+        double double_x = cos(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier) + x_offset;
+        double double_y = sin(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier) + y_offset;
         int x = (int) double_x;
         int y = (int) double_y;
 
         // int x = (int) (cos(degree * degree_multiplier));
         // int y = (int) (sin(degree * degree_multiplier));
 
-        Point center = { .x = x, .y = y };
+        //Point *center = (Point *) malloc(sizeof(Point));
+        // center = { .x = x, .y = y };
+        ((Vertex_Data *) p->data)->center->x = x;
+        ((Vertex_Data *) p->data)->center->y = y;
 
         //printf("point %d: degree: %lf, center: (%lf; %lf)\n\n", degree_multiplier, degree * degree_multiplier, cos(degree * degree_multiplier), sin(degree * degree_multiplier));
 
-        transfrom_point(&center, window_surface);
-        ((Vertex_Data *) p->data)->center = center;
+        transfrom_point(((Vertex_Data *) p->data)->center, window_surface);
 
         degree_multiplier++;
         p = p->next_node;
@@ -155,15 +158,15 @@ void draw_vertices(List *vertices, SDL_Renderer *renderer, int radius) {
     // int radius = (int) (size * VERTEX_CIRCLE_RADIUS_MULTIPLIER);
 
     while (p != NULL) {
-        Point center = ((Vertex_Data *) p->data)->center;
+        Point *center = ((Vertex_Data *) p->data)->center;
         bool selected = ((Vertex_Data *) p->data)->selected;
-        selected ? filledCircleRGBA(renderer, center.x, center.y, radius, SELECTED_R, SELECTED_G, SELECTED_B, SELECTED_ALPHA) : filledCircleRGBA(renderer, center.x, center.y, radius, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA);
+        selected ? filledCircleRGBA(renderer, center->x, center->y, radius, SELECTED_R, SELECTED_G, SELECTED_B, SELECTED_ALPHA) : filledCircleRGBA(renderer, center->x, center->y, radius, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA);
         
 #ifdef DEBUG
-        int min_x = center.x - radius;
-        int max_x = center.x + radius;
-        int min_y = center.y - radius;
-        int max_y = center.y + radius;
+        int min_x = center->x - radius;
+        int max_x = center->x + radius;
+        int min_y = center->y - radius;
+        int max_y = center->y + radius;
         rectangleRGBA(renderer, min_x, min_y, max_x, max_y, DEBUG_R, DEBUG_G, DEBUG_B, DEBUG_ALPHA);
 #endif
 
@@ -177,11 +180,11 @@ Node *get_clicked_node(SDL_Event *event, List *vertices, int radius) {
     Node *p = vertices->head_node;
 
     while (p != NULL) {
-        Point center = ((Vertex_Data *) p->data)->center;
-        int min_x = center.x - radius;
-        int max_x = center.x + radius;
-        int min_y = center.y - radius;
-        int max_y = center.y + radius;
+        Point *center = ((Vertex_Data *) p->data)->center;
+        int min_x = center->x - radius;
+        int max_x = center->x + radius;
+        int min_y = center->y - radius;
+        int max_y = center->y + radius;
 
         bool collision_x = click.x >= min_x && click.x <= max_x;
         bool collision_y = click.y >= min_y && click.y <= max_y;
@@ -214,4 +217,41 @@ void toggle_node_selection(Node* node) {
 
 int get_radius(int max_size, double mode_multiplier, double zoom_multiplier) {
     return (int) (max_size * mode_multiplier * zoom_multiplier);
+}
+
+// int move_coords(List *vertices, SDL_Event *event) {
+//     Node *p = vertices->head_node;
+
+//     while (p != NULL) {
+//         Point center = ((Vertex_Data *) p->data)->center;
+
+//         switch (event->type) {
+//         case SDLK_UP:
+//             /* code */
+//             break;
+        
+//         default:
+//             break;
+//         }
+//         center.y -= MOVE_STEP;
+
+//         ((Vertex_Data *) p->data)->center = center;
+//         p = p->next_node;
+//     }
+// }
+
+void move_vertex_center_up(Node *node) {
+    ((Vertex_Data *) node->data)->center->y += MOVE_STEP;
+}
+
+void move_vertex_center_down(Node *node) {
+    ((Vertex_Data *) node->data)->center->y -= MOVE_STEP;
+}
+
+void move_vertex_center_left(Node *node) {
+    ((Vertex_Data *) node->data)->center->x -= MOVE_STEP;
+}
+
+void move_vertex_center_right(Node *node) {
+    ((Vertex_Data *) node->data)->center->x += MOVE_STEP;
 }

@@ -31,7 +31,7 @@ typedef enum MODES {
  */
 typedef struct Vertex_Data {
     unsigned int id; //! Vertex ID
-    Point center; //! Vertex középpont
+    Point *center; //! Vertex középpont
     bool selected; //! Ki van-e választva?
 } Vertex_Data;
 

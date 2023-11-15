@@ -22,4 +22,5 @@
 #define BG_G 243
 #define BG_B 243
 #define BG_ALPHA 255
-#define ZOOM_STEP 0.25
+#define ZOOM_STEP 0.025
+#define MOVE_STEP 5

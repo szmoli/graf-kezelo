@@ -48,7 +48,13 @@ int main(void) {
 
     bool running = true;
     double zoom_multiplier = 1;
+    int x_offset = 0;
+    int y_offset = 0;
     int max_size = get_max_size(window_surface);
+#ifdef DEBUG
+    Point main_circle_center = { .x = 0, .y = 0 };
+    Point old_main_circle_center;
+#endif
 
     // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
     // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
@@ -82,19 +88,54 @@ int main(void) {
                 switch (event.key.keysym.sym) {
                     case SDLK_v:
                         new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
+                        set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+                        break;
+                    case SDLK_LEFT:
+                        // for_each(vertices, move_vertex_center_left);
+                        x_offset += MOVE_STEP;
+                        set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+#ifdef DEBUG
+                        main_circle_center.x += MOVE_STEP;
+#endif
+                        break;
+                    case SDLK_RIGHT:
+                        x_offset -= MOVE_STEP;
+                        // for_each(vertices, move_vertex_center_right);
+                        set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+#ifdef DEBUG
+                        main_circle_center.x -= MOVE_STEP;
+
+#endif
+                        break;
+                    case SDLK_UP:
+                        y_offset += MOVE_STEP;
+                        // for_each(vertices, move_vertex_center_up);
+                        set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+#ifdef DEBUG
+                        main_circle_center.y += MOVE_STEP;
+#endif
+                        break;
+                    case SDLK_DOWN:
+                        y_offset -= MOVE_STEP;
+                        // for_each(vertices, move_vertex_center_down);
+                        set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+#ifdef DEBUG
+                        main_circle_center.y -= MOVE_STEP;
+#endif
+                        break;
                     default:
                         break;
                 }
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                Node *clicked_node = get_clicked_node(&event, vertices, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, zoom_multiplier));
+                Node *clicked_node = get_clicked_node(&event, vertices, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1));
 
                 //! @todo Befejezni a selection cuccokat.
                 if (clicked_node == NULL) {
                     for_each(selected_vertices, deselect_original_node);
                     list_clear(selected_vertices, false);
-                    print_list(selected_vertices, VERTEX_DATA_POINTER);
-                    printf("cleared selected_vertices\n\n");
+                    //print_list(selected_vertices, VERTEX_DATA_POINTER);
+                    //printf("cleared selected_vertices\n\n");
                 } else {
                     if (!(((Vertex_Data *)clicked_node->data)->selected)) { // ha nem volt kiválasztva, akkor kiválasztjuk
                         select_node(clicked_node);
@@ -121,10 +162,13 @@ int main(void) {
             case SDL_MOUSEWHEEL:
                 if (event.wheel.y > 0) { // up
                     zoom_multiplier += ZOOM_STEP;
-                    printf("zoom: %lf\n", zoom_multiplier);
+                    set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+                    //printf("zoom: %lf\n", zoom_multiplier);
                 } else if (event.wheel.y < 0 && zoom_multiplier - ZOOM_STEP > 0) { // down
                     zoom_multiplier -= ZOOM_STEP;
-                    printf("zoom: %lf\n", zoom_multiplier);
+                    set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+
+                    //printf("zoom: %lf\n", zoom_multiplier);
                 }
                 break;
             default:
@@ -132,34 +176,17 @@ int main(void) {
                 SDL_RenderClear(renderer);
 
 #ifdef DEBUG
-                draw_main_circle(window_surface, renderer, get_radius(max_size, MAIN_CIRCLE_RADIUS_MULTIPLIER, zoom_multiplier));
+                // (&main_circle_center)->x += x_offset;
+                // (&main_circle_center)->y += y_offset;
+                draw_main_circle(window_surface, renderer, get_radius(max_size, MAIN_CIRCLE_RADIUS_MULTIPLIER, zoom_multiplier), main_circle_center); //! @bug
 #endif
 
-                set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier);
-                draw_vertices(vertices, renderer, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, zoom_multiplier));
+                draw_vertices(vertices, renderer, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1));
 
                 SDL_RenderPresent(renderer);
                 break;
         }
     }
-
-
-    //new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
-
-    // list_clear(neighbour_arr->array[0]);
-    // print_list(neighbour_arr->array[0], VERTEX_DATA_POINTER);
-    // print_list(neighbour_arr->array[1], VERTEX_DATA_POINTER);    
-    // print_list(neighbour_arr->array[2], VERTEX_DATA_POINTER);    
-    // printf("neighbour list printed\n\n");
-
-
-    // print_list(vertices, VERTEX_DATA);
-    // printf("vertices printed\n\n");
-
-    //destroy_list(neighbour_arr->array[0]);
-    // print_list(vertices, VERTEX_DATA);
-    //printf("%p\n", vertices->head_node->data);
-
 
     destroy_array(neighbour_arr, LINKED_LIST, false);
     destroy_list(selected_vertices, false);

@@ -77,6 +77,10 @@ Node *get_node(List *list, void *data) {
  */
 void destroy_node(Node *node, bool destroy_data) {
     if (destroy_data) {
+        //! @bug olyan területet próbál felszabadítani, ami nincs lefoglalva.
+        Point *center = ((Vertex_Data *) node->data)->center;
+        free(center);
+        // printf("center freed\n");
         free(node->data);
         //printf("data freed\n");
     } else {
@@ -219,9 +223,10 @@ void print_list(List *list, MODES mode) {
  */
 Vertex_Data *new_vertex_data(unsigned int *id) {
     Vertex_Data *vertex_data = (Vertex_Data *) malloc(sizeof(Vertex_Data));
-
+    Point *center = (Point *) malloc(sizeof(Point));
     //printf("id: %u\n", *id);
 
+    vertex_data->center = center;
     vertex_data->id = (*id)++;
     vertex_data->selected = false;
 
@@ -243,7 +248,7 @@ void for_each(List *list, void (*function)(Node *)) {
 
     while (p != NULL) {
         (*function)(p);
-        //printf("faszom\n\n");
+        // printf("faszom\n");
         p = p->next_node;
     }
 }
