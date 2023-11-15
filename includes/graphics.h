@@ -23,7 +23,3 @@ void deselect_original_node(Node* node);
 void toggle_node_selection(Node* node);
 void deselect_node(Node* node);
 int get_radius(int max_size, double mode_multiplier, double zoom_multiplier);
-void move_vertex_center_up(Node *node);
-void move_vertex_center_down(Node *node);
-void move_vertex_center_left(Node *node);
-void move_vertex_center_right(Node *node);

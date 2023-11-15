@@ -6,3 +6,4 @@
 #include <stdlib.h>
 
 void new_vertex(Array *neighbour_arr, List *vertexes, Vertex_Data *data);
+List *get_neighbour_list(Array *neighbour_arr, Node *node);

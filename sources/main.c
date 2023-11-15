@@ -56,14 +56,6 @@ int main(void) {
     Point old_main_circle_center;
 #endif
 
-    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
-    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
-    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
-    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
-    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
-    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
-    // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
-
     while (running) {
         SDL_Event event;
         SDL_PollEvent(&event);
@@ -141,7 +133,8 @@ int main(void) {
                         select_node(clicked_node);
                         Node *copied_clicked_node = copy_node(clicked_node);
                         list_push(selected_vertices, copied_clicked_node);
-                        print_list(selected_vertices, VERTEX_DATA_POINTER);
+                        //print_list(selected_vertices, VERTEX_DATA_POINTER);
+                        //print_list(get_neighbour_list(neighbour_arr, clicked_node), VERTEX_DATA_POINTER);
                     } else { // ha ki volt választva, akkor "nemkiválasztjuk"
                         deselect_node(clicked_node);
                         //! @todo Kiszedni a kijelolt listából

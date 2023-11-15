@@ -24,4 +24,16 @@ void new_vertex(Array *neighbour_arr, List *vertexes, Vertex_Data *data) {
     array_push(neighbour_arr, neighbour_list);
 }
 
+List *get_neighbour_list(Array *neighbour_arr, Node *node) {
+    for (size_t i = 0; i < neighbour_arr->size; i++) {
+        if ((*((Vertex_Data **) ((List*) neighbour_arr->array[i])->head_node->data)) == (Vertex_Data *) node->data) return neighbour_arr->array[i];
+    }
+}
+
+//! @todo befejezni a set_edge függvényt
+void set_edge(Array *neighbour_arr, Node *node1, Node *node2) {
+    List *list_a;
+    List *list_b;
+}
+
 //! @todo Megírni a többi gráfpont-kezelő függvényt

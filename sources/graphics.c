@@ -219,39 +219,3 @@ int get_radius(int max_size, double mode_multiplier, double zoom_multiplier) {
     return (int) (max_size * mode_multiplier * zoom_multiplier);
 }
 
-// int move_coords(List *vertices, SDL_Event *event) {
-//     Node *p = vertices->head_node;
-
-//     while (p != NULL) {
-//         Point center = ((Vertex_Data *) p->data)->center;
-
-//         switch (event->type) {
-//         case SDLK_UP:
-//             /* code */
-//             break;
-        
-//         default:
-//             break;
-//         }
-//         center.y -= MOVE_STEP;
-
-//         ((Vertex_Data *) p->data)->center = center;
-//         p = p->next_node;
-//     }
-// }
-
-void move_vertex_center_up(Node *node) {
-    ((Vertex_Data *) node->data)->center->y += MOVE_STEP;
-}
-
-void move_vertex_center_down(Node *node) {
-    ((Vertex_Data *) node->data)->center->y -= MOVE_STEP;
-}
-
-void move_vertex_center_left(Node *node) {
-    ((Vertex_Data *) node->data)->center->x -= MOVE_STEP;
-}
-
-void move_vertex_center_right(Node *node) {
-    ((Vertex_Data *) node->data)->center->x += MOVE_STEP;
-}
