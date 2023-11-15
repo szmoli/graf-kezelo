@@ -40,13 +40,15 @@ int main(void) {
     SDL_Window *window = NULL;
     SDL_Surface *window_surface = NULL;
     SDL_Renderer *renderer = NULL;
-    bool running = true;
-    double zoom_multiplier = 1;
 
     if (!config_sdl(&window, &window_surface, &renderer)) {
         fprintf(stderr, "%s: config failed\n\n", __func__);
         return -1;
     }
+
+    bool running = true;
+    double zoom_multiplier = 1;
+    int max_size = get_max_size(window_surface);
 
     // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
     // new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
@@ -85,7 +87,7 @@ int main(void) {
                 }
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                Node *clicked_node = get_clicked_node(window_surface, &event, vertices);
+                Node *clicked_node = get_clicked_node(&event, vertices, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, zoom_multiplier));
 
                 //! @todo Befejezni a selection cuccokat.
                 if (clicked_node == NULL) {
@@ -130,11 +132,11 @@ int main(void) {
                 SDL_RenderClear(renderer);
 
 #ifdef DEBUG
-                draw_main_circle(window_surface, renderer, 0, 0);
+                draw_main_circle(window_surface, renderer, get_radius(max_size, MAIN_CIRCLE_RADIUS_MULTIPLIER, zoom_multiplier));
 #endif
 
-                set_vertices_coords(vertices, window_surface);
-                draw_vertices(vertices, window_surface, renderer);
+                set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier);
+                draw_vertices(vertices, renderer, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, zoom_multiplier));
 
                 SDL_RenderPresent(renderer);
                 break;

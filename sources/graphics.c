@@ -97,14 +97,14 @@ int get_max_size(SDL_Surface *window_surface) {
  * @param b Kék
  * @param a Alpha
  */
-void draw_main_circle(SDL_Surface *window_surface, SDL_Renderer *renderer, int x, int y) {
-    int size = get_max_size(window_surface);
+void draw_main_circle(SDL_Surface *window_surface, SDL_Renderer *renderer, int radius) {
+    // int size = get_max_size(window_surface);
 
-    int radius = (int) size * MAIN_CIRCLE_RADIUS_MULTIPLIER;
-    Point center = { .x = x, .y = y };
+    // int radius = (int) size * MAIN_CIRCLE_RADIUS_MULTIPLIER;
+    Point center = { .x = MAIN_CIRCLE_X, .y = MAIN_CIRCLE_Y };
     transfrom_point(&center, window_surface);
     aacircleRGBA(renderer, center.x, center.y, radius, DEBUG_R, DEBUG_G, DEBUG_B, DEBUG_ALPHA); // kör
-    filledCircleRGBA(renderer, center.x, center.y, radius * 0.025, DEBUG_R, DEBUG_G, DEBUG_B, DEBUG_ALPHA); // középpont
+    filledCircleRGBA(renderer, center.x, center.y, radius * MAIN_CIRCLE_CENTER_RADIUS_MULTIPLIER, DEBUG_R, DEBUG_G, DEBUG_B, DEBUG_ALPHA); // középpont
 }
 
 /**
@@ -113,18 +113,18 @@ void draw_main_circle(SDL_Surface *window_surface, SDL_Renderer *renderer, int x
  * @param vertices Pontok listája
  * @param window_surface Ablak felszín
  */
-void set_vertices_coords(List *vertices, SDL_Surface *window_surface) {
+void set_vertices_coords(List *vertices, SDL_Surface *window_surface, int max_size, double zoom_multiplier) {
     double degree = (2 * PI) / vertices->size;
     size_t degree_multiplier = 1;
     Node *p = vertices->head_node;
-    int size = get_max_size(window_surface);
+    // int size = get_max_size(window_surface);
 
     while (p != NULL) {
         // int x = (int) (round(cos(degree * degree_multiplier))) * (round(window_surface->h * MAIN_CIRCLE_RADIUS_MULTIPLIER));
         // int y = (int) (round(sin(degree * degree_multiplier))) * (round(window_surface->h * MAIN_CIRCLE_RADIUS_MULTIPLIER));
 
-        double double_x = cos(degree * degree_multiplier) * (size * MAIN_CIRCLE_RADIUS_MULTIPLIER);
-        double double_y = sin(degree * degree_multiplier) * (size * MAIN_CIRCLE_RADIUS_MULTIPLIER);
+        double double_x = cos(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier);
+        double double_y = sin(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier);
         int x = (int) double_x;
         int y = (int) double_y;
 
@@ -149,10 +149,10 @@ void set_vertices_coords(List *vertices, SDL_Surface *window_surface) {
  * @param vertices A pontokat tartalmazó lista
  * @see draw_main_circle
  */
-void draw_vertices(List *vertices, SDL_Surface *window_surface, SDL_Renderer *renderer) {
-    int size = get_max_size(window_surface);
+void draw_vertices(List *vertices, SDL_Renderer *renderer, int radius) {
+    // int size = get_max_size(window_surface);
     Node *p = vertices->head_node;
-    int radius = (int) (size * VERTEX_CIRCLE_RADIUS_MULTIPLIER);
+    // int radius = (int) (size * VERTEX_CIRCLE_RADIUS_MULTIPLIER);
 
     while (p != NULL) {
         Point center = ((Vertex_Data *) p->data)->center;
@@ -171,10 +171,9 @@ void draw_vertices(List *vertices, SDL_Surface *window_surface, SDL_Renderer *re
     }
 }
 
-Node *get_clicked_node(SDL_Surface *window_surface, SDL_Event *event, List *vertices) {
+Node *get_clicked_node(SDL_Event *event, List *vertices, int radius) {
     Point click = { .x = event->button.x, .y = event->button.y };
-    int size = get_max_size(window_surface);
-    int radius = (int) (size * VERTEX_CIRCLE_RADIUS_MULTIPLIER);
+    // int radius = (int) (size * VERTEX_CIRCLE_RADIUS_MULTIPLIER);
     Node *p = vertices->head_node;
 
     while (p != NULL) {
@@ -211,4 +210,8 @@ void deselect_node(Node* node) {
 
 void toggle_node_selection(Node* node) {
     ((Vertex_Data *) node->data)->selected = !(((Vertex_Data *) node->data)->selected);
+}
+
+int get_radius(int max_size, double mode_multiplier, double zoom_multiplier) {
+    return (int) (max_size * mode_multiplier * zoom_multiplier);
 }
