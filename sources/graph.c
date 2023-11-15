@@ -30,10 +30,14 @@ List *get_neighbour_list(Array *neighbour_arr, Node *node) {
     }
 }
 
+// Node *get_node
+
 //! @todo befejezni a set_edge függvényt
-void set_edge(Array *neighbour_arr, Node *node1, Node *node2) {
-    List *list_a;
-    List *list_b;
+void set_edge(Array *neighbour_arr, Node *node_a, Node *node_b) {
+    List *list_a = get_neighbour_list(neighbour_arr, node_a);
+    List *list_b = get_neighbour_list(neighbour_arr, node_b);
+    list_push(list_a, copy_node(node_b));
+    list_push(list_b, copy_node(node_a));
 }
 
 //! @todo Megírni a többi gráfpont-kezelő függvényt

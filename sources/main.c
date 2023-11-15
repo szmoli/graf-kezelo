@@ -82,6 +82,18 @@ int main(void) {
                         new_vertex(neighbour_arr, vertices, new_vertex_data(&id));
                         set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                         break;
+                    case SDLK_e:
+                        switch (selected_vertices->size) {
+                            case 2:
+                                //! @todo kitalálni, hogy hogyan kapjuk meg az eredeti nodeot a másolatából
+                                printf("number of selected vertices is 2\n");
+                                break;
+                            default:
+                                printf("number of selected vertices is not 2\n");
+                                break;
+                        }
+
+                        break;
                     case SDLK_LEFT:
                         // for_each(vertices, move_vertex_center_left);
                         x_offset += MOVE_STEP;
