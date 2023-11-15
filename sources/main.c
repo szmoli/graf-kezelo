@@ -86,7 +86,15 @@ int main(void) {
                         switch (selected_vertices->size) {
                             case 2:
                                 //! @todo kitalálni, hogy hogyan kapjuk meg az eredeti nodeot a másolatából
-                                printf("number of selected vertices is 2\n");
+                                // printf("copy: %p\n", *((Vertex_Data **) selected_vertices->head_node->data));
+                                // printf("real: %p\n", vertices->head_node->data);
+                                Node *node_a = get_node(vertices, *((Vertex_Data **) selected_vertices->head_node->data));
+                                Node *node_b = get_node(vertices, *((Vertex_Data **) selected_vertices->head_node->next_node->data));
+                                // printf("node a: ");
+                                // print_node(node_a, VERTEX_DATA);
+                                // printf("node b: ");
+                                // print_node(node_b, VERTEX_DATA);
+                                // printf("number of selected vertices is 2\n");
                                 break;
                             default:
                                 printf("number of selected vertices is not 2\n");
