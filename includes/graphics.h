@@ -1,9 +1,12 @@
 #pragma once
 
+#include "constants.h"
 #include "SDL.h"
 #include "SDL2_gfxPrimitives.h"
 #include "typedefs.h"
-#include "constants.h"
+#ifdef DEBUG
+#include "linked_list.h"
+#endif
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -23,3 +26,4 @@ void deselect_original_node(Node* node);
 void toggle_node_selection(Node* node);
 void deselect_node(Node* node);
 int get_radius(int max_size, double mode_multiplier, double zoom_multiplier);
+void draw_edges(Array *neighbour_arr, SDL_Renderer *renderer);

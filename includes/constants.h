@@ -24,3 +24,8 @@
 #define BG_ALPHA 255
 #define ZOOM_STEP 0.025
 #define MOVE_STEP 5
+#define EDGE_R 103
+#define EDGE_G 120
+#define EDGE_B 121
+#define EDGE_ALPHA 200
+#define EDGE_W 5

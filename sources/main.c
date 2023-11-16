@@ -89,7 +89,11 @@ int main(void) {
                                 // printf("copy: %p\n", *((Vertex_Data **) selected_vertices->head_node->data));
                                 // printf("real: %p\n", vertices->head_node->data);
                                 Node *node_a = get_node(vertices, *((Vertex_Data **) selected_vertices->head_node->data));
+                                // printf("node a selected\n");
                                 Node *node_b = get_node(vertices, *((Vertex_Data **) selected_vertices->head_node->next_node->data));
+                                set_edge(neighbour_arr, node_a, node_b);
+                                print_array(neighbour_arr, VERTEX_DATA_POINTER);
+                                // printf("node b selected\n");
                                 // printf("node a: ");
                                 // print_node(node_a, VERTEX_DATA);
                                 // printf("node b: ");
@@ -195,6 +199,9 @@ int main(void) {
 #endif
 
                 draw_vertices(vertices, renderer, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1));
+                printf("vertices: ");
+                print_list(vertices, VERTEX_DATA);
+                draw_edges(neighbour_arr, renderer);
 
                 SDL_RenderPresent(renderer);
                 break;

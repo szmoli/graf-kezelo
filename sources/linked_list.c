@@ -62,11 +62,11 @@ Node *get_node(List *list, void *data) {
     
     while (p != NULL) {
         //! @bug nem talalja meg az egyezo cimet (???)
-        printf("p: %p; search: %p\n", p->data, data);
-        scanf("%d");
-        if (p->data == data) return p;
+        // printf("p: %p; data: %p\n", p->data, data);
+        // scanf("%d");
+        if ((void *) p->data == (void *) data) return p;
 
-        p->next_node;
+        p = p->next_node;
     }
     
     return NULL;

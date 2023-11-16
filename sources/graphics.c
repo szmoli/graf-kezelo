@@ -219,3 +219,17 @@ int get_radius(int max_size, double mode_multiplier, double zoom_multiplier) {
     return (int) (max_size * mode_multiplier * zoom_multiplier);
 }
 
+void draw_edges(Array *neighbour_arr, SDL_Renderer *renderer) {
+    printf("%s\n", __func__);
+
+    for (size_t i = 0; i < neighbour_arr->size; i++) {
+        print_list((List *) neighbour_arr->array[i], VERTEX_DATA_POINTER);
+        Point *line_start = (*(Vertex_Data **) ((List *) neighbour_arr->array[i])->head_node->data)->center;
+        Node *iterator = ((List *) neighbour_arr->array[i])->head_node->next_node;
+
+        while (iterator != NULL) {
+            Point *line_end = (*(Vertex_Data **) iterator->data)->center;
+            thickLineRGBA(renderer, line_start->x, line_start->y, line_end->x, line_end->y, EDGE_W, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA);
+        }        
+    }
+}

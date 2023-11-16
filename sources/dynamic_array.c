@@ -130,9 +130,10 @@ void array_delete(Array *d_arr, size_t index) {
  * 
  * @param d_arr A gráf, amit kiír
  */
-void print_array(Array *d_arr) {
+void print_array(Array *d_arr, MODES mode) {
     for (size_t i = 0; i < d_arr->size; i++) {
-        printf("%d%s", *((int *) d_arr->array[i]), i == d_arr->size - 1 ? "\n" : ", ");
+        // printf("%d%s", *((int *) d_arr->array[i]), i == d_arr->size - 1 ? "\n" : ", ");
+        print_list((List *) d_arr->array[i], mode);
     }
 }
 
