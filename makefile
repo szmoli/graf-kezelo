@@ -3,9 +3,9 @@ STANDARD = c99
 INCLUDES = -I ./includes/ -I ./includes/SDL2 -I ./includes/SDL2_gfx
 LIBS = -L ./libraries -l SDL2
 SRC_DIR = ./sources
-C_SOURCES = $(addprefix $(SRC_DIR)/, main.c linked_list.c dynamic_array.c graph.c graphics.c SDL2_framerate.c SDL2_gfxPrimitives.c SDL2_imageFilter.c SDL2_rotozoom.c)
+C_SOURCES = $(addprefix $(SRC_DIR)/, main.c)
 OBJ_DIR = ./objects
-C_OBJECTS = $(addprefix $(OBJ_DIR)/, main.o linked_list.o dynamic_array.o graph.o graphics.o SDL2_framerate.o SDL2_gfxPrimitives.o SDL2_imageFilter.o SDL2_rotozoom.o)
+C_OBJECTS = $(addprefix $(OBJ_DIR)/, main.o)
 BIN = ./build.exe
 C_FLAGS = -std=$(STANDARD) $(INCLUDES) $(LIBS)
 
