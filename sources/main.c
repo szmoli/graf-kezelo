@@ -1,317 +1,213 @@
+#include "constants.h"
 #include "debugmalloc.h"
+#include "SDL.h"
+#include "SDL2_gfxPrimitives.h"
+#include "lists.h"
 
 #include <stdbool.h>
 #include <memory.h>
+#include <math.h>
 
-typedef struct Point {
-    int x;
-    int y;
-} Point;
+/**
+ * @brief Bekonfigurálja az SDL-t a megadott változókra.
+ * 
+ * @param window Ablak változó.
+ * @param window_surface Ablak felület változó.
+ * @param renderer Renderer változó
+ * @return true Ha sikeres a konfigurálás.
+ * @return false Ha sikertelen a konfigurálás.
+ */
+bool config_sdl(SDL_Window **window, SDL_Surface **window_surface, SDL_Renderer **renderer) {
+    SDL_Init(SDL_INIT_EVERYTHING);
 
-typedef struct Vertex_Data {
-    int id;
-    bool selected;
-} Vertex_Data;
+    *window = SDL_CreateWindow("Gráfkezelő", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 720, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
-typedef struct Vertex_Node {
-    Vertex_Data vertex_data;
-    struct Vertex_Node *next_node;
-} Vertex_Node;
+    if (*window == NULL) {
+        fprintf(stderr, "%s: no window\n", __func__);
+        return false;
+    }
 
-typedef struct Vertex_List {
-    int size;
-    Vertex_Node *head;
-    Vertex_Node *tail;
-} Vertex_List;
+    *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
 
-typedef struct Edge {
-    Vertex_Node *from;
-    Vertex_Node *to;
-    bool directed;
-} Edge;
+    if (*renderer == NULL) {
+        SDL_DestroyRenderer(*renderer);
+        *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_SOFTWARE);
+    }
 
-typedef struct Edge_Node {
-    Edge edge;
-    struct Edge_Node *next_node;
-} Edge_Node;
+    if (*renderer == NULL) {
+        fprintf(stderr, "%s: no renderer\n", __func__);
+        return false;
+    }
 
-typedef struct Edge_List {
-    int size;
-    Edge_Node *head;
-    Edge_Node *tail;
-} Edge_List;
+    *window_surface = SDL_GetWindowSurface(*window);
 
-typedef struct Vertex_Pointer_Node {
-    Vertex_Node *vertex_node;
-    struct Vertex_Pointer_Node *next_node;
-} Vertex_Pointer_Node;
+    if (*window_surface == NULL) {
+        fprintf(stderr, "%s: no window surface\n", __func__);
+        return false;        
+    }
 
-typedef struct Vertex_Pointer_List {
-    int size;
-    Vertex_Pointer_Node *head;
-    Vertex_Pointer_Node *tail;
-} Vertex_Pointer_List;
-
-Vertex_Node *new_vertex_node() {
-    return (Vertex_Node *) malloc(sizeof(Vertex_Node));
+    return true;
 }
 
-Edge_Node *new_edge_node() {
-    return (Edge_Node *) malloc(sizeof(Edge_Node));
+/**
+ * @brief Leállítja az SDL ablakot és a főciklus változóját false-ra állítja.
+ * 
+ * @param window Ablak változó.
+ * @param renderer Renderer változó.
+ * @param loop A főciklus bentmaradás feltételének változója.
+ */
+void quit_sdl(SDL_Window **window, SDL_Renderer **renderer, bool *loop) {
+    *loop = false;
+    SDL_DestroyRenderer(*renderer);
+    SDL_DestroyWindowSurface(*window);
+    SDL_DestroyWindow(*window);
+    SDL_Quit();
 }
 
-Vertex_Pointer_Node *new_vertex_pointer_node() {
-    return (Vertex_Pointer_Node *) malloc(sizeof(Vertex_Pointer_Node));
+/**
+ * @brief Egy homogén koordinátát SDL-szerű koordinátává alakít.
+ * 
+ * @param point Pont, aminek a koordinátáit átalakítja
+ * @param window_surface Ablak felszín
+ */
+void transfrom_point(Point *point, SDL_Surface *window_surface) {
+    int half_x = window_surface->w / 2;
+    int half_y = window_surface->h / 2;    
+    point->x += half_x;
+    point->y += half_y;
 }
 
-Vertex_List *new_vertex_list() {
-    Vertex_List *list = (Vertex_List *) malloc(sizeof(Vertex_List));
-    list->head = NULL;
-    list->tail = NULL;
-    list->size = 0;
+/**
+ * @brief Visszaadja az ablak szélességét vagy magasságát attól függően, hogy melyik a nagyobb.
+ * 
+ * @param window_surface Ablakfelület változó
+ * @return int A nagyobb érték
+ */
+int get_max_size(SDL_Surface *window_surface) {
+    return window_surface->h > window_surface->w ? window_surface->w : window_surface->h;
 }
 
-Edge_List *new_edge_list() {
-    Edge_List *list = (Edge_List *) malloc(sizeof(Edge_List));
-    list->head = NULL;
-    list->tail = NULL;
-    list->size = 0;
+void create_vertex(Vertex_List *vertices, size_t vertex_id) {
+    Vertex_Node *vertex_node = new_vertex_node();
+    vertex_node->vertex_data.id = vertex_id;
+    vertex_node->vertex_data.selected = false;
+    vertex_list_push(vertices, vertex_node);
 }
 
-Vertex_Pointer_List *new_vertex_pointer_list() {
-    Vertex_Pointer_List *list = (Vertex_Pointer_List *) malloc(sizeof(Vertex_Pointer_List));
-    list->head = NULL;
-    list->tail = NULL;
-    list->size = 0;
-}
-
-void destroy_vertex_list(Vertex_List *list) {
-    Vertex_Node *iterator = list->head;
-    Vertex_Node *previous = NULL;
+/**
+ * @brief Beállítja a pontoknak a koordinátáit attól függően, hogy hány pont létezik.
+ * 
+ * @param vertices Pontok listája
+ * @param window_surface Ablak felszín
+ */
+void set_vertices_coords(Vertex_List *vertices, SDL_Surface *window_surface, int max_size, double zoom_multiplier, int x_offset, int y_offset) {
+    double degree = (2 * PI) / vertices->size;
+    size_t degree_multiplier = 1;
+    Vertex_Node *iterator = vertices->head;
 
     while (iterator != NULL) {
-        previous = iterator;
-        iterator = iterator->next_node;
-        free(previous);
-    }
+        double double_x = cos(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier) + x_offset;
+        double double_y = sin(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier) + y_offset;
+        // printf("coords: %lf %lf\n", double_x, double_y);
+        int x = (int) double_x;
+        int y = (int) double_y;
+        iterator->vertex_data.center.x = x;
+        iterator->vertex_data.center.y = y;
 
-    free(list);
-    list = NULL;
+        transfrom_point(&(iterator->vertex_data.center), window_surface);
+        // printf("new coord: %d %d\n", iterator->vertex_data.center.x, iterator->vertex_data.center.y);
+
+        degree_multiplier++;
+        iterator = iterator->next_node;
+    }
 }
 
-void clear_vertex_list(Vertex_List *list) {
-        Vertex_Node *iterator = list->head;
-    Vertex_Node *previous = NULL;
-    
-    while (iterator != NULL) {
-        previous = iterator;
-        iterator = iterator->next_node;
-        free(previous);
-        previous = NULL;
-    }
-
-    free(list);
-    list->head = NULL;
-    list->tail = NULL;
-    list->size = 0;
+int get_radius(int max_size, double mode_multiplier, double zoom_multiplier) {
+    return (int) (max_size * mode_multiplier * zoom_multiplier);
 }
 
-void destroy_edge_list(Edge_List *list) {
-    Edge_Node *iterator = list->head;
-    Edge_Node *previous = NULL;
-    
-    while (iterator != NULL) {
-        previous = iterator;
-        iterator = iterator->next_node;
-        free(previous);
-    }
-
-    free(list);
-    list = NULL;
-}
-
-void clear_edge_list(Edge_List *list) {
-    Edge_Node *iterator = list->head;
-    Edge_Node *previous = NULL;
+/**
+ * @brief Megrajzolja a gráfpontokat. Hasonló a draw_main_circle() függvényhez.
+ * 
+ * @param vertices A pontokat tartalmazó lista
+ * @see draw_main_circle
+ */
+void draw_vertices(Vertex_List *vertices, SDL_Renderer *renderer, int radius) {
+    // int size = get_max_size(window_surface);
+    Vertex_Node *iterator = vertices->head;
+    // int radius = (int) (size * VERTEX_CIRCLE_RADIUS_MULTIPLIER);
 
     while (iterator != NULL) {
-        previous = iterator;
-        iterator = iterator->next_node;
-        free(previous);
-        previous = NULL;
-    }
+        Point center = iterator->vertex_data.center;
+        bool selected = iterator->vertex_data.selected;
+        selected ? filledCircleRGBA(renderer, center.x, center.y, radius, SELECTED_R, SELECTED_G, SELECTED_B, SELECTED_ALPHA) : filledCircleRGBA(renderer, center.x, center.y, radius, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA);
 
-    free(list);
-    list->head = NULL;
-    list->tail = NULL;
-    list->size = 0;
-}
-
-void destroy_vertex_pointer_list(Vertex_Pointer_List *list) {
-    Vertex_Pointer_Node *iterator = list->head;
-    Vertex_Pointer_Node *previous = NULL;
-
-    while (iterator != NULL) {
-        previous = iterator;
-        iterator = iterator->next_node;
-        free(previous);
-    }
-
-    free(list);
-    list = NULL;
-}
-
-void clear_vertex_pointer_list(Vertex_Pointer_List *list) {
-    Vertex_Pointer_Node *iterator = list->head;
-    Vertex_Pointer_Node *previous = NULL;
-
-    while (iterator != NULL) {
-        previous = iterator;
-        iterator = iterator->next_node;
-        free(previous);
-        previous = NULL;
-    }
-
-    free(list);
-    list->head = NULL;
-    list->tail = NULL;
-    list->size = 0;
-}
-
-void vertex_list_push(Vertex_List *list, Vertex_Node *node) {
-    if (list->head == NULL) list->head = node;
-    if (list->tail != NULL) list->tail->next_node = node;    
-    list->tail = node;
-    node->next_node = NULL;
-    list->size++;
-}
-
-void edge_list_push(Edge_List *list, Edge_Node *node) {
-    if (list->head == NULL) list->head = node;
-    if (list->tail != NULL) list->tail->next_node = node;    
-    list->tail = node;
-    node->next_node = NULL;
-    list->size++;
-}
-
-void vertex_pointer_list_push(Vertex_Pointer_List *list, Vertex_Pointer_Node *node) {
-    if (list->head == NULL) list->head = node;
-    if (list->tail != NULL) list->tail->next_node = node;    
-    list->tail = node;
-    node->next_node = NULL;
-    list->size++;
-}
-
-void vertex_list_pop(Vertex_List *list, Vertex_Node *node) {
-    Vertex_Node *iterator = list->head;
-    Vertex_Node *previous = NULL;
-
-    if (iterator == NULL) return;
-
-    while (iterator != NULL && iterator != node) {
-        previous = iterator;
+        printf("%d: %d %d, %d\n", iterator->vertex_data.id, iterator->vertex_data.center.x, iterator->vertex_data.center.y, radius);
+        printf("%p, %p\n", iterator, iterator->next_node);
+        
         iterator = iterator->next_node;
     }
 
-    if (iterator == list->head) {
-        list->head = iterator->next_node;
-    } else if (iterator != NULL) {
-        previous->next_node = iterator->next_node;
-    }
-
-    list->size--;
-    free(iterator);
-    iterator = NULL;
-}
-
-void edge_list_pop(Edge_List *list, Edge_Node *node) {
-    Edge_Node *iterator = list->head;
-    Edge_Node *previous = NULL;
-
-    if (iterator == NULL) return;
-
-    while (iterator != NULL && iterator != node) {
-        previous = iterator;
-        iterator = iterator->next_node;
-    }
-
-    if (iterator == list->head) {
-        list->head = iterator->next_node;
-    } else if (iterator != NULL) {
-        previous->next_node = iterator->next_node;
-    }
-
-    list->size--;
-    free(iterator);
-    iterator = NULL;
-}
-
-void vertex_pointer_list_pop(Vertex_Pointer_List *list, Vertex_Pointer_Node *node) {
-    Vertex_Pointer_Node *iterator = list->head;
-    Vertex_Pointer_Node *previous = NULL;
-
-    if (iterator == NULL) return;
-
-    while (iterator != NULL && iterator != node) {
-        previous = iterator;
-        iterator = iterator->next_node;
-    }
-
-    if (iterator == list->head) {
-        list->head = iterator->next_node;
-    } else if (iterator != NULL) {
-        previous->next_node = iterator->next_node;
-    }
-
-    list->size--;
-    free(iterator);
-    iterator = NULL;
-}
-
-void print_vertex_list(Vertex_List *list) {
-    Vertex_Node *iterator = list->head;
-
-    if (iterator == NULL) return;
-
-    while (iterator != NULL) {
-        printf("%d (%p)%s", iterator->vertex_data.id, iterator, iterator->next_node == NULL ? "\n" : " -> ");
-        iterator = iterator->next_node;
-    }
-}
-
-void print_edge_list(Edge_List *list) {
-    Edge_Node *iterator = list->head;
-
-    if (iterator == NULL) return;
-
-    while (iterator != NULL) {
-        printf("(%d (%p)%s%d (%p)%s)", iterator->edge.from->vertex_data.id, iterator->edge.from, iterator->edge.directed ? " -> " : " <-> ", iterator->edge.to->vertex_data.id, iterator->edge.from, iterator->next_node == NULL ? "\n" : " -> ");
-        iterator = iterator->next_node;
-    }
-}
-
-void print_vertex_pointer_list(Vertex_Pointer_List *list) {
-    Vertex_Pointer_Node *iterator = list->head;
-
-    if (iterator == NULL) return;
-
-    while (iterator != NULL) {
-        printf("%d (%p)%s", iterator->vertex_node->vertex_data.id, iterator->vertex_node, iterator->next_node == NULL ? "\n" : " -> ");
-        iterator = iterator->next_node;
-    }
+    // printf("end\n");
 }
 
 int main(void) {
+    SDL_Window *window = NULL;
+    SDL_Surface *window_surface = NULL;
+    SDL_Renderer *renderer = NULL;
+
+    if (!config_sdl(&window, &window_surface, &renderer)) {
+        fprintf(stderr, "SDL config failed\n");
+        return 0;
+    }
+
+    size_t vertex_id = 0;
+    double zoom_multiplier = 1;
+    int x_offset = 0;
+    int y_offset = 0;
+    int max_size = get_max_size(window_surface);
+    bool running = true;
     Vertex_List *vertices = new_vertex_list();
     Vertex_Pointer_List *selection = new_vertex_pointer_list();
     Edge_List *edges = new_edge_list();
 
-    vertex_list_push(vertices, new_vertex_node());
-    edge_list_push(edges, new_edge_node());
-    vertex_pointer_list_push(selection, new_vertex_pointer_node());
-    vertex_list_pop(vertices, vertices->head);
-    edge_list_pop(edges, edges->head);
-    vertex_pointer_list_pop(selection, selection->head);
+    while (running) {
+        SDL_Event event;
+        SDL_PollEvent(&event);
+
+        switch (event.type) {
+            case SDL_MOUSEWHEEL:
+                if (event.wheel.y > 0) { // up
+                    zoom_multiplier += ZOOM_STEP;
+                    set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+                } else if (event.wheel.y < 0 && zoom_multiplier - ZOOM_STEP > 0) { // down
+                    zoom_multiplier -= ZOOM_STEP;
+                    set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+                }
+                break;
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+                    case SDLK_v:
+                        create_vertex(vertices, vertex_id);
+                        vertex_id++;
+                        set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+                        print_vertex_list(vertices);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case SDL_QUIT:
+                quit_sdl(&window, &renderer, &running);
+                break;
+            default: // rendering
+                SDL_SetRenderDrawColor(renderer, BG_R, BG_G, BG_B, BG_ALPHA);
+                SDL_RenderClear(renderer);
+                draw_vertices(vertices, renderer, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1));
+                SDL_RenderPresent(renderer);
+                break;
+        }
+    }    
 
     destroy_edge_list(edges);
     destroy_vertex_pointer_list(selection);
