@@ -8,6 +8,32 @@
 #include <stdbool.h>
 #include <memory.h>
 
+void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
+    Edge_Node *edge_node = new_edge_node();
+    edge_node->edge.directed = directed;
+    edge_node->edge.to = to;
+    edge_node->edge.from = from;
+    edge_list_push(edges, edge_node);
+}
+
+void draw_edges(Edge_List *edges, SDL_Renderer *renderer) {
+    Edge_Node *iterator = edges->head;
+
+    while (iterator != NULL) {
+        Point center_to = iterator->edge.to->vertex_data.center;
+        Point center_from = iterator->edge.from->vertex_data.center;
+
+        int x_to = center_to.x;
+        int y_to = center_to.y;
+        int x_from = center_from.x;
+        int y_from = center_from.y;
+
+        thickLineRGBA(renderer, x_to, y_to, x_from, y_from, EDGE_W, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA);
+
+        iterator = iterator->next_node;
+    }
+}
+
 int main(void) {
     printf("program eleje\n");
 
@@ -92,7 +118,21 @@ int main(void) {
                 break;
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
-                    case SDLK_v:
+                    case SDLK_e: // él létrehozás
+                        switch (selection->size) {
+                        case 2:
+                            Vertex_Node *from = selection->head->vertex_node;
+                            Vertex_Node *to = selection->head->next_node->vertex_node;
+                            create_edge(edges, to, from, false);
+                            break;
+
+                        default:
+                            printf("nem megfelelo szamu pont kijelolve\n\n");
+                            break;
+                        }
+
+                        break;
+                    case SDLK_v: // vertex létrehozás
                         create_vertex(vertices, vertex_id, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1));
                         print_vertex_list(vertices);
                         printf("vertex created\n");
@@ -101,38 +141,48 @@ int main(void) {
                         printf("vertex coords set\n");
                         printf("\n");
                         break;
+
                     case SDLK_LEFT:
                         x_offset += MOVE_STEP;
                         set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                         break;
+
                     case SDLK_RIGHT:
                         x_offset -= MOVE_STEP;
                         set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                         break;
+
                     case SDLK_UP:
                         y_offset += MOVE_STEP;
                         set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                         break;
+
                     case SDLK_DOWN:
                         y_offset -= MOVE_STEP;
                         set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                         break;
+
                     case SDLK_r: // zoom és offset reset
                         x_offset = 0;
                         y_offset = 0;
                         zoom_multiplier = 1;
                         set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                         break;
+
                     default:
                         break;
                 }
+
                 break;
+
             case SDL_QUIT:
                 quit_sdl(&window, &renderer, &running);
                 break;
+
             default: // rendering
                 SDL_SetRenderDrawColor(renderer, BG_R, BG_G, BG_B, BG_ALPHA);
                 SDL_RenderClear(renderer);
+                draw_edges(edges, renderer);
                 draw_vertices(vertices, renderer);
                 SDL_RenderPresent(renderer);
                 break;
