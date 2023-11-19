@@ -8,6 +8,14 @@
 #include <stdbool.h>
 #include <memory.h>
 
+/**
+ * @brief Létrehoz egy gráf élt
+ * 
+ * @param edges Létező élek listája
+ * @param to Vertex_Node amibe megy az él
+ * @param from Vertex_Node amiből megy az él
+ * @param directed Irányított él-e?
+ */
 void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
     Edge_Node *edge_node = new_edge_node();
     edge_node->edge.directed = directed;
@@ -16,6 +24,13 @@ void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool dire
     edge_list_push(edges, edge_node);
 }
 
+/**
+ * @brief Kirajzolja a gráf éleit
+ * @todo Directed rajzolás
+ * 
+ * @param edges Létező élek listája
+ * @param renderer SDL_Renderer
+ */
 void draw_edges(Edge_List *edges, SDL_Renderer *renderer) {
     Edge_Node *iterator = edges->head;
 
@@ -31,6 +46,86 @@ void draw_edges(Edge_List *edges, SDL_Renderer *renderer) {
         thickLineRGBA(renderer, x_to, y_to, x_from, y_from, EDGE_W, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA);
 
         iterator = iterator->next_node;
+    }
+}
+
+bool has_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
+    Edge_Node *iterator = edges->head;
+    Edge_Node *previous = NULL;
+
+    switch (directed) {
+    case true:
+        while (iterator != NULL) {
+            previous = iterator;
+            iterator = iterator->next_node;
+
+            if (iterator->edge.to == to && iterator->edge.from == from) {
+                return true;
+            }
+        }
+
+        return false;
+        break;
+    
+    case false:
+        while (iterator != NULL) {
+            previous = iterator;
+            iterator = iterator->next_node;
+
+            // if (((previous->edge.to == to) && (previous->edge.from == from)) || ((previous->edge.from == to) && (previous->edge.from == to))) {
+            //     return true;
+            // }
+
+            if (((previous->edge.to == to) && (previous->edge.from == from)) || ((previous->edge.to == from) && (previous->edge.from == to))) {
+                return true;
+            }
+        }
+
+        return false;
+        break;
+    }
+}
+
+void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
+    Edge_Node *iterator = edges->head;
+    Edge_Node *previous = NULL;
+
+    while (iterator != NULL) {
+        previous = iterator;
+        iterator = iterator->next_node;
+
+        if (iterator->edge.to == vertex_node || iterator->edge.from == vertex_node) {
+            edge_list_pop(edges, previous);
+        }
+    }
+}
+
+void delete_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
+    Edge_Node *iterator = edges->head;
+    Edge_Node *previous = NULL;
+
+    switch (directed) {
+    case true:
+        while (iterator != NULL) {
+            previous = iterator;
+            iterator = iterator->next_node;
+
+            if (iterator->edge.to == to && iterator->edge.from == from) {
+                edge_list_pop(edges, previous);
+            }
+        }
+        break;
+    
+    case false:
+        while (iterator != NULL) {
+            previous = iterator;
+            iterator = iterator->next_node;
+
+            if ((previous->edge.to == to && previous->edge.from == from) || (previous->edge.from == to && previous->edge.from == to)) {
+                edge_list_pop(edges, previous);
+            }
+        }
+        break;
     }
 }
 
@@ -130,15 +225,55 @@ int main(void) {
                         case 2:
                             Vertex_Node *from = selection->head->vertex_node;
                             Vertex_Node *to = selection->head->next_node->vertex_node;
-                            create_edge(edges, to, from, false);
+
+                            if (!has_edge(edges, to, from, false)) {
+                                create_edge(edges, to, from, false);
+                                printf("edges: ");
+                                print_edge_list(edges);
+                                printf("\n");
+                            } else {
+                                printf("%d <-> %d\n\n", from->vertex_data.id, to->vertex_data.id);
+                            }
                             break;
 
                         default:
                             printf("nem megfelelo szamu pont kijelolve\n\n");
                             break;
                         }
-
                         break;
+
+                    case SDLK_d:
+                        switch (selection->size) {
+                        case 2:
+                            Vertex_Node *from = selection->head->vertex_node;
+                            Vertex_Node *to = selection->head->next_node->vertex_node;
+                            delete_edge(edges, to, from, false);
+                            printf("edges:\n");
+                            print_edge_list(edges);
+                            printf("\n");
+                            break;
+
+                        default:
+                            printf("nem megfelelo szamu pont kijelolve\n\n");
+                            break;
+                        }
+                        break;
+
+                    case SDLK_a: // minden él törlése
+                        switch (selection->size) {
+                        case 1:
+                            delete_all_edges(edges, selection->head->vertex_node);
+                            printf("edges:\n");
+                            print_edge_list(edges);
+                            printf("\n");
+                            break;
+
+                        default:
+                            printf("nem megfelelo szamu pont kijelolve\n\n");
+                            break;
+                        }
+                        break;
+
                     case SDLK_v: // vertex létrehozás
                         create_vertex(vertices, vertex_id, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1));
                         print_vertex_list(vertices);

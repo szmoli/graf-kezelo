@@ -33,3 +33,4 @@
 #define SHADING_G 0
 #define SHADING_B 0
 #define SHADING_ALPHA 120
+#define FONT CASCADIAMONO.TTF

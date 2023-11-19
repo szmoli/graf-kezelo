@@ -3,7 +3,9 @@
 #include "constants.h"
 #include "lists.h"
 #include "SDL.h"
+// #include "SDL_ttf.h"
 #include "SDL2_gfxPrimitives.h"
+// #include "SDL2_gfxPrimitives_font.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
