@@ -27,6 +27,7 @@ void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool dire
 /**
  * @brief Kirajzolja a gráf éleit
  * @todo Directed rajzolás
+ * @todo Kijelölt Edge-ek kiszínezése
  * 
  * @param edges Létező élek listája
  * @param renderer SDL_Renderer
@@ -94,7 +95,7 @@ void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
         previous = iterator;
         iterator = iterator->next_node;
 
-        if (iterator->edge.to == vertex_node || iterator->edge.from == vertex_node) {
+        if ((previous->edge.to == vertex_node) || (previous->edge.from == vertex_node)) {
             edge_list_pop(edges, previous);
         }
     }
