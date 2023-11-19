@@ -117,6 +117,12 @@ int main(void) {
                         y_offset -= MOVE_STEP;
                         set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                         break;
+                    case SDLK_r: // zoom és offset reset
+                        x_offset = 0;
+                        y_offset = 0;
+                        zoom_multiplier = 1;
+                        set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+                        break;
                     default:
                         break;
                 }
