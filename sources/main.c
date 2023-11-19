@@ -101,6 +101,15 @@ void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
     }
 }
 
+/**
+ * @brief 
+ * @bug Ha három pont közt van húzva két él, akkor kitöröl két élt is egy helyett
+ * 
+ * @param edges 
+ * @param to 
+ * @param from 
+ * @param directed 
+ */
 void delete_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
     Edge_Node *iterator = edges->head;
     Edge_Node *previous = NULL;
@@ -161,9 +170,18 @@ int main(void) {
         SDL_PollEvent(&event);
 
         switch (event.type) {
-            case SDL_WINDOWEVENT_RESIZED:
-                window_surface = SDL_GetWindowSurface(window);
-                max_size = get_max_size(window_surface);
+            case SDL_WINDOWEVENT:
+                switch (event.window.event) {
+                case SDL_WINDOWEVENT_RESIZED:
+                    window_surface = SDL_GetWindowSurface(window);
+                    max_size = get_max_size(window_surface);
+                    set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+                    break;
+
+                default:
+                    break;
+                }
+                
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 switch (event.button.button) {
