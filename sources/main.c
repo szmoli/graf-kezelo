@@ -101,12 +101,17 @@ int main(void) {
                             printf("kijelolve: %p\n", clicked_node);
 
                             printf("\n");
+                        } else if (clicked_node->vertex_data.selected) {
+                            unselect_vertex(selection, get_vertex_pointer_node(selection, clicked_node));
+                            //! @bug selection tail nem nullazodik ki
                         }
                         break;
                     default:
                         break;
                 }
+
                 break;
+
             case SDL_MOUSEWHEEL:
                 if (event.wheel.y > 0) { // up
                     zoom_multiplier += ZOOM_STEP;
@@ -115,7 +120,9 @@ int main(void) {
                     zoom_multiplier -= ZOOM_STEP;
                     set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                 }
+
                 break;
+
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_e: // él létrehozás
