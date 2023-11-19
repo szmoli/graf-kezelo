@@ -2,6 +2,10 @@
  * @brief Ez a fájl tartalmazza a lista típus definíciókat.
  */
 
+#pragma once
+
+#include <stdbool.h>
+
 /**
  * @brief 2D-s pont
  * 
@@ -19,7 +23,11 @@ typedef struct Vertex_Data {
     int id;
     bool selected;
     Point center;
-    // int red, green, blue, alpha;
+    int red;
+    int green;
+    int blue;
+    int alpha;
+    int radius;
 } Vertex_Data;
 
 /**

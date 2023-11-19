@@ -22,3 +22,4 @@ void vertex_pointer_list_pop(Vertex_Pointer_List *list, Vertex_Pointer_Node *nod
 void print_vertex_list(Vertex_List *list);
 void print_edge_list(Edge_List *list);
 void print_vertex_pointer_list(Vertex_Pointer_List *list);
+Vertex_Pointer_Node *get_vertex_pointer_node(Vertex_Pointer_List *list, Vertex_Node *vertex_node);

@@ -10,7 +10,10 @@
  * @return Vertex_Node* A létrehozott listaelem címe
  */
 Vertex_Node *new_vertex_node() {
-    return (Vertex_Node *) malloc(sizeof(Vertex_Node));
+    Vertex_Node *node = (Vertex_Node *) malloc(sizeof(Vertex_Node));    
+    node->next_node = NULL;
+    // printf("next node: %p\n", node->next_node);
+    return node;
 }
 
 /**
@@ -19,7 +22,9 @@ Vertex_Node *new_vertex_node() {
  * @return Edge_Node* A létrehozott listaelem címe
  */
 Edge_Node *new_edge_node() {
-    return (Edge_Node *) malloc(sizeof(Edge_Node));
+    Edge_Node *node = (Edge_Node *) malloc(sizeof(Edge_Node));    
+    node->next_node = NULL;
+    return node;
 }
 
 /**
@@ -28,7 +33,9 @@ Edge_Node *new_edge_node() {
  * @return Vertex_Pointer_Node* A létrehozott listaelem címe
  */
 Vertex_Pointer_Node *new_vertex_pointer_node() {
-    return (Vertex_Pointer_Node *) malloc(sizeof(Vertex_Pointer_Node));
+    Vertex_Pointer_Node *node = (Vertex_Pointer_Node *) malloc(sizeof(Vertex_Pointer_Node));
+    node->next_node = NULL;
+    return node;
 }
 
 /**
@@ -197,10 +204,10 @@ void clear_vertex_pointer_list(Vertex_Pointer_List *list) {
  * @param node Listaelem címe
  */
 void vertex_list_push(Vertex_List *list, Vertex_Node *node) {
+    // node->next_node = NULL;
     if (list->head == NULL) list->head = node;
     if (list->tail != NULL) list->tail->next_node = node;    
     list->tail = node;
-    node->next_node = NULL;
     list->size++;
 }
 
@@ -211,10 +218,10 @@ void vertex_list_push(Vertex_List *list, Vertex_Node *node) {
  * @param node Listaelem címe
  */
 void edge_list_push(Edge_List *list, Edge_Node *node) {
+    // node->next_node = NULL;
     if (list->head == NULL) list->head = node;
     if (list->tail != NULL) list->tail->next_node = node;    
     list->tail = node;
-    node->next_node = NULL;
     list->size++;
 }
 
@@ -225,10 +232,10 @@ void edge_list_push(Edge_List *list, Edge_Node *node) {
  * @param node Listaelem címe
  */
 void vertex_pointer_list_push(Vertex_Pointer_List *list, Vertex_Pointer_Node *node) {
+    // node->next_node = NULL;
     if (list->head == NULL) list->head = node;
     if (list->tail != NULL) list->tail->next_node = node;    
     list->tail = node;
-    node->next_node = NULL;
     list->size++;
 }
 
@@ -364,4 +371,21 @@ void print_vertex_pointer_list(Vertex_Pointer_List *list) {
         printf("%d (%p)%s", iterator->vertex_node->vertex_data.id, iterator->vertex_node, iterator->next_node == NULL ? "\n" : " -> ");
         iterator = iterator->next_node;
     }
+}
+
+/**
+ * @brief Megkeresi egy Vertex_Pointer_List-ben a megadott Vertex_Node-ra mutató listaelemet
+ * 
+ * @param list A lista amiben keres
+ * @param vertex_node A Vertex_Node, amit keres
+ * @return Vertex_Pointer_Node* NULL, ha nem talált egyezést
+ */
+Vertex_Pointer_Node *get_vertex_pointer_node(Vertex_Pointer_List *list, Vertex_Node *vertex_node) {
+    Vertex_Pointer_Node *iterator = list->head;
+
+    while (iterator != NULL && iterator->vertex_node != vertex_node) {
+        iterator = iterator->next_node;
+    }
+
+    return iterator;
 }

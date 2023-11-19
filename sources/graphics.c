@@ -1,0 +1,249 @@
+/**
+ * @brief Grafikai műveletek
+ * 
+ */
+
+#include "graphics.h"
+
+/**
+ * @brief Bekonfigurálja az SDL-t a megadott változókra.
+ * 
+ * @param window Ablak változó.
+ * @param window_surface Ablak felület változó.
+ * @param renderer Renderer változó
+ * @return true Ha sikeres a konfigurálás.
+ * @return false Ha sikertelen a konfigurálás.
+ */
+bool config_sdl(SDL_Window **window, SDL_Surface **window_surface, SDL_Renderer **renderer) {
+    SDL_Init(SDL_INIT_EVERYTHING);
+
+    *window = SDL_CreateWindow("Gráfkezelő", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 720, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+
+    if (*window == NULL) {
+        fprintf(stderr, "%s: no window\n", __func__);
+        return false;
+    }
+
+    *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
+
+    if (*renderer == NULL) {
+        SDL_DestroyRenderer(*renderer);
+        *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_SOFTWARE);
+    }
+
+    if (*renderer == NULL) {
+        fprintf(stderr, "%s: no renderer\n", __func__);
+        return false;
+    }
+
+    *window_surface = SDL_GetWindowSurface(*window);
+
+    if (*window_surface == NULL) {
+        fprintf(stderr, "%s: no window surface\n", __func__);
+        return false;        
+    }
+
+    return true;
+}
+
+/**
+ * @brief Leállítja az SDL ablakot és a főciklus változóját false-ra állítja.
+ * 
+ * @param window Ablak változó.
+ * @param renderer Renderer változó.
+ * @param loop A főciklus bentmaradás feltételének változója.
+ */
+void quit_sdl(SDL_Window **window, SDL_Renderer **renderer, bool *loop) {
+    *loop = false;
+    SDL_DestroyRenderer(*renderer);
+    SDL_DestroyWindowSurface(*window);
+    SDL_DestroyWindow(*window);
+    SDL_Quit();
+}
+
+/**
+ * @brief Egy homogén koordinátát SDL-szerű koordinátává alakít.
+ * 
+ * @param point Pont, aminek a koordinátáit átalakítja
+ * @param window_surface Ablak felszín
+ */
+void transfrom_point(Point *point, SDL_Surface *window_surface) {
+    int half_x = window_surface->w / 2;
+    int half_y = window_surface->h / 2;    
+    point->x += half_x;
+    point->y += half_y;
+}
+
+/**
+ * @brief Visszaadja az ablak szélességét vagy magasságát attól függően, hogy melyik a nagyobb.
+ * 
+ * @param window_surface Ablakfelület változó
+ * @return int A nagyobb érték
+ */
+int get_max_size(SDL_Surface *window_surface) {
+    return window_surface->h > window_surface->w ? window_surface->w : window_surface->h;
+}
+
+/**
+ * @brief Létrehoz egy gráf pontot.
+ * 
+ * Létrehoz egy új vertex_node-ot és beállítja az adatait, majd hozzáadja a pontokat a létező pontokat tároló listához.
+ * 
+ * @param vertices Létező pontok listája
+ * @param vertex_id Az azonosítókat követő változó
+ */
+void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius) {
+    Vertex_Node *vertex_node = new_vertex_node();
+    vertex_node->vertex_data.id = vertex_id;
+    vertex_node->vertex_data.radius = radius;
+    vertex_node->vertex_data.selected = false;
+    vertex_node->vertex_data.red = VERTEX_R;
+    vertex_node->vertex_data.green = VERTEX_G;
+    vertex_node->vertex_data.blue = VERTEX_B;
+    vertex_node->vertex_data.alpha = VERTEX_ALPHA;
+    // printf("vertex node next: %p\n", vertex_node->next_node);
+    vertex_list_push(vertices, vertex_node);
+}
+
+/**
+ * @brief Beállítja a pontoknak a koordinátáit attól függően, hogy hány pont létezik.
+ * 
+ * A pontokat egy szabályos körben rendezi el, a pontok számától függően. A pontok elhelyezése függ az ablak méretétől, hogy mindig kiférjen az egész gráf
+ *
+ * @see transform_point
+ * 
+ * @param vertices Pontok listája
+ * @param window_surface Ablak felszín
+ * @param max_size Ablak mérete
+ * @param zoom_multiplier Zoom
+ * @param x_offset X elmozdulás
+ * @param y_offset Y elmozdulás
+ */
+void set_vertices_coords(Vertex_List *vertices, SDL_Surface *window_surface, int max_size, double zoom_multiplier, int x_offset, int y_offset) {
+    // printf("start\n");
+    double degree = (2 * PI) / vertices->size;
+    size_t degree_multiplier = 1;
+    Vertex_Node *iterator = vertices->head;
+    // printf("iterator: %p\n", iterator);
+
+    while (iterator != NULL) {
+        double double_x = cos(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier) + x_offset;
+        double double_y = sin(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier) + y_offset;
+        int x = (int) double_x;
+        int y = (int) double_y;
+        iterator->vertex_data.center.x = x;
+        iterator->vertex_data.center.y = y;
+
+        // printf("valtozok\n");
+
+        transfrom_point(&(iterator->vertex_data.center), window_surface);
+
+        // printf("transform point\n");
+
+        degree_multiplier++;
+        // printf("iterator next: %p\n", iterator->next_node);
+        iterator = iterator->next_node;
+        // printf("new iterator: %p\n", iterator);
+    }
+
+    // printf("coords set vege\n");
+}
+
+/**
+ * @brief Kiszámolja egy pont sugarát.
+ * 
+ * A pontok sugara függ az ablak mérettől, a zoomolástól és attól, hogy milyen típusú a pont.
+ * 
+ * @param max_size Képrenyő mérete
+ * @param mode_multiplier Pont típusának szorzója
+ * @param zoom_multiplier Zoom
+ * @return int A pont sugara
+ */
+int get_radius(int max_size, double mode_multiplier, double zoom_multiplier) {
+    return (int) (max_size * mode_multiplier * zoom_multiplier);
+}
+
+/**
+ * @brief Megrajzolja a gráfpontokat. Hasonló a draw_main_circle() függvényhez.
+ * 
+ * @param vertices A pontokat tartalmazó lista
+ * @see draw_main_circle
+ */
+void draw_vertices(Vertex_List *vertices, SDL_Renderer *renderer) {
+    Vertex_Node *iterator = vertices->head;
+
+    while (iterator != NULL) {
+        Point center = iterator->vertex_data.center;
+        Vertex_Data vd = iterator->vertex_data;
+
+        filledCircleRGBA(renderer, center.x, center.y, vd.radius, vd.red, vd.green, vd.blue, vd.alpha);
+        circleRGBA(renderer, center.x, center.y, vd.radius, SHADING_R, SHADING_G, SHADING_B, SHADING_ALPHA);
+        
+        iterator = iterator->next_node;
+    }
+}
+
+/**
+ * @brief Megkeresi azt a Vertex_Node-ot, amire kattintott a felhasználó.
+ * 
+ * @param event SDL_Event
+ * @param vertices Létező pontok listája
+ * @return Vertex_Node* 
+ */
+Vertex_Node *get_clicked_node(SDL_Event *event, Vertex_List *vertices) {
+    Point click = { .x = event->button.x, .y = event->button.y };
+    Vertex_Node *iterator = vertices->head;
+
+    while (iterator != NULL) {
+        Point center = iterator->vertex_data.center;
+        int radius = iterator->vertex_data.radius;
+        int min_x = center.x - radius;
+        int max_x = center.x + radius;
+        int min_y = center.y - radius;
+        int max_y = center.y + radius;
+
+        bool collision_x = click.x >= min_x && click.x <= max_x;
+        bool collision_y = click.y >= min_y && click.y <= max_y;
+        
+        if (collision_x && collision_y) return iterator;
+
+        iterator = iterator->next_node;
+    }
+
+    return iterator;
+}
+
+/**
+ * @brief Kijelöli a megadott Vertex_Node-ot
+ * 
+ * @param selection Kijelölt pontok listája
+ * @param vertex_node Pont
+ */
+void select_vertex(Vertex_Pointer_List *selection, Vertex_Node *vertex_node) {
+    vertex_node->vertex_data.selected = true;
+    vertex_node->vertex_data.red = SELECTED_R;
+    vertex_node->vertex_data.green = SELECTED_G;
+    vertex_node->vertex_data.blue = SELECTED_B;
+    vertex_node->vertex_data.alpha = SELECTED_ALPHA;
+    
+    Vertex_Pointer_Node *vp = new_vertex_pointer_node();
+    vp->vertex_node = vertex_node;
+    // printf("next: %p\n", vp->next_node);
+    vertex_pointer_list_push(selection, vp);
+}
+
+/**
+ * @brief Megszünteti a megadott Vertex_Node_Pointer által mutatott Vertex_Node kijelölését
+ * 
+ * @param selection Kijelölt pontok listája
+ * @param vertex_pointer_node Pont mutató
+ */
+void unselect_vertex(Vertex_Pointer_List *selection, Vertex_Pointer_Node *vertex_pointer_node) {
+    vertex_pointer_node->vertex_node->vertex_data.selected = false;
+    vertex_pointer_node->vertex_node->vertex_data.red = VERTEX_R;
+    vertex_pointer_node->vertex_node->vertex_data.green = VERTEX_G;
+    vertex_pointer_node->vertex_node->vertex_data.blue = VERTEX_B;
+    vertex_pointer_node->vertex_node->vertex_data.alpha = VERTEX_ALPHA;
+
+    vertex_pointer_list_pop(selection, vertex_pointer_node);
+}
