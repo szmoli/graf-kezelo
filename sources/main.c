@@ -101,6 +101,10 @@ void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
     }
 }
 
+void print_edge_node(Edge_Node *node) {
+    printf("%d (%p)%s%d (%p)%s", node->edge.from->vertex_data.id, node->edge.from, node->edge.directed ? " -> " : " <-> ", node->edge.to->vertex_data.id, node->edge.from, "\n");
+}
+
 /**
  * @brief 
  * @bug Ha három pont közt van húzva két él, akkor kitöröl két élt is egy helyett
@@ -113,6 +117,7 @@ void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
 void delete_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
     Edge_Node *iterator = edges->head;
     Edge_Node *previous = NULL;
+    // Edge_List *queue = new_edge_list();
 
     switch (directed) {
     case true:
@@ -127,16 +132,36 @@ void delete_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool dire
         break;
     
     case false:
-        while (iterator != NULL) {
-            previous = iterator;
-            iterator = iterator->next_node;
+        while (iterator != NULL && (!(iterator->edge.to == to && iterator->edge.from == from) && !(iterator->edge.from == to && iterator->edge.from == to))) {
+            // previous = iterator;
 
-            if ((previous->edge.to == to && previous->edge.from == from) || (previous->edge.from == to && previous->edge.from == to)) {
-                edge_list_pop(edges, previous);
-            }
+            // if ((iterator->edge.to == to && iterator->edge.from == from) || (iterator->edge.from == to && iterator->edge.from == to)) {
+            //     // edge_list_pop(edges, previous);
+            //     // edge_list_push(queue, iterator);
+            // }
+            
+            iterator = iterator->next_node;
         }
         break;
     }
+
+    printf("[delete edge] iterator:\n");
+    //print_edge_node(iterator);
+    printf("%p\n", iterator);
+    edge_list_pop(edges, iterator);
+    // printf("[delete edge] edge list:\n");
+    // print_edge_list(queue);
+    // printf("[delete edge] edge list vege\n");
+
+    // iterator = queue->head;
+
+    // while (iterator != NULL) {
+    //     printf
+    //     printf("[delete edge] popped\n");
+    //     iterator = iterator->next_node;
+    // }
+
+    // destroy_edge_list(queue);
 }
 
 int main(void) {
@@ -214,10 +239,15 @@ int main(void) {
 
                             printf("kijelolve: %p\n", clicked_node);
 
-                            printf("\n");
-                        } else if (clicked_node->vertex_data.selected) {
+                            printf("selection:\n");
+                            print_vertex_pointer_list(selection);
+                            printf("select vege\n");
+                        } else if (clicked_node->vertex_data.selected) { // kijelölés megszüntetése
                             unselect_vertex(selection, get_vertex_pointer_node(selection, clicked_node));
                             //! @bug selection tail nem nullazodik ki
+                            printf("selection:\n");
+                            print_vertex_pointer_list(selection);
+                            printf("\n");
                         }
                         break;
                     default:
@@ -261,7 +291,7 @@ int main(void) {
                         }
                         break;
 
-                    case SDLK_d:
+                    case SDLK_d: // él törlése
                         switch (selection->size) {
                         case 2:
                             Vertex_Node *from = selection->head->vertex_node;
