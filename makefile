@@ -7,7 +7,7 @@ C_SOURCES = $(addprefix $(SRC_DIR)/, main.c SDL2_gfxPrimitives.c SDL2_rotozoom.c
 OBJ_DIR = ./objects
 C_OBJECTS = $(addprefix $(OBJ_DIR)/, main.o SDL2_gfxPrimitives.o SDL2_rotozoom.o lists.o graphics.o)
 BIN = ./build.exe
-C_FLAGS = -std=$(STANDARD) $(INCLUDES) $(LIBS)
+C_FLAGS = -std=$(STANDARD) $(INCLUDES) $(LIBS) -g3
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(C_FLAGS) -c -o $@ $<

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.h"
+#include "debugmalloc.h"
 #include "lists.h"
 #include "SDL.h"
 #include "SDL2_gfxPrimitives.h"

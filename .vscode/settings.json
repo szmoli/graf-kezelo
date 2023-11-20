@@ -4,6 +4,7 @@
         "stdio.h": "c",
         "debugmalloc.h": "c",
         "lists.h": "c",
-        "list_types.h": "c"
+        "list_types.h": "c",
+        "graphics.h": "c"
     }
 }

@@ -34,85 +34,85 @@ void draw_edges(Edge_List *edges, SDL_Renderer *renderer) {
     }
 }
 
-bool has_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
-    Edge_Node *iterator = edges->head;
-    Edge_Node *previous = NULL;
+// bool has_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
+//     Edge_Node *iterator = edges->head;
+//     Edge_Node *previous = NULL;
 
-    switch (directed) {
-    case true:
-        while (iterator != NULL) {
-            previous = iterator;
-            iterator = iterator->next_node;
+//     switch (directed) {
+//     case true:
+//         while (iterator != NULL) {
+//             previous = iterator;
+//             iterator = iterator->next_node;
 
-            if (iterator->edge.to == to && iterator->edge.from == from) {
-                return true;
-            }
-        }
+//             if (iterator->edge.to == to && iterator->edge.from == from) {
+//                 return true;
+//             }
+//         }
 
-        return false;
-        break;
+//         return false;
+//         break;
     
-    case false:
-        while (iterator != NULL) {
-            previous = iterator;
-            iterator = iterator->next_node;
+//     case false:
+//         while (iterator != NULL) {
+//             previous = iterator;
+//             iterator = iterator->next_node;
 
-            // if (((previous->edge.to == to) && (previous->edge.from == from)) || ((previous->edge.from == to) && (previous->edge.from == to))) {
-            //     return true;
-            // }
+//             // if (((previous->edge.to == to) && (previous->edge.from == from)) || ((previous->edge.from == to) && (previous->edge.from == to))) {
+//             //     return true;
+//             // }
 
-            if (((previous->edge.to == to) && (previous->edge.from == from)) || ((previous->edge.to == from) && (previous->edge.from == to))) {
-                return true;
-            }
-        }
+//             if (((previous->edge.to == to) && (previous->edge.from == from)) || ((previous->edge.to == from) && (previous->edge.from == to))) {
+//                 return true;
+//             }
+//         }
 
-        return false;
-        break;
-    }
-}
+//         return false;
+//         break;
+//     }
+// }
 
-void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
-    Edge_Node *iterator = edges->head;
-    Edge_Node *previous = NULL;
+// void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
+//     Edge_Node *iterator = edges->head;
+//     Edge_Node *previous = NULL;
 
-    while (iterator != NULL) {
-        previous = iterator;
-        iterator = iterator->next_node;
+//     while (iterator != NULL) {
+//         previous = iterator;
+//         iterator = iterator->next_node;
 
-        if (iterator->edge.to == vertex_node || iterator->edge.from == vertex_node) {
-            edge_list_pop(edges, previous);
-        }
-    }
-}
+//         if (iterator->edge.to == vertex_node || iterator->edge.from == vertex_node) {
+//             edge_list_pop(edges, previous);
+//         }
+//     }
+// }
 
-void delete_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
-    Edge_Node *iterator = edges->head;
-    Edge_Node *previous = NULL;
+// void delete_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
+//     Edge_Node *iterator = edges->head;
+//     Edge_Node *previous = NULL;
 
-    switch (directed) {
-    case true:
-        while (iterator != NULL) {
-            previous = iterator;
-            iterator = iterator->next_node;
+//     switch (directed) {
+//     case true:
+//         while (iterator != NULL) {
+//             previous = iterator;
+//             iterator = iterator->next_node;
 
-            if (iterator->edge.to == to && iterator->edge.from == from) {
-                edge_list_pop(edges, previous);
-            }
-        }
-        break;
+//             if (iterator->edge.to == to && iterator->edge.from == from) {
+//                 edge_list_pop(edges, previous);
+//             }
+//         }
+//         break;
     
-    case false:
-        while (iterator != NULL) {
-            previous = iterator;
-            iterator = iterator->next_node;
+//     case false:
+//         while (iterator != NULL) {
+//             previous = iterator;
+//             iterator = iterator->next_node;
 
-            if ((previous->edge.to == to && previous->edge.from == from) || (previous->edge.from == to && previous->edge.from == to)) {
-                edge_list_pop(edges, previous);
-            }
-        }
-        break;
-    }
-}
+//             if ((previous->edge.to == to && previous->edge.from == from) || (previous->edge.from == to && previous->edge.from == to)) {
+//                 edge_list_pop(edges, previous);
+//             }
+//         }
+//         break;
+//     }
+// }
 
 int main(void) {
     printf("program eleje\n");
@@ -188,15 +188,17 @@ int main(void) {
                             //! @bug kijelölés random nem működik
                             select_vertex(selection, clicked_node);
 
-                            printf("kijelolve: %p\n", clicked_node);
+                            printf("kijelolve: %p\n\n", clicked_node);
 
                             // printf("selection:\n");
                             // print_vertex_pointer_list(selection);
                             // printf("select vege\n");
-                        } else if (clicked_node->vertex_data.selected) { // kijelölés megszüntetése
-                            unselect_vertex(selection, get_vertex_pointer_node(selection, clicked_node));
-
+                        } else if (clicked_node != NULL && clicked_node->vertex_data.selected) { // kijelölés megszüntetése
+                            printf("clicked node: %p\n", clicked_node);
+                            Vertex_Pointer_Node *vp = get_vertex_pointer_node(selection, clicked_node);
                             printf("kijeloles megszuntetve: %p\n", clicked_node);
+                            printf("vertex pointer: %p\n\n", vp);
+                            unselect_vertex(selection, vp);
 
                             //! @bug selection tail nem nullazodik ki
                             // printf("selection:\n");

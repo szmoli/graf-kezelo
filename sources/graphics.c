@@ -228,7 +228,6 @@ void select_vertex(Vertex_Pointer_List *selection, Vertex_Node *vertex_node) {
     
     Vertex_Pointer_Node *vp = new_vertex_pointer_node();
     vp->vertex_node = vertex_node;
-    // printf("next: %p\n", vp->next_node);
     vertex_pointer_list_push(selection, vp);
 }
 
