@@ -56,7 +56,6 @@ typedef struct Vertex_List {
 typedef struct Edge {
     Vertex_Node *from;
     Vertex_Node *to;
-    bool directed;
 } Edge;
 
 /**

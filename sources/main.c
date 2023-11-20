@@ -10,7 +10,6 @@
 
 void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
     Edge_Node *edge_node = new_edge_node();
-    edge_node->edge.directed = directed;
     edge_node->edge.to = to;
     edge_node->edge.from = from;
     edge_list_push(edges, edge_node);
@@ -34,42 +33,13 @@ void draw_edges(Edge_List *edges, SDL_Renderer *renderer) {
     }
 }
 
-// bool has_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
-//     Edge_Node *iterator = edges->head;
-//     Edge_Node *previous = NULL;
+Edge_Node *get_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from) {
+    Edge_Node *iterator = edges->head;
 
-//     switch (directed) {
-//     case true:
-//         while (iterator != NULL) {
-//             previous = iterator;
-//             iterator = iterator->next_node;
+    while (iterator != NULL && !((iterator->edge.from == from) && (iterator->edge.to == to))) iterator = iterator->next_node;
 
-//             if (iterator->edge.to == to && iterator->edge.from == from) {
-//                 return true;
-//             }
-//         }
-
-//         return false;
-//         break;
-    
-//     case false:
-//         while (iterator != NULL) {
-//             previous = iterator;
-//             iterator = iterator->next_node;
-
-//             // if (((previous->edge.to == to) && (previous->edge.from == from)) || ((previous->edge.from == to) && (previous->edge.from == to))) {
-//             //     return true;
-//             // }
-
-//             if (((previous->edge.to == to) && (previous->edge.from == from)) || ((previous->edge.to == from) && (previous->edge.from == to))) {
-//                 return true;
-//             }
-//         }
-
-//         return false;
-//         break;
-//     }
-// }
+    return iterator;
+}
 
 // void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
 //     Edge_Node *iterator = edges->head;
@@ -163,7 +133,7 @@ int main(void) {
                     case SDL_BUTTON_LEFT:
                         Vertex_Node *clicked_node = get_clicked_node(&event, vertices);
 
-                        if (clicked_node == NULL) { // kijelölés törlése
+                        if (clicked_node == NULL && selection->size != 0) { // kijelölés törlése
                             printf("clicked nothing\n");
                             printf("selection head: %p\n", selection->head);
                             printf("selection tail: %p\n", selection->tail);
@@ -185,27 +155,18 @@ int main(void) {
                                 printf("\n\n");
                             }
                         } else if (clicked_node != NULL && !(clicked_node->vertex_data.selected)) { // kijelölés
-                            //! @bug kijelölés random nem működik
                             select_vertex(selection, clicked_node);
 
                             printf("kijelolve: %p\n\n", clicked_node);
-
-                            // printf("selection:\n");
-                            // print_vertex_pointer_list(selection);
-                            // printf("select vege\n");
                         } else if (clicked_node != NULL && clicked_node->vertex_data.selected) { // kijelölés megszüntetése
                             printf("clicked node: %p\n", clicked_node);
                             Vertex_Pointer_Node *vp = get_vertex_pointer_node(selection, clicked_node);
                             printf("kijeloles megszuntetve: %p\n", clicked_node);
                             printf("vertex pointer: %p\n\n", vp);
                             unselect_vertex(selection, vp);
-
-                            //! @bug selection tail nem nullazodik ki
-                            // printf("selection:\n");
-                            // print_vertex_pointer_list(selection);
-                            // printf("\n");
                         }
                         break;
+
                     default:
                         break;
                 }
@@ -230,7 +191,13 @@ int main(void) {
                         case 2:
                             Vertex_Node *from = selection->head->vertex_node;
                             Vertex_Node *to = selection->head->next_node->vertex_node;
-                            create_edge(edges, to, from, false);
+
+                            if (has_edge(edges, to, from) == NULL) {
+                                create_edge(edges, to, from, false);
+                            } else {
+                                printf("mar van el koztuk\n\n");
+                            }
+
                             break;
 
                         default:
@@ -239,6 +206,12 @@ int main(void) {
                         }
 
                         break;
+
+                    case SDLK_d: // él törlése
+                        
+
+                        break;
+
                     case SDLK_v: // vertex létrehozás
                         create_vertex(vertices, vertex_id, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1));
                         print_vertex_list(vertices);

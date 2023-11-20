@@ -346,7 +346,7 @@ void print_edge_list(Edge_List *list) {
     if (iterator == NULL) return;
 
     while (iterator != NULL) {
-        printf("(%d (%p)%s%d (%p)%s)", iterator->edge.from->vertex_data.id, iterator->edge.from, iterator->edge.directed ? " -> " : " <-> ", iterator->edge.to->vertex_data.id, iterator->edge.from, iterator->next_node == NULL ? "\n" : " -> ");
+        printf("(%d (%p)%s%d (%p)%s)", iterator->edge.from->vertex_data.id, iterator->edge.from, " -> ", iterator->edge.to->vertex_data.id, iterator->edge.from, "\n");
         iterator = iterator->next_node;
     }
 }
