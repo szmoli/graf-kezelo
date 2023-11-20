@@ -234,19 +234,23 @@ int main(void) {
                                 printf("\n\n");
                             }
                         } else if (clicked_node != NULL && !(clicked_node->vertex_data.selected)) { // kijelölés
+                            //! @bug kijelölés random nem működik
                             select_vertex(selection, clicked_node);
 
                             printf("kijelolve: %p\n", clicked_node);
 
-                            printf("selection:\n");
-                            print_vertex_pointer_list(selection);
-                            printf("select vege\n");
+                            // printf("selection:\n");
+                            // print_vertex_pointer_list(selection);
+                            // printf("select vege\n");
                         } else if (clicked_node->vertex_data.selected) { // kijelölés megszüntetése
                             unselect_vertex(selection, get_vertex_pointer_node(selection, clicked_node));
+
+                            printf("kijeloles megszuntetve: %p\n", clicked_node);
+
                             //! @bug selection tail nem nullazodik ki
-                            printf("selection:\n");
-                            print_vertex_pointer_list(selection);
-                            printf("\n");
+                            // printf("selection:\n");
+                            // print_vertex_pointer_list(selection);
+                            // printf("\n");
                         }
                         break;
                     default:
