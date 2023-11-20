@@ -258,9 +258,6 @@ void vertex_list_pop(Vertex_List *list, Vertex_Node *node) {
 
     if (iterator == list->head) {
         list->head = iterator->next_node;
-    } else if (iterator == list->tail) {
-        previous->next_node = iterator->next_node;
-        list->tail = previous;
     } else if (iterator != NULL) {
         previous->next_node = iterator->next_node;
     }
@@ -289,9 +286,6 @@ void edge_list_pop(Edge_List *list, Edge_Node *node) {
 
     if (iterator == list->head) {
         list->head = iterator->next_node;
-    } else if (iterator == list->tail) {
-        previous->next_node = iterator->next_node;
-        list->tail = previous;
     } else if (iterator != NULL) {
         previous->next_node = iterator->next_node;
     }
@@ -320,9 +314,6 @@ void vertex_pointer_list_pop(Vertex_Pointer_List *list, Vertex_Pointer_Node *nod
 
     if (iterator == list->head) {
         list->head = iterator->next_node;
-    } else if (iterator == list->tail) {
-        previous->next_node = iterator->next_node;
-        list->tail = previous;
     } else if (iterator != NULL) {
         previous->next_node = iterator->next_node;
     }
@@ -361,7 +352,7 @@ void print_edge_list(Edge_List *list) {
     if (iterator == NULL) return;
 
     while (iterator != NULL) {
-        printf("%d (%p)%s%d (%p)%s", iterator->edge.from->vertex_data.id, iterator->edge.from, iterator->edge.directed ? " -> " : " <-> ", iterator->edge.to->vertex_data.id, iterator->edge.from, "\n");
+        printf("(%d (%p)%s%d (%p)%s)", iterator->edge.from->vertex_data.id, iterator->edge.from, iterator->edge.directed ? " -> " : " <-> ", iterator->edge.to->vertex_data.id, iterator->edge.from, iterator->next_node == NULL ? "\n" : " -> ");
         iterator = iterator->next_node;
     }
 }

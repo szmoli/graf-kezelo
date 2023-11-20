@@ -8,14 +8,6 @@
 #include <stdbool.h>
 #include <memory.h>
 
-/**
- * @brief Létrehoz egy gráf élt
- * 
- * @param edges Létező élek listája
- * @param to Vertex_Node amibe megy az él
- * @param from Vertex_Node amiből megy az él
- * @param directed Irányított él-e?
- */
 void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
     Edge_Node *edge_node = new_edge_node();
     edge_node->edge.directed = directed;
@@ -24,13 +16,6 @@ void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool dire
     edge_list_push(edges, edge_node);
 }
 
-/**
- * @brief Kirajzolja a gráf éleit
- * @todo Directed rajzolás
- * 
- * @param edges Létező élek listája
- * @param renderer SDL_Renderer
- */
 void draw_edges(Edge_List *edges, SDL_Renderer *renderer) {
     Edge_Node *iterator = edges->head;
 
@@ -100,23 +85,9 @@ void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
     }
 }
 
-void print_edge_node(Edge_Node *node) {
-    printf("%d (%p)%s%d (%p)%s", node->edge.from->vertex_data.id, node->edge.from, node->edge.directed ? " -> " : " <-> ", node->edge.to->vertex_data.id, node->edge.from, "\n");
-}
-
-/**
- * @brief 
- * @bug Ha három pont közt van húzva két él, akkor kitöröl két élt is egy helyett
- * 
- * @param edges 
- * @param to 
- * @param from 
- * @param directed 
- */
 void delete_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
     Edge_Node *iterator = edges->head;
     Edge_Node *previous = NULL;
-    // Edge_List *queue = new_edge_list();
 
     switch (directed) {
     case true:
@@ -131,36 +102,16 @@ void delete_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool dire
         break;
     
     case false:
-        while (iterator != NULL && (!(iterator->edge.to == to && iterator->edge.from == from) && !(iterator->edge.from == to && iterator->edge.from == to))) {
-            // previous = iterator;
-
-            // if ((iterator->edge.to == to && iterator->edge.from == from) || (iterator->edge.from == to && iterator->edge.from == to)) {
-            //     // edge_list_pop(edges, previous);
-            //     // edge_list_push(queue, iterator);
-            // }
-            
+        while (iterator != NULL) {
+            previous = iterator;
             iterator = iterator->next_node;
+
+            if ((previous->edge.to == to && previous->edge.from == from) || (previous->edge.from == to && previous->edge.from == to)) {
+                edge_list_pop(edges, previous);
+            }
         }
         break;
     }
-
-    printf("[delete edge] iterator:\n");
-    //print_edge_node(iterator);
-    printf("%p\n", iterator);
-    edge_list_pop(edges, iterator);
-    // printf("[delete edge] edge list:\n");
-    // print_edge_list(queue);
-    // printf("[delete edge] edge list vege\n");
-
-    // iterator = queue->head;
-
-    // while (iterator != NULL) {
-    //     printf
-    //     printf("[delete edge] popped\n");
-    //     iterator = iterator->next_node;
-    // }
-
-    // destroy_edge_list(queue);
 }
 
 int main(void) {
@@ -277,55 +228,15 @@ int main(void) {
                         case 2:
                             Vertex_Node *from = selection->head->vertex_node;
                             Vertex_Node *to = selection->head->next_node->vertex_node;
-
-                            if (!has_edge(edges, to, from, false)) {
-                                create_edge(edges, to, from, false);
-                                printf("edges: ");
-                                print_edge_list(edges);
-                                printf("\n");
-                            } else {
-                                printf("%d <-> %d\n\n", from->vertex_data.id, to->vertex_data.id);
-                            }
+                            create_edge(edges, to, from, false);
                             break;
 
                         default:
                             printf("nem megfelelo szamu pont kijelolve\n\n");
                             break;
                         }
+
                         break;
-
-                    case SDLK_d: // él törlése
-                        switch (selection->size) {
-                        case 2:
-                            Vertex_Node *from = selection->head->vertex_node;
-                            Vertex_Node *to = selection->head->next_node->vertex_node;
-                            delete_edge(edges, to, from, false);
-                            printf("edges:\n");
-                            print_edge_list(edges);
-                            printf("\n");
-                            break;
-
-                        default:
-                            printf("nem megfelelo szamu pont kijelolve\n\n");
-                            break;
-                        }
-                        break;
-
-                    case SDLK_a: // minden él törlése
-                        switch (selection->size) {
-                        case 1:
-                            delete_all_edges(edges, selection->head->vertex_node);
-                            printf("edges:\n");
-                            print_edge_list(edges);
-                            printf("\n");
-                            break;
-
-                        default:
-                            printf("nem megfelelo szamu pont kijelolve\n\n");
-                            break;
-                        }
-                        break;
-
                     case SDLK_v: // vertex létrehozás
                         create_vertex(vertices, vertex_id, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1));
                         print_vertex_list(vertices);

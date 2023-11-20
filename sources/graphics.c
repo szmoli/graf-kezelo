@@ -178,7 +178,6 @@ void draw_vertices(Vertex_List *vertices, SDL_Renderer *renderer) {
 
         filledCircleRGBA(renderer, center.x, center.y, vd.radius, vd.red, vd.green, vd.blue, vd.alpha);
         circleRGBA(renderer, center.x, center.y, vd.radius, SHADING_R, SHADING_G, SHADING_B, SHADING_ALPHA);
-
         
         iterator = iterator->next_node;
     }
