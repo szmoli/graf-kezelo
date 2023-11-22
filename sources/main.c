@@ -8,31 +8,62 @@
 #include <stdbool.h>
 #include <memory.h>
 
+/**
+ * @brief Létrehoz egy gráf élt
+ * @todo Megcsinálni az irányított éleket
+ * 
+ * @param edges Létező élek listája
+ * @param to Melyik pontból
+ * @param from Melyik pontba
+ * @param directed Irányított él-e?
+ */
 void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
     Edge_Node *edge_node = new_edge_node();
     edge_node->edge.to = to;
     edge_node->edge.from = from;
+    edge_node->edge.directed = false;
+    edge_node->edge.red = EDGE_R;
+    edge_node->edge.green = EDGE_G;
+    edge_node->edge.blue = EDGE_B;
+    edge_node->edge.alpha = EDGE_ALPHA;
+    edge_node->edge.width = EDGE_W;
     edge_list_push(edges, edge_node);
 }
 
+/**
+ * @brief Kirajzolja az éleket
+ * @todo Irányított élek kirajzolása
+ * 
+ * @param edges Létező élek listája
+ * @param renderer SDL_Renderer
+ */
 void draw_edges(Edge_List *edges, SDL_Renderer *renderer) {
     Edge_Node *iterator = edges->head;
 
     while (iterator != NULL) {
         Point center_to = iterator->edge.to->vertex_data.center;
         Point center_from = iterator->edge.from->vertex_data.center;
+        Edge edge = iterator->edge;
 
         int x_to = center_to.x;
         int y_to = center_to.y;
         int x_from = center_from.x;
         int y_from = center_from.y;
 
-        thickLineRGBA(renderer, x_to, y_to, x_from, y_from, EDGE_W, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA);
+        thickLineRGBA(renderer, x_to, y_to, x_from, y_from, edge.width, edge.red, edge.green, edge.blue, edge.alpha);
 
         iterator = iterator->next_node;
     }
 }
 
+/**
+ * @brief Megkeresi a két pont közt húzott élt
+ * 
+ * @param edges Létező élek listája
+ * @param to Melyik pontból
+ * @param from Melyik pontba
+ * @return Edge_Node* NULL, ha nincs köztük él
+ */
 Edge_Node *get_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from) {
     Edge_Node *iterator = edges->head;
 
@@ -40,49 +71,6 @@ Edge_Node *get_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from) {
 
     return iterator;
 }
-
-// void delete_all_edges(Edge_List *edges, Vertex_Node *vertex_node) {
-//     Edge_Node *iterator = edges->head;
-//     Edge_Node *previous = NULL;
-
-//     while (iterator != NULL) {
-//         previous = iterator;
-//         iterator = iterator->next_node;
-
-//         if (iterator->edge.to == vertex_node || iterator->edge.from == vertex_node) {
-//             edge_list_pop(edges, previous);
-//         }
-//     }
-// }
-
-// void delete_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
-//     Edge_Node *iterator = edges->head;
-//     Edge_Node *previous = NULL;
-
-//     switch (directed) {
-//     case true:
-//         while (iterator != NULL) {
-//             previous = iterator;
-//             iterator = iterator->next_node;
-
-//             if (iterator->edge.to == to && iterator->edge.from == from) {
-//                 edge_list_pop(edges, previous);
-//             }
-//         }
-//         break;
-    
-//     case false:
-//         while (iterator != NULL) {
-//             previous = iterator;
-//             iterator = iterator->next_node;
-
-//             if ((previous->edge.to == to && previous->edge.from == from) || (previous->edge.from == to && previous->edge.from == to)) {
-//                 edge_list_pop(edges, previous);
-//             }
-//         }
-//         break;
-//     }
-// }
 
 int main(void) {
     printf("program eleje\n");
@@ -184,15 +172,40 @@ int main(void) {
 
                 break;
 
+            case SDL_KEYUP:
+                switch (event.key.keysym.sym) {
+                    case SDLK_LALT:
+                        SDL_SetModState(KMOD_NONE);
+                        break;
+
+                    case SDLK_LCTRL:
+                        SDL_SetModState(KMOD_NONE);
+                        break;
+
+                    default:
+                        break;
+                }
+
+                break;
+
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
+                    case SDLK_LALT:
+                        SDL_SetModState(KMOD_ALT);
+                        break;
+
+                    case SDLK_LCTRL:
+                        SDL_SetModState(KMOD_CTRL);
+                        break;
+
+                    //! @bug második él csinálásnál meghal a progi
                     case SDLK_e: // él létrehozás
                         switch (selection->size) {
                         case 2:
                             Vertex_Node *from = selection->head->vertex_node;
                             Vertex_Node *to = selection->head->next_node->vertex_node;
 
-                            if (has_edge(edges, to, from) == NULL) {
+                            if (get_edge(edges, to, from) == NULL) {
                                 create_edge(edges, to, from, false);
                             } else {
                                 printf("mar van el koztuk\n\n");
@@ -207,8 +220,52 @@ int main(void) {
 
                         break;
 
+                    //! @bug lecrashel, mert nem nezzuk a selection sizet a deletenel: ha alt + d akkor a size 1 kell legyen, ha sima d, akkor pedig 2 kell legyen
                     case SDLK_d: // él törlése
-                        
+
+                        switch (SDL_GetModState()) {
+                            case KMOD_NONE:
+                                switch (selection->size) {
+                                    case 2:
+                                        Vertex_Node *from = selection->head->vertex_node;
+                                        Vertex_Node *to = selection->head->next_node->vertex_node;
+                                        edge_list_pop(edges, get_edge(edges, to, from));
+                                        break;
+                                    
+                                    default:
+                                        printf("nem megfelelo kijeloles\n");
+                                        break;
+                                }
+                                
+                                break;
+
+                            case KMOD_ALT:
+                                switch (selection->size) {
+                                    case 1:
+                                        Vertex_Node *from = selection->head->vertex_node;
+                                        
+                                        Edge_Node *iterator = edges->head;
+                                        Edge_Node *previous = NULL;
+
+                                        //! @bug lehet bug idk
+                                        while (iterator != NULL) {
+                                            previous = iterator;
+                                            iterator = iterator->next_node;
+                                            edge_list_pop(edges, previous);
+                                        }
+
+                                        break;
+                                    
+                                    default:
+                                        printf("nem megfelelo kijeloles\n");
+                                        break;
+                                }
+                                
+                                break;
+                            
+                            default:
+                                break;
+                        }
 
                         break;
 
