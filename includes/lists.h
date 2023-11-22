@@ -1,5 +1,5 @@
 #include "debugmalloc.h"
-#include "list_types.h"
+#include "typedefs.h"
 
 Vertex_Node *new_vertex_node();
 Edge_Node *new_edge_node();

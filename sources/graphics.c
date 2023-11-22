@@ -246,3 +246,67 @@ void unselect_vertex(Vertex_Pointer_List *selection, Vertex_Pointer_Node *vertex
 
     vertex_pointer_list_pop(selection, vertex_pointer_node);
 }
+
+/**
+ * @brief Létrehoz egy gráf élt
+ * @todo Megcsinálni az irányított éleket
+ * 
+ * @param edges Létező élek listája
+ * @param to Melyik pontból
+ * @param from Melyik pontba
+ * @param directed Irányított él-e?
+ */
+void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
+    Edge_Node *edge_node = new_edge_node();
+    edge_node->edge.to = to;
+    edge_node->edge.from = from;
+    edge_node->edge.directed = false;
+    edge_node->edge.red = EDGE_R;
+    edge_node->edge.green = EDGE_G;
+    edge_node->edge.blue = EDGE_B;
+    edge_node->edge.alpha = EDGE_ALPHA;
+    edge_node->edge.width = EDGE_W;
+    edge_list_push(edges, edge_node);
+}
+
+/**
+ * @brief Kirajzolja az éleket
+ * @todo Irányított élek kirajzolása
+ * 
+ * @param edges Létező élek listája
+ * @param renderer SDL_Renderer
+ */
+void draw_edges(Edge_List *edges, SDL_Renderer *renderer) {
+    Edge_Node *iterator = edges->head;
+
+    while (iterator != NULL) {
+        Point center_to = iterator->edge.to->vertex_data.center;
+        Point center_from = iterator->edge.from->vertex_data.center;
+        Edge edge = iterator->edge;
+
+        int x_to = center_to.x;
+        int y_to = center_to.y;
+        int x_from = center_from.x;
+        int y_from = center_from.y;
+
+        thickLineRGBA(renderer, x_to, y_to, x_from, y_from, edge.width, edge.red, edge.green, edge.blue, edge.alpha);
+
+        iterator = iterator->next_node;
+    }
+}
+
+/**
+ * @brief Megkeresi a két pont közt húzott élt
+ * 
+ * @param edges Létező élek listája
+ * @param to Melyik pontból
+ * @param from Melyik pontba
+ * @return Edge_Node* NULL, ha nincs köztük él
+ */
+Edge_Node *get_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from) {
+    Edge_Node *iterator = edges->head;
+
+    while (iterator != NULL && !((iterator->edge.from == from) && (iterator->edge.to == to))) iterator = iterator->next_node;
+
+    return iterator;
+}
