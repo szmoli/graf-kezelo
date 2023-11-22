@@ -207,8 +207,17 @@ void clear_vertex_pointer_list(Vertex_Pointer_List *list) {
  * @param node Listaelem címe
  */
 void vertex_list_push(Vertex_List *list, Vertex_Node *node) {
-    if (list->tail != NULL) list->tail->next_node = node;
-    if (list->head == NULL) list->head = node;  
+    Vertex_Node *iterator = list->head;
+    Vertex_Node *previous = NULL;
+
+    while (iterator != NULL) {
+        previous = iterator;
+        iterator = iterator->next_node;
+    }
+
+    if (list->head == NULL) list->head = node;
+    else if (previous == list->head && list->head != NULL) list->head->next_node = node;
+    if (list->tail != NULL) list->tail->next_node = node;    
     list->tail = node;
     list->size++;
 }
@@ -220,8 +229,17 @@ void vertex_list_push(Vertex_List *list, Vertex_Node *node) {
  * @param node Listaelem címe
  */
 void edge_list_push(Edge_List *list, Edge_Node *node) {
-    if (list->tail != NULL) list->tail->next_node = node;
-    if (list->head == NULL) list->head = node;  
+    Edge_Node *iterator = list->head;
+    Edge_Node *previous = NULL;
+
+    while (iterator != NULL) {
+        previous = iterator;
+        iterator = iterator->next_node;
+    }
+
+    if (list->head == NULL) list->head = node;
+    else if (previous == list->head && list->head != NULL) list->head->next_node = node;
+    if (list->tail != NULL) list->tail->next_node = node;    
     list->tail = node;
     list->size++;
 }
@@ -233,8 +251,23 @@ void edge_list_push(Edge_List *list, Edge_Node *node) {
  * @param node Listaelem címe
  */
 void vertex_pointer_list_push(Vertex_Pointer_List *list, Vertex_Pointer_Node *node) {
-    if (list->tail != NULL) list->tail->next_node = node;
-    if (list->head == NULL) list->head = node;  
+    Vertex_Pointer_Node *iterator = list->head;
+    Vertex_Pointer_Node *previous = NULL;
+
+    while (iterator != NULL) {
+        previous = iterator;
+        iterator = iterator->next_node;
+    }
+
+    // ha previous == NULL, akkor vagy nincs head node vagy az elso nodenal alltunk meg ilyenkor az elozo nodeot nem kell allitanunk semmire
+    // ha van head node, akkor annak a kovetkezojet allitjuk az ujra
+    // ha nincs headnode, akkor az uj lesz a head node
+
+    // ha previous != NULL, akkor a lista valamelyik elemen alltunk meg, ami nem az elso, ilyenkor previous next nodejat allitjuk az uj nodera
+
+    if (list->head == NULL) list->head = node;
+    else if (previous == list->head && list->head != NULL) list->head->next_node = node;
+    if (list->tail != NULL) list->tail->next_node = node;    
     list->tail = node;
     list->size++;
 }
@@ -257,10 +290,7 @@ void vertex_list_pop(Vertex_List *list, Vertex_Node *node) {
     }
 
     if (iterator == NULL) return;
-    if (iterator == list->tail) {
-        list->tail = previous;
-        list->tail->next_node = iterator->next_node;
-    }
+    if (iterator == list->tail) list->tail = iterator->next_node;
     if (iterator == list->head) list->head = iterator->next_node;    
     if (previous != NULL) previous->next_node = iterator->next_node;
 
@@ -287,10 +317,7 @@ void edge_list_pop(Edge_List *list, Edge_Node *node) {
     }
 
     if (iterator == NULL) return;
-    if (iterator == list->tail) {
-        list->tail = previous;
-        list->tail->next_node = iterator->next_node;
-    }
+    if (iterator == list->tail) list->tail = iterator->next_node;
     if (iterator == list->head) list->head = iterator->next_node;    
     if (previous != NULL) previous->next_node = iterator->next_node;
 
@@ -317,10 +344,7 @@ void vertex_pointer_list_pop(Vertex_Pointer_List *list, Vertex_Pointer_Node *nod
     }
 
     if (iterator == NULL) return;
-    if (iterator == list->tail) {
-        list->tail = previous;
-        list->tail->next_node = iterator->next_node;
-    }
+    if (iterator == list->tail) list->tail = iterator->next_node;
     if (iterator == list->head) list->head = iterator->next_node;    
     if (previous != NULL) previous->next_node = iterator->next_node;
 

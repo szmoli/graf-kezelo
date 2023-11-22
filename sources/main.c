@@ -118,7 +118,7 @@ int main(void) {
                         } else if (clicked_node != NULL && !(clicked_node->vertex_data.selected)) { // kijelölés
                             select_vertex(selection, clicked_node);
 
-                            printf("kijelolve: %d (%p)\n\n", clicked_node->vertex_data.id, clicked_node);
+                            printf("kijelolve: %p\n\n", clicked_node);
                         } else if (clicked_node != NULL && clicked_node->vertex_data.selected) { // kijelölés megszüntetése
                             printf("clicked node: %p\n", clicked_node);
                             Vertex_Pointer_Node *vp = get_vertex_pointer_node(selection, clicked_node);
@@ -188,10 +188,6 @@ int main(void) {
                         SDL_SetModState(KMOD_CTRL);
                         break;
 
-                    case SDLK_a: // debug
-                        printf("breakpoint\n");
-                        break;
-
                     case SDLK_e: // él létrehozás
                         switch (selection->size) {
                         case 2:
@@ -213,6 +209,7 @@ int main(void) {
 
                         break;
 
+                    //! @bug ha az utoljara letrehozott nodeot toroljuk, akkor nem mukodik az uj nodeok letrehozasa
                     case SDLK_DELETE:
                         Vertex_Pointer_Node *selection_iterator = selection->head;
                         Vertex_Pointer_Node *selection_previous = NULL;
