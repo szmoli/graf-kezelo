@@ -256,13 +256,31 @@ void vertex_list_pop(Vertex_List *list, Vertex_Node *node) {
         iterator = iterator->next_node;
     }
 
-    if (iterator == NULL) return;
-    if (iterator == list->tail) {
-        list->tail = previous;
-        list->tail->next_node = iterator->next_node;
+    if (iterator == NULL) {
+        return;
     }
-    if (iterator == list->head) list->head = iterator->next_node;    
-    if (previous != NULL) previous->next_node = iterator->next_node;
+
+    //if (iterator != NULL && previous != NULL) {
+    if (previous != NULL) {
+        previous->next_node = iterator->next_node;
+    }
+
+    //if (iterator != NULL && previous == NULL) {
+    if (previous == NULL) {
+        list->head = iterator->next_node;
+    }
+
+    if (iterator->next_node == NULL) {
+        list->tail = previous;
+    }
+
+    // if (iterator == NULL) return;
+    // if (iterator == list->tail) {
+    //     list->tail = previous;
+    //     list->tail->next_node = iterator->next_node;
+    // }
+    // if (iterator == list->head) list->head = iterator->next_node;    
+    // if (previous != NULL) previous->next_node = iterator->next_node;
 
     list->size--;
     free(iterator);
@@ -286,13 +304,23 @@ void edge_list_pop(Edge_List *list, Edge_Node *node) {
         iterator = iterator->next_node;
     }
 
-    if (iterator == NULL) return;
-    if (iterator == list->tail) {
-        list->tail = previous;
-        list->tail->next_node = iterator->next_node;
+    if (iterator == NULL) {
+        return;
     }
-    if (iterator == list->head) list->head = iterator->next_node;    
-    if (previous != NULL) previous->next_node = iterator->next_node;
+
+    //if (iterator != NULL && previous != NULL) {
+    if (previous != NULL) {
+        previous->next_node = iterator->next_node;
+    }
+
+    //if (iterator != NULL && previous == NULL) {
+    if (previous == NULL) {
+        list->head = iterator->next_node;
+    }
+
+    if (iterator->next_node == NULL) {
+        list->tail = previous;
+    }
 
     list->size--;
     free(iterator);
@@ -316,13 +344,23 @@ void vertex_pointer_list_pop(Vertex_Pointer_List *list, Vertex_Pointer_Node *nod
         iterator = iterator->next_node;
     }
 
-    if (iterator == NULL) return;
-    if (iterator == list->tail) {
-        list->tail = previous;
-        list->tail->next_node = iterator->next_node;
+    if (iterator == NULL) {
+        return;
     }
-    if (iterator == list->head) list->head = iterator->next_node;    
-    if (previous != NULL) previous->next_node = iterator->next_node;
+
+    //if (iterator != NULL && previous != NULL) {
+    if (previous != NULL) {
+        previous->next_node = iterator->next_node;
+    }
+
+    //if (iterator != NULL && previous == NULL) {
+    if (previous == NULL) {
+        list->head = iterator->next_node;
+    }
+
+    if (iterator->next_node == NULL) {
+        list->tail = previous;
+    }
 
     list->size--;
     free(iterator);
