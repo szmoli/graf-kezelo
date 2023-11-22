@@ -72,6 +72,14 @@ Edge_Node *get_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from) {
     return iterator;
 }
 
+// Edge_Node *get_edge_undirected(Edge_List *edges, Vertex_Node *to, Vertex_Node *from) {
+//     Edge_Node *iterator = edges->head;
+
+//     while (iterator != NULL && !(((iterator->edge.from == from) && (iterator->edge.to == to)) || ((iterator->edge.from == to) && (iterator->edge.to == from)))) iterator = iterator->next_node;
+
+//     return iterator;
+// }
+
 int main(void) {
     printf("program eleje\n");
 
@@ -216,6 +224,34 @@ int main(void) {
                         default:
                             printf("nem megfelelo szamu pont kijelolve\n\n");
                             break;
+                        }
+
+                        break;
+
+                    //! @bug lehet bug idk
+                    case SDLK_DELETE:
+                        Vertex_Pointer_Node *selection_iterator = selection->head;
+                        Vertex_Pointer_Node *selection_previous = NULL;
+
+                        while (selection_iterator != NULL) {
+                            selection_previous = selection_iterator;
+                            selection_iterator = selection_iterator->next_node;
+
+                            Edge_Node *edges_iterator = edges->head;
+                            Edge_Node *edges_previous = NULL;
+
+                            while (edges_iterator != NULL) {
+                                edges_previous = edges_iterator;
+                                edges_iterator = edges_iterator->next_node;
+
+                                if (edges_previous->edge.to == selection_previous->vertex_node || edges_previous->edge.from == selection_previous->vertex_node) {
+                                    edge_list_pop(edges, edges_previous);
+                                }
+                            }
+
+                            vertex_list_pop(vertices, selection_previous->vertex_node);
+                            vertex_pointer_list_pop(selection, selection_previous);
+                            set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                         }
 
                         break;

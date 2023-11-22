@@ -28,7 +28,7 @@
 #define EDGE_G 120
 #define EDGE_B 121
 #define EDGE_ALPHA 200
-#define EDGE_W 1
+#define EDGE_W 3
 #define SHADING_R 0
 #define SHADING_G 0
 #define SHADING_B 0
