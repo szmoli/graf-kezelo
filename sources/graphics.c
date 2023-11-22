@@ -256,11 +256,10 @@ void unselect_vertex(Vertex_Pointer_List *selection, Vertex_Pointer_Node *vertex
  * @param from Melyik pontba
  * @param directed Irányított él-e?
  */
-void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed) {
+void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from) {
     Edge_Node *edge_node = new_edge_node();
     edge_node->edge.to = to;
     edge_node->edge.from = from;
-    edge_node->edge.directed = false;
     edge_node->edge.red = EDGE_R;
     edge_node->edge.green = EDGE_G;
     edge_node->edge.blue = EDGE_B;

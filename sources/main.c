@@ -3,10 +3,47 @@
 #include "lists.h"
 #include "graphics.h"
 #include "SDL.h"
-#include "SDL2_gfxPrimitives.h"
 
 #include <stdbool.h>
 #include <memory.h>
+
+void save_vertex_list(Vertex_List *list) {
+    Vertex_Node *iterator = list->head;
+
+    while (iterator != NULL) {
+        Vertex_Data vd = iterator->vertex_data;
+
+        // id, selected, center x, center y, red, green, blue, alpha, radius
+        printf("%c,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", VERTEX_SAVE_HEADER, vd.id, vd.selected ? 1 : 0, vd.center.x, vd.center.y, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA, vd.radius);
+
+        iterator = iterator->next_node;
+    }
+}
+
+void save_edge_list(Edge_List *list) {
+    Edge_Node *iterator = list->head;
+
+    while (iterator != NULL) {
+        Edge edge = iterator->edge;
+        Vertex_Data vd_to = edge.to->vertex_data;
+        Vertex_Data vd_from = edge.from->vertex_data;
+
+        // from, to, red, green, blue, alpha, width
+        printf("%c,%d,%d,%d,%d,%d,%d,%d,%d\n", EDGE_SAVE_HEADER, vd_from.id, vd_to.id, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA, EDGE_W);
+
+        iterator = iterator->next_node;
+    }
+}
+
+void save_vertex_pointer_list(Vertex_Pointer_List *list) {
+    Vertex_Pointer_Node *iterator = list->head;
+
+    while (iterator != NULL) {
+        Vertex_Data vd = iterator->vertex_node->vertex_data;
+        printf("%c,%d\n", SELECTION_SAVE_HEADER, vd.id);
+        iterator = iterator->next_node;
+    }    
+}
 
 int main(void) {
     printf("program eleje\n");
@@ -126,6 +163,23 @@ int main(void) {
 
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
+                    case SDLK_s:
+                        switch (SDL_GetModState()) {
+                            case KMOD_CTRL:
+                                save_vertex_list(vertices);
+                                printf("\n");
+                                save_edge_list(edges);
+                                printf("\n");
+                                save_vertex_pointer_list(selection);
+                                printf("\n");
+                                break;
+                            
+                            default:
+                                break;
+                        }
+
+                        break;
+
                     case SDLK_LALT:
                         SDL_SetModState(KMOD_ALT);
                         break;
@@ -134,7 +188,6 @@ int main(void) {
                         SDL_SetModState(KMOD_CTRL);
                         break;
 
-                    //! @bug második él csinálásnál meghal a progi
                     case SDLK_e: // él létrehozás
                         switch (selection->size) {
                         case 2:
@@ -142,7 +195,7 @@ int main(void) {
                             Vertex_Node *to = selection->head->next_node->vertex_node;
 
                             if (get_edge(edges, to, from) == NULL) {
-                                create_edge(edges, to, from, false);
+                                create_edge(edges, to, from);
                             } else {
                                 printf("mar van el koztuk\n\n");
                             }
@@ -156,7 +209,7 @@ int main(void) {
 
                         break;
 
-                    //! @bug lehet bug idk
+                    //! @bug ha az utoljara letrehozott nodeot toroljuk, akkor nem mukodik az uj nodeok letrehozasa
                     case SDLK_DELETE:
                         Vertex_Pointer_Node *selection_iterator = selection->head;
                         Vertex_Pointer_Node *selection_previous = NULL;
@@ -186,7 +239,6 @@ int main(void) {
 
                     //! @bug lecrashel, mert nem nezzuk a selection sizet a deletenel: ha alt + d akkor a size 1 kell legyen, ha sima d, akkor pedig 2 kell legyen
                     case SDLK_d: // él törlése
-
                         switch (SDL_GetModState()) {
                             case KMOD_NONE:
                                 switch (selection->size) {

@@ -21,6 +21,6 @@ void draw_vertices(Vertex_List *vertices, SDL_Renderer *renderer);
 Vertex_Node *get_clicked_node(SDL_Event *event, Vertex_List *vertices);
 void select_vertex(Vertex_Pointer_List *selection, Vertex_Node *vertex_node);
 void unselect_vertex(Vertex_Pointer_List *selection, Vertex_Pointer_Node *vertex_pointer_node);
-void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, bool directed);
+void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from);
 void draw_edges(Edge_List *edges, SDL_Renderer *renderer);
 Edge_Node *get_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from);
