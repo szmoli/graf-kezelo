@@ -7,20 +7,69 @@
 #include <stdbool.h>
 #include <memory.h>
 
-void save_vertex_list(Vertex_List *list) {
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <direct.h>
+#include <Windows.h>
+#include <time.h>
+
+//! @todo create buffer with big enough size
+//! @todo megcsinalni ezt a functiont vegre
+/**
+ * @brief Visszaadja a dátumot és időt char*-ként. Csak lefoglalja a memóriát, de nem szabadítja fel, így külön kell egy free()-t hívni a visszaadott stringre.
+ * 
+ * @return char* Dátum és idő
+ */
+char *get_save_file_path(char *saves_dir) {
+    time_t raw_time;
+    time(&raw_time);
+    struct tm *local_time = localtime(&raw_time);
+    size_t buffer_size = 25;
+    char *save_path = (char *) malloc((strlen(saves_dir) + 1) * sizeof(char));
+    strcpy(save_path, saves_dir);
+    char *buffer = (char *) malloc((buffer_size + 1) * sizeof(char));
+
+    while (strftime(buffer, buffer_size, "%Y-%m-%d_%H%M%S.grp", local_time) == 0) {
+        free(buffer);
+        buffer_size *= 2;
+        buffer = (char *) malloc((buffer_size + 1) * sizeof(char));
+    }
+
+    realloc(save_path, (strlen(save_path) + strlen(buffer) + 1) * sizeof(char));
+
+    strcat(save_path, buffer);
+    free(buffer);
+
+    return save_path;
+}
+
+/**
+ * @brief Ellenőrzi, hogy van-e már a programnak mentések mappája, ha nincs akkor létrehozza
+ * 
+ * @param saves_dir Mappa elérési útvonala
+ */
+void check_and_make_saves_dir(char *saves_dir) {
+    struct stat st;
+
+    if (stat(SAVES_DIR, &st) == -1) {
+        _mkdir(SAVES_DIR); 
+    }
+}
+
+void save_vertex_list(Vertex_List *list, FILE *save_file) {
     Vertex_Node *iterator = list->head;
 
     while (iterator != NULL) {
         Vertex_Data vd = iterator->vertex_data;
 
         // id, selected, center x, center y, red, green, blue, alpha, radius
-        printf("%c,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", VERTEX_SAVE_HEADER, vd.id, vd.selected ? 1 : 0, vd.center.x, vd.center.y, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA, vd.radius);
+        fprintf(save_file, "%c,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", VERTEX_SAVE_HEADER, vd.id, vd.selected ? 1 : 0, vd.center.x, vd.center.y, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA, vd.radius);
 
         iterator = iterator->next_node;
     }
 }
 
-void save_edge_list(Edge_List *list) {
+void save_edge_list(Edge_List *list, FILE *save_file) {
     Edge_Node *iterator = list->head;
 
     while (iterator != NULL) {
@@ -29,20 +78,28 @@ void save_edge_list(Edge_List *list) {
         Vertex_Data vd_from = edge.from->vertex_data;
 
         // from, to, red, green, blue, alpha, width
-        printf("%c,%d,%d,%d,%d,%d,%d,%d,%d\n", EDGE_SAVE_HEADER, vd_from.id, vd_to.id, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA, EDGE_W);
+        fprintf(save_file, "%c,%d,%d,%d,%d,%d,%d,%d,%d\n", EDGE_SAVE_HEADER, vd_from.id, vd_to.id, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA, EDGE_W);
 
         iterator = iterator->next_node;
     }
 }
 
-void save_vertex_pointer_list(Vertex_Pointer_List *list) {
+void save_vertex_pointer_list(Vertex_Pointer_List *list, FILE *save_file) {
     Vertex_Pointer_Node *iterator = list->head;
 
     while (iterator != NULL) {
         Vertex_Data vd = iterator->vertex_node->vertex_data;
-        printf("%c,%d\n", SELECTION_SAVE_HEADER, vd.id);
+        fprintf(save_file, "%c,%d\n", SELECTION_SAVE_HEADER, vd.id);
         iterator = iterator->next_node;
     }    
+}
+
+void save_graph(Vertex_List *vertices, Edge_List *edges, Vertex_Pointer_List *selection, char *file_path) {
+    FILE *save_file = fopen(file_path, "w");
+    save_vertex_list(vertices, save_file);
+    save_edge_list(edges, save_file);
+    save_vertex_pointer_list(selection, save_file);
+    fclose(save_file);
 }
 
 int main(void) {
@@ -166,12 +223,8 @@ int main(void) {
                     case SDLK_s:
                         switch (SDL_GetModState()) {
                             case KMOD_CTRL:
-                                save_vertex_list(vertices);
-                                printf("\n");
-                                save_edge_list(edges);
-                                printf("\n");
-                                save_vertex_pointer_list(selection);
-                                printf("\n");
+                                check_and_make_saves_dir(SAVES_DIR);
+                                save_graph(vertices, edges, selection, "saves/fasz.grp");
                                 break;
                             
                             default:
@@ -196,6 +249,7 @@ int main(void) {
 
                             if (get_edge(edges, to, from) == NULL) {
                                 create_edge(edges, to, from);
+                                unselect_vertex(selection, selection->head->next_node);
                             } else {
                                 printf("mar van el koztuk\n\n");
                             }
