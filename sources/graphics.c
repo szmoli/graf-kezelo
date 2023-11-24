@@ -136,6 +136,7 @@ void set_vertices_coords(Vertex_List *vertices, SDL_Surface *window_surface, int
 
         // printf("valtozok\n");
 
+
         transfrom_point(&(iterator->vertex_data.center), window_surface);
 
         // printf("transform point\n");
@@ -148,6 +149,7 @@ void set_vertices_coords(Vertex_List *vertices, SDL_Surface *window_surface, int
 
     // printf("coords set vege\n");
 }
+
 
 /**
  * @brief Kiszámolja egy pont sugarát.

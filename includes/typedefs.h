@@ -100,3 +100,22 @@ typedef struct Vertex_Pointer_List {
     Vertex_Pointer_Node *head;
     Vertex_Pointer_Node *tail;
 } Vertex_Pointer_List;
+
+/**
+ * @brief Gráf él mutató listaelem
+ * 
+ */
+typedef struct Edge_Pointer_Node {
+    Edge_Node *edge_node;
+    struct Edge_Pointer_Node *next_node;
+} Edge_Pointer_Node;
+
+/**
+ * @brief Gráf él mutató lista
+ * 
+ */
+typedef struct Edge_Pointer_List {
+    int size;
+    Edge_Pointer_Node *head;
+    Edge_Pointer_Node *tail;
+} Edge_Pointer_List;

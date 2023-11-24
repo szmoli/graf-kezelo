@@ -17,6 +17,18 @@ Vertex_Node *new_vertex_node() {
 }
 
 /**
+ * @brief Létrehoz a memóriában egy új gráf él mutató listaelemet.
+ * 
+ * @return Edge_Pointer_Node* 
+ */
+Edge_Pointer_Node *new_edge_pointer_node() {
+     Edge_Pointer_Node *node = (Edge_Pointer_Node *) malloc(sizeof(Edge_Pointer_Node));    
+    node->next_node = NULL;
+    // printf("next node: %p\n", node->next_node);
+    return node;
+}
+
+/**
  * @brief Létrehoz a memóriában egy új gráf él listaelemet.
  * 
  * @return Edge_Node* A létrehozott listaelem címe
@@ -45,6 +57,19 @@ Vertex_Pointer_Node *new_vertex_pointer_node() {
  */
 Vertex_List *new_vertex_list() {
     Vertex_List *list = (Vertex_List *) malloc(sizeof(Vertex_List));
+    list->head = NULL;
+    list->tail = NULL;
+    list->size = 0;
+    return list;
+}
+
+/**
+ * @brief Létrehoz a memóriában egy új gráf él mutató listát.
+ * 
+ * @return Edge_Pointer_List* A létrehozott lista címe.
+ */
+Edge_Pointer_List *new_edge_pointer_list() {
+    Edge_Pointer_List *list = (Edge_Pointer_List *) malloc(sizeof(Edge_Pointer_List));
     list->head = NULL;
     list->tail = NULL;
     list->size = 0;
@@ -94,6 +119,47 @@ void destroy_vertex_list(Vertex_List *list) {
 
     free(list);
     list = NULL;
+}
+
+/**
+ * @brief Felszabadítja a megadott gráf él mutató listát
+ * 
+ * @param list Felszabadítandó lista címe
+ */
+void destroy_edge_pointer_list(Edge_Pointer_List *list) {
+    Edge_Pointer_Node *iterator = list->head;
+    Edge_Pointer_Node *previous = NULL;
+
+    while (iterator != NULL) {
+        previous = iterator;
+        iterator = iterator->next_node;
+        free(previous);
+    }
+
+    free(list);
+    list = NULL;
+}
+
+/**
+ * @brief Kiüríti a megadott gráf él mutató listát
+ * 
+ * @param list Kiürítendő lista címe
+ */
+void clear_edge_pointer_list(Edge_Pointer_List *list) {
+    Edge_Pointer_Node *iterator = list->head;
+    Edge_Pointer_Node *previous = NULL;
+    
+    while (iterator != NULL) {
+        previous = iterator;
+        iterator = iterator->next_node;
+        free(previous);
+        previous = NULL;
+    }
+
+    free(list);
+    list->head = NULL;
+    list->tail = NULL;
+    list->size = 0;
 }
 
 /**
@@ -228,6 +294,28 @@ void vertex_list_push(Vertex_List *list, Vertex_Node *node) {
  * @param list Lista címe
  * @param node Listaelem címe
  */
+void edge_pointer_list_push(Edge_Pointer_List *list, Edge_Pointer_Node *node) {
+    Edge_Pointer_Node *iterator = list->head;
+    Edge_Pointer_Node *previous = NULL;
+
+    while (iterator != NULL) {
+        previous = iterator;
+        iterator = iterator->next_node;
+    }
+
+    if (list->head == NULL) list->head = node;
+    else if (previous == list->head && list->head != NULL) list->head->next_node = node;
+    if (list->tail != NULL) list->tail->next_node = node;    
+    list->tail = node;
+    list->size++;
+}
+
+/**
+ * @brief Hozzáad a megadott lista végéhez egy listaelemet.
+ * 
+ * @param list Lista címe
+ * @param node Listaelem címe
+ */
 void edge_list_push(Edge_List *list, Edge_Node *node) {
     Edge_Node *iterator = list->head;
     Edge_Node *previous = NULL;
@@ -258,12 +346,6 @@ void vertex_pointer_list_push(Vertex_Pointer_List *list, Vertex_Pointer_Node *no
         previous = iterator;
         iterator = iterator->next_node;
     }
-
-    // ha previous == NULL, akkor vagy nincs head node vagy az elso nodenal alltunk meg ilyenkor az elozo nodeot nem kell allitanunk semmire
-    // ha van head node, akkor annak a kovetkezojet allitjuk az ujra
-    // ha nincs headnode, akkor az uj lesz a head node
-
-    // ha previous != NULL, akkor a lista valamelyik elemen alltunk meg, ami nem az elso, ilyenkor previous next nodejat allitjuk az uj nodera
 
     if (list->head == NULL) list->head = node;
     else if (previous == list->head && list->head != NULL) list->head->next_node = node;
@@ -307,13 +389,45 @@ void vertex_list_pop(Vertex_List *list, Vertex_Node *node) {
         list->tail = previous;
     }
 
-    // if (iterator == NULL) return;
-    // if (iterator == list->tail) {
-    //     list->tail = previous;
-    //     list->tail->next_node = iterator->next_node;
-    // }
-    // if (iterator == list->head) list->head = iterator->next_node;    
-    // if (previous != NULL) previous->next_node = iterator->next_node;
+    list->size--;
+    free(iterator);
+    iterator = NULL;
+}
+
+/**
+ * @brief Kitörli a megadott listából a megadott listaelemet
+ * 
+ * @param list Lista címe
+ * @param node Listaelem címe
+ */
+void edge_pointer_list_pop(Edge_Pointer_List *list, Edge_Pointer_Node *node) {
+    Edge_Pointer_Node *iterator = list->head;
+    Edge_Pointer_Node *previous = NULL;
+
+    if (node == NULL) return;
+
+    while (iterator != NULL && iterator != node) {
+        previous = iterator;
+        iterator = iterator->next_node;
+    }
+
+    if (iterator == NULL) {
+        return;
+    }
+
+    //if (iterator != NULL && previous != NULL) {
+    if (previous != NULL) {
+        previous->next_node = iterator->next_node;
+    }
+
+    //if (iterator != NULL && previous == NULL) {
+    if (previous == NULL) {
+        list->head = iterator->next_node;
+    }
+
+    if (iterator->next_node == NULL) {
+        list->tail = previous;
+    }
 
     list->size--;
     free(iterator);
@@ -414,8 +528,6 @@ void print_vertex_list(Vertex_List *list) {
         printf("%d (%p)%s", iterator->vertex_data.id, iterator, iterator->next_node == NULL ? "\n" : " -> ");
         iterator = iterator->next_node;
     }
-
-    // printf("%p\n", list->tail->next_node);
 }
 
 /**
@@ -430,6 +542,22 @@ void print_edge_list(Edge_List *list) {
 
     while (iterator != NULL) {
         printf("(%d (%p)%s%d (%p)%s)", iterator->edge.from->vertex_data.id, iterator->edge.from, " -> ", iterator->edge.to->vertex_data.id, iterator->edge.from, "\n");
+        iterator = iterator->next_node;
+    }
+}
+
+/**
+ * @brief Kiírja a megadott lista összes elemét
+ * 
+ * @param list Lista címe
+ */
+void print_edge_pointer_list(Edge_Pointer_List *list) {
+    Edge_Pointer_Node *iterator = list->head;
+
+    if (iterator == NULL) return;
+
+    while (iterator != NULL) {
+        printf("(%d (%p)%s%d (%p)%s)", iterator->edge_node->edge.from->vertex_data.id, iterator->edge_node->edge.from, " -> ", iterator->edge_node->edge.to->vertex_data.id, iterator->edge_node->edge.from, "\n");
         iterator = iterator->next_node;
     }
 }

@@ -33,8 +33,8 @@
 #define SHADING_G 0
 #define SHADING_B 0
 #define SHADING_ALPHA 120
-#define VERTEX_SAVE_HEADER 'V'
-#define EDGE_SAVE_HEADER 'E'
-#define SELECTION_SAVE_HEADER 'S'
 #define SAVES_DIR "saves/"
-#define FILE_EXTENSION ".grp"
+#define VERTEX_FILE_EXTENSION ".vrx"
+#define SELECTION_FILE_EXTENSION ".sel"
+#define EDGE_FILE_EXTENSION ".edg"
+#define GRAPH_FILE_EXTENSION ".grp"
