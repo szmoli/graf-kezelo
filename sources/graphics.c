@@ -96,7 +96,7 @@ void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius) {
     Vertex_Node *vertex_node = new_vertex_node();
     vertex_node->vertex_data.id = vertex_id;
     vertex_node->vertex_data.radius = radius;
-    vertex_node->vertex_data.selected = false;
+    vertex_node->vertex_data.selected = 0;
     vertex_node->vertex_data.red = VERTEX_R;
     vertex_node->vertex_data.green = VERTEX_G;
     vertex_node->vertex_data.blue = VERTEX_B;
@@ -179,7 +179,7 @@ void draw_vertices(Vertex_List *vertices, SDL_Renderer *renderer) {
         Vertex_Data vd = iterator->vertex_data;
 
         filledCircleRGBA(renderer, center.x, center.y, vd.radius, vd.red, vd.green, vd.blue, vd.alpha);
-        circleRGBA(renderer, center.x, center.y, vd.radius, SHADING_R, SHADING_G, SHADING_B, SHADING_ALPHA);
+        //circleRGBA(renderer, center.x, center.y, vd.radius, SHADING_R, SHADING_G, SHADING_B, SHADING_ALPHA);
         
         iterator = iterator->next_node;
     }
@@ -222,7 +222,7 @@ Vertex_Node *get_clicked_node(SDL_Event *event, Vertex_List *vertices) {
  * @param vertex_node Pont
  */
 void select_vertex(Vertex_Pointer_List *selection, Vertex_Node *vertex_node) {
-    vertex_node->vertex_data.selected = true;
+    vertex_node->vertex_data.selected = 1;
     vertex_node->vertex_data.red = SELECTED_R;
     vertex_node->vertex_data.green = SELECTED_G;
     vertex_node->vertex_data.blue = SELECTED_B;
@@ -240,7 +240,7 @@ void select_vertex(Vertex_Pointer_List *selection, Vertex_Node *vertex_node) {
  * @param vertex_pointer_node Pont mutató
  */
 void unselect_vertex(Vertex_Pointer_List *selection, Vertex_Pointer_Node *vertex_pointer_node) {
-    vertex_pointer_node->vertex_node->vertex_data.selected = false;
+    vertex_pointer_node->vertex_node->vertex_data.selected = 0;
     vertex_pointer_node->vertex_node->vertex_data.red = VERTEX_R;
     vertex_pointer_node->vertex_node->vertex_data.green = VERTEX_G;
     vertex_pointer_node->vertex_node->vertex_data.blue = VERTEX_B;

@@ -73,14 +73,14 @@ void check_and_make_saves_dir(char *saves_dir) {
  * @param list 
  * @param save_file 
  */
-void save_vertex_list(Vertex_List *list, FILE *save_file) {
+void save_vertices_and_selection(Vertex_List *list, FILE *save_file) {
     Vertex_Node *iterator = list->head;
 
     while (iterator != NULL) {
         Vertex_Data vd = iterator->vertex_data;
 
-        // id, selected, center x, center y, red, green, blue, alpha, radius
-        fprintf(save_file, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", vd.id, vd.selected ? 1 : 0, vd.center.x, vd.center.y, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA, vd.radius);
+        // id, selected, red, green, blue, alpha, radius
+        fprintf(save_file, "%d,%d,%d,%d,%d,%d,%d\n", vd.id, vd.selected, vd.red, vd.green, vd.blue, vd.alpha, vd.radius);
 
         iterator = iterator->next_node;
     }
@@ -92,7 +92,7 @@ void save_vertex_list(Vertex_List *list, FILE *save_file) {
  * @param list 
  * @param save_file 
  */
-void save_edge_list(Edge_List *list, FILE *save_file) {
+void save_edges(Edge_List *list, FILE *save_file) {
     Edge_Node *iterator = list->head;
 
     while (iterator != NULL) {
@@ -133,19 +133,16 @@ void save_vertex_pointer_list(Vertex_Pointer_List *list, FILE *save_file) {
  * @param edges_save_path 
  * @param selection_save_path 
  */
-void save_graph(Vertex_List *vertices, Edge_List *edges, Vertex_Pointer_List *selection, char *vertices_save_path, char *edges_save_path, char *selection_save_path, char *graph_save_path) {
+void save_graph(Vertex_List *vertices, Edge_List *edges, char *vertices_save_path, char *edges_save_path, char *graph_save_path) {
     FILE *vertices_save_file = fopen(vertices_save_path, "w");
     FILE *edges_save_file = fopen(edges_save_path, "w");
-    FILE *selection_save_file = fopen(selection_save_path, "w");
     FILE *graph_save_file = fopen(graph_save_path, "w");
 
-    save_vertex_list(vertices, vertices_save_file);
-    save_edge_list(edges, edges_save_file);
-    save_vertex_pointer_list(selection, selection_save_file);
+    save_vertices_and_selection(vertices, vertices_save_file);
+    save_edges(edges, edges_save_file);
 
     fclose(vertices_save_file);
     fclose(edges_save_file);
-    fclose(selection_save_file);
     fclose(graph_save_file);
 }
 
@@ -181,19 +178,34 @@ char *get_date_time_str_from_file_path(char *file_path) {
  * @param vertices Gráf pontok listája
  * @param file Gráf pontok mentés fájlja
  */
-void load_vertex_list(Vertex_List *vertices, FILE *file) {
+void load_vertices_and_selection(Vertex_List *vertices, Vertex_Pointer_List *selection, FILE *file, int *max_id) {
     bool reading = true;
     
     while (reading) {
         Vertex_Node *node = new_vertex_node();
-        Vertex_Data vd = node->vertex_data;
+        Vertex_Data *vd = &(node->vertex_data);
 
-        if (fscanf(file, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", &(vd.id), &(vd.selected), &(vd.center.x), &(vd.center.y), &(vd.green), &(vd.blue), &(vd.red), &(vd.alpha), &(vd.radius)) == 9) {
+        int read_count = fscanf(file, "%d,%d,%d,%d,%d,%d,%d\n", &vd->id, &vd->selected, &vd->red, &vd->green, &vd->blue, &vd->alpha, &vd->radius);
+        if (read_count == 7) {
+            if (*max_id < vd->id) *max_id = vd->id;
+
             vertex_list_push(vertices, node);
 
-        } else {
-            free(node);
+            if (vd->selected) {
+                Vertex_Pointer_Node *selection_node = new_vertex_pointer_node();
+                selection_node->vertex_node = node;
+                vertex_pointer_list_push(selection, selection_node);
+            }
+
+        } else if (read_count == EOF) {
             reading = false;
+            free(node);
+
+            if (feof(file)) {
+                printf("EOF reached\n");
+            } else if (ferror(file)) {
+                printf("Error reading file.\n");
+            }
         }
     }
 }
@@ -204,32 +216,55 @@ void load_vertex_list(Vertex_List *vertices, FILE *file) {
  * @param edges Gráf élek listája
  * @param file Gráf élek mentés fájlja
  */
-void load_edge_list(Edge_List *edges, FILE *file) {
-    printf("%s\n", __func__);
+void load_edges(Edge_List *edges, Vertex_List *vertices, FILE *file) {
+    bool reading = true;
+    
+    while (reading) {
+        Edge_Node *node = new_edge_node();
+        Edge *edge = &(node->edge);
+        int from_id;        
+        int to_id;        
+
+        int read_count = fscanf(file, "%d,%d,%d,%d,%d,%d,%d\n", &from_id, &to_id, &edge->red, &edge->green, &edge->blue, &edge->alpha, &edge->width);
+
+        if (read_count == 7) {
+            Vertex_Node *from = get_vertex_node_by_id(vertices, from_id);
+            Vertex_Node *to = get_vertex_node_by_id(vertices, to_id);
+
+            if (from != NULL && to != NULL) {
+                node->edge.from = from;
+                node->edge.to = to;
+                edge_list_push(edges, node);
+
+            } else {
+                free(node);
+            }
+
+        } else if (read_count == EOF) {
+            reading = false;
+            free(node);
+        }
+    }
 }
 
 /**
- * @brief Betölti a kijelöléseket
+ * @brief Betölti az egész elmentett gráfot egy fájlból
  * 
- * @param selection Kijelölések listája
- * @param file Kijelölések mentés fájlja
+ * @param vertices Gráf pontok listája
+ * @param edges Gráf élek listája
+ * @param selection Kijelölt pontok listája
+ * @param vertices_save_path  Gráf pontok mentésének elérési útvonala
+ * @param edges_save_path Gráf élek mentésének elérési útvonala
  */
-void load_vertex_pointer_list(Vertex_Pointer_List *selection, FILE *file) {
-    printf("%s\n", __func__);
-}
-
-void load_graph(Vertex_List *vertices, Edge_List *edges, Vertex_Pointer_List *selection, char *vertices_save_path, char *edges_save_path, char *selection_save_path) {
+void load_graph(Vertex_List *vertices, Edge_List *edges, Vertex_Pointer_List *selection, char *vertices_save_path, char *edges_save_path, int *max_id) {
     FILE *vertices_save_file = fopen(vertices_save_path, "r");
     FILE *edges_save_file = fopen(edges_save_path, "r");
-    FILE *selection_save_file = fopen(selection_save_path, "r");
 
-    load_vertex_list(vertices, vertices_save_file);
-    load_edge_list(edges, edges_save_file);
-    load_vertex_pointer_list(selection, selection_save_file);
+    load_vertices_and_selection(vertices, selection, vertices_save_file, max_id);
+    load_edges(edges, vertices, edges_save_file);
     
     fclose(vertices_save_file);
     fclose(edges_save_file);
-    fclose(selection_save_file);
 }
 
 int main(void) {
@@ -246,7 +281,7 @@ int main(void) {
 
     printf("SDL config kesz\n");
 
-    size_t vertex_id = 0;
+    int vertex_id = 0;
     double zoom_multiplier = 1;
     int x_offset = 0;
     int y_offset = 0;
@@ -270,19 +305,21 @@ int main(void) {
                 printf("file dropped: %s\n", file_path);
 
                 if (is_valid_graph_file(event.drop.file, GRAPH_FILE_EXTENSION)) {
+                    clear_vertex_list(vertices);
+                    clear_vertex_pointer_list(selection);
+                    clear_edge_list(edges);
+
                     date_time_str = get_date_time_str_from_file_path(file_path);
 
                     char *vertices_save_path = get_save_file_path(SAVES_DIR, VERTEX_FILE_EXTENSION, date_time_str);
                     char *edges_save_path = get_save_file_path(SAVES_DIR, EDGE_FILE_EXTENSION, date_time_str);
-                    char *selection_save_path = get_save_file_path(SAVES_DIR, SELECTION_FILE_EXTENSION, date_time_str);
 
-                    load_graph(vertices, edges, selection, vertices_save_path, edges_save_path, selection_save_path);
+                    load_graph(vertices, edges, selection,  vertices_save_path, edges_save_path, &vertex_id);
+                    set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
+                    render = true;
 
                     free(vertices_save_path);
                     free(edges_save_path);
-                    free(selection_save_path);
-
-                    set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset);
                 }
 
                 break;
@@ -393,14 +430,12 @@ int main(void) {
 
                                 char *vertices_save_path = get_save_file_path(SAVES_DIR, VERTEX_FILE_EXTENSION, date_time_str);
                                 char *edges_save_path = get_save_file_path(SAVES_DIR, EDGE_FILE_EXTENSION, date_time_str);
-                                char *selection_save_path = get_save_file_path(SAVES_DIR, SELECTION_FILE_EXTENSION, date_time_str);
                                 char *graph_save_path = get_save_file_path(SAVES_DIR, GRAPH_FILE_EXTENSION, date_time_str);
 
-                                save_graph(vertices, edges, selection, vertices_save_path, edges_save_path, selection_save_path, graph_save_path);
+                                save_graph(vertices, edges, vertices_save_path, edges_save_path, graph_save_path);
 
                                 free(vertices_save_path);
                                 free(edges_save_path);
-                                free(selection_save_path);
                                 free(graph_save_path);
 
                                 break;

@@ -30,3 +30,4 @@ void clear_edge_pointer_list(Edge_Pointer_List *list);
 void edge_pointer_list_push(Edge_Pointer_List *list, Edge_Pointer_Node *node);
 void edge_pointer_list_pop(Edge_Pointer_List *list, Edge_Pointer_Node *node);
 void print_edge_pointer_list(Edge_Pointer_List *list);
+Vertex_Node *get_vertex_node_by_id(Vertex_List *list, int id);

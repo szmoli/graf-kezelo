@@ -21,7 +21,7 @@ typedef struct Point {
  */
 typedef struct Vertex_Data {
     int id;
-    bool selected;
+    int selected;
     Point center;
     int red;
     int green;
@@ -44,7 +44,7 @@ typedef struct Vertex_Node {
  * 
  */
 typedef struct Vertex_List {
-    int size;
+    size_t size;
     Vertex_Node *head;
     Vertex_Node *tail;
 } Vertex_List;
@@ -77,7 +77,7 @@ typedef struct Edge_Node {
  * 
  */
 typedef struct Edge_List {
-    int size;
+    size_t size;
     Edge_Node *head;
     Edge_Node *tail;
 } Edge_List;
@@ -96,7 +96,7 @@ typedef struct Vertex_Pointer_Node {
  * 
  */
 typedef struct Vertex_Pointer_List {
-    int size;
+    size_t size;
     Vertex_Pointer_Node *head;
     Vertex_Pointer_Node *tail;
 } Vertex_Pointer_List;
@@ -115,7 +115,7 @@ typedef struct Edge_Pointer_Node {
  * 
  */
 typedef struct Edge_Pointer_List {
-    int size;
+    size_t size;
     Edge_Pointer_Node *head;
     Edge_Pointer_Node *tail;
 } Edge_Pointer_List;

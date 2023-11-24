@@ -12,7 +12,6 @@
 Vertex_Node *new_vertex_node() {
     Vertex_Node *node = (Vertex_Node *) malloc(sizeof(Vertex_Node));    
     node->next_node = NULL;
-    // printf("next node: %p\n", node->next_node);
     return node;
 }
 
@@ -156,7 +155,6 @@ void clear_edge_pointer_list(Edge_Pointer_List *list) {
         previous = NULL;
     }
 
-    free(list);
     list->head = NULL;
     list->tail = NULL;
     list->size = 0;
@@ -178,7 +176,6 @@ void clear_vertex_list(Vertex_List *list) {
         previous = NULL;
     }
 
-    free(list);
     list->head = NULL;
     list->tail = NULL;
     list->size = 0;
@@ -219,7 +216,6 @@ void clear_edge_list(Edge_List *list) {
         previous = NULL;
     }
 
-    free(list);
     list->head = NULL;
     list->tail = NULL;
     list->size = 0;
@@ -260,7 +256,6 @@ void clear_vertex_pointer_list(Vertex_Pointer_List *list) {
         previous = NULL;
     }
 
-    free(list);
     list->head = NULL;
     list->tail = NULL;
     list->size = 0;
@@ -596,5 +591,22 @@ Vertex_Pointer_Node *get_vertex_pointer_node(Vertex_Pointer_List *list, Vertex_N
         printf("[%s] iterator: %p\n", __func__, iterator);
     }
 
+    return iterator;
+}
+
+/**
+ * @brief Visszaadja a megadott listából azt az elemet, aminek azonosítója megegyezik a megadott azonosítóval
+ * 
+ * @param list 
+ * @param id 
+ * @return Vertex_Node* NULL, ha nincs a listában
+ */
+Vertex_Node *get_vertex_node_by_id(Vertex_List *list, int id) {
+    Vertex_Node *iterator = list->head;
+
+    while (iterator != NULL && iterator->vertex_data.id != id) {
+        iterator = iterator->next_node;
+    }
+    
     return iterator;
 }
