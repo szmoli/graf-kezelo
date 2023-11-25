@@ -92,15 +92,15 @@ int get_max_size(SDL_Surface *window_surface) {
  * @param vertices Létező pontok listája
  * @param vertex_id Az azonosítókat követő változó
  */
-void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius) {
+void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius, int vertex_red, int vertex_green, int vertex_blue, int vertex_alpha) {
     Vertex_Node *vertex_node = new_vertex_node();
     vertex_node->vertex_data.id = vertex_id;
     vertex_node->vertex_data.radius = radius;
     vertex_node->vertex_data.selected = 0;
-    vertex_node->vertex_data.red = VERTEX_R;
-    vertex_node->vertex_data.green = VERTEX_G;
-    vertex_node->vertex_data.blue = VERTEX_B;
-    vertex_node->vertex_data.alpha = VERTEX_ALPHA;
+    vertex_node->vertex_data.red = vertex_red;
+    vertex_node->vertex_data.green = vertex_green;
+    vertex_node->vertex_data.blue = vertex_blue;
+    vertex_node->vertex_data.alpha = vertex_alpha;
     // printf("vertex node next: %p\n", vertex_node->next_node);
     vertex_list_push(vertices, vertex_node);
 }
@@ -119,16 +119,16 @@ void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius) {
  * @param x_offset X elmozdulás
  * @param y_offset Y elmozdulás
  */
-void set_vertices_coords(Vertex_List *vertices, SDL_Surface *window_surface, int max_size, double zoom_multiplier, int x_offset, int y_offset) {
+void set_vertices_coords(Vertex_List *vertices, SDL_Surface *window_surface, int max_size, double zoom_multiplier, int x_offset, int y_offset, double main_circle_radius_multiplier) {
     // printf("start\n");
-    double degree = (2 * PI) / vertices->size;
+    double degree = (2 * 3.14159265359) / vertices->size;
     size_t degree_multiplier = 1;
     Vertex_Node *iterator = vertices->head;
     // printf("iterator: %p\n", iterator);
 
     while (iterator != NULL) {
-        double double_x = cos(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier) + x_offset;
-        double double_y = sin(degree * degree_multiplier) * (max_size * MAIN_CIRCLE_RADIUS_MULTIPLIER * zoom_multiplier) + y_offset;
+        double double_x = cos(degree * degree_multiplier) * (max_size * main_circle_radius_multiplier * zoom_multiplier) + x_offset;
+        double double_y = sin(degree * degree_multiplier) * (max_size * main_circle_radius_multiplier * zoom_multiplier) + y_offset;
         int x = (int) double_x;
         int y = (int) double_y;
         iterator->vertex_data.center.x = x;
@@ -221,12 +221,12 @@ Vertex_Node *get_clicked_node(SDL_Event *event, Vertex_List *vertices) {
  * @param selection Kijelölt pontok listája
  * @param vertex_node Pont
  */
-void select_vertex(Vertex_Pointer_List *selection, Vertex_Node *vertex_node) {
+void select_vertex(Vertex_Pointer_List *selection, Vertex_Node *vertex_node, int selected_red, int selected_green, int selected_blue, int selected_alpha) {
     vertex_node->vertex_data.selected = 1;
-    vertex_node->vertex_data.red = SELECTED_R;
-    vertex_node->vertex_data.green = SELECTED_G;
-    vertex_node->vertex_data.blue = SELECTED_B;
-    vertex_node->vertex_data.alpha = SELECTED_ALPHA;
+    vertex_node->vertex_data.red = selected_red;
+    vertex_node->vertex_data.green = selected_green;
+    vertex_node->vertex_data.blue = selected_blue;
+    vertex_node->vertex_data.alpha = selected_alpha;
     
     Vertex_Pointer_Node *vp = new_vertex_pointer_node();
     vp->vertex_node = vertex_node;
@@ -239,12 +239,12 @@ void select_vertex(Vertex_Pointer_List *selection, Vertex_Node *vertex_node) {
  * @param selection Kijelölt pontok listája
  * @param vertex_pointer_node Pont mutató
  */
-void unselect_vertex(Vertex_Pointer_List *selection, Vertex_Pointer_Node *vertex_pointer_node) {
+void unselect_vertex(Vertex_Pointer_List *selection, Vertex_Pointer_Node *vertex_pointer_node, int vertex_red, int vertex_green, int vertex_blue, int vertex_alpha) {
     vertex_pointer_node->vertex_node->vertex_data.selected = 0;
-    vertex_pointer_node->vertex_node->vertex_data.red = VERTEX_R;
-    vertex_pointer_node->vertex_node->vertex_data.green = VERTEX_G;
-    vertex_pointer_node->vertex_node->vertex_data.blue = VERTEX_B;
-    vertex_pointer_node->vertex_node->vertex_data.alpha = VERTEX_ALPHA;
+    vertex_pointer_node->vertex_node->vertex_data.red = vertex_red;
+    vertex_pointer_node->vertex_node->vertex_data.green = vertex_green;
+    vertex_pointer_node->vertex_node->vertex_data.blue = vertex_blue;
+    vertex_pointer_node->vertex_node->vertex_data.alpha = vertex_alpha;
 
     vertex_pointer_list_pop(selection, vertex_pointer_node);
 }
@@ -258,15 +258,15 @@ void unselect_vertex(Vertex_Pointer_List *selection, Vertex_Pointer_Node *vertex
  * @param from Melyik pontba
  * @param directed Irányított él-e?
  */
-void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from) {
+void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, int edge_red, int edge_green, int edge_blue, int edge_alpha, int edge_width) {
     Edge_Node *edge_node = new_edge_node();
     edge_node->edge.to = to;
     edge_node->edge.from = from;
-    edge_node->edge.red = EDGE_R;
-    edge_node->edge.green = EDGE_G;
-    edge_node->edge.blue = EDGE_B;
-    edge_node->edge.alpha = EDGE_ALPHA;
-    edge_node->edge.width = EDGE_W;
+    edge_node->edge.red = edge_red;
+    edge_node->edge.green = edge_green;
+    edge_node->edge.blue = edge_blue;
+    edge_node->edge.alpha = edge_alpha;
+    edge_node->edge.width = edge_width;
     edge_list_push(edges, edge_node);
 }
 
@@ -310,4 +310,29 @@ Edge_Node *get_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from) {
     while (iterator != NULL && !((iterator->edge.from == from) && (iterator->edge.to == to))) iterator = iterator->next_node;
 
     return iterator;
+}
+
+/**
+ * @brief Kiszínezi a megadott node-hoz tartozó éleket a megadott színre
+ * 
+ * @param edges Élek listája
+ * @param vertex_node Gráf pont
+ * @param edge_red R
+ * @param edge_green G 
+ * @param edge_blue B
+ * @param edge_alpha A
+ */
+void toggle_select_edges(Edge_List *edges, Vertex_Node *vertex_node, int edge_red, int edge_green, int edge_blue, int edge_alpha) {
+    Edge_Node *edges_iterator = edges->head;
+
+    while (edges_iterator != NULL) {
+        if (edges_iterator->edge.to == vertex_node || edges_iterator->edge.from == vertex_node) {
+            edges_iterator->edge.red = edge_red;
+            edges_iterator->edge.green = edge_green;
+            edges_iterator->edge.blue = edge_blue;            
+            edges_iterator->edge.alpha = edge_alpha;
+        }
+
+        edges_iterator = edges_iterator->next_node;
+    }
 }

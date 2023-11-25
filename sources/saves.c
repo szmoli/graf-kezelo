@@ -50,8 +50,8 @@ char *get_save_file_path(char *saves_dir, char *extension, char *time_str) {
 void check_and_make_saves_dir(char *saves_dir) {
     struct stat st;
 
-    if (stat(SAVES_DIR, &st) == -1) {
-        _mkdir(SAVES_DIR); 
+    if (stat(saves_dir, &st) == -1) {
+        _mkdir(saves_dir); 
     }
 }
 
@@ -89,7 +89,7 @@ void save_edges(Edge_List *list, FILE *save_file) {
         Vertex_Data vd_from = edge.from->vertex_data;
 
         // from, to, red, green, blue, alpha, width
-        fprintf(save_file, "%d,%d,%d,%d,%d,%d,%d\n", vd_from.id, vd_to.id, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA, EDGE_W);
+        fprintf(save_file, "%d,%d,%d,%d,%d,%d,%d\n", vd_from.id, vd_to.id, edge.red, edge.green, edge.blue, edge.alpha, edge.width);
 
         iterator = iterator->next_node;
     }

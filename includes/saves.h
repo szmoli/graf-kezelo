@@ -1,6 +1,5 @@
 #pragma once
 
-#include "constants.h"
 #include "typedefs.h"
 #include "lists.h"
 
