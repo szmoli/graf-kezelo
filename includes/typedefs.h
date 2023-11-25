@@ -29,6 +29,7 @@ typedef struct Vertex_Data {
     int blue;
     int alpha;
     int radius;
+    bool visited;
 } Vertex_Data;
 
 /**
@@ -108,6 +109,7 @@ typedef struct Vertex_Pointer_List {
  */
 typedef struct Edge_Pointer_Node {
     Edge_Node *edge_node;
+    bool visited;
     struct Edge_Pointer_Node *next_node;
 } Edge_Pointer_Node;
 

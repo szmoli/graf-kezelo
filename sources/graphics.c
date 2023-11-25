@@ -101,6 +101,7 @@ void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius, int vert
     vertex_node->vertex_data.green = vertex_green;
     vertex_node->vertex_data.blue = vertex_blue;
     vertex_node->vertex_data.alpha = vertex_alpha;
+    vertex_node->vertex_data.visited = false;
     // printf("vertex node next: %p\n", vertex_node->next_node);
     vertex_list_push(vertices, vertex_node);
 }

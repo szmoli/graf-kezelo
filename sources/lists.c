@@ -21,8 +21,9 @@ Vertex_Node *new_vertex_node() {
  * @return Edge_Pointer_Node* 
  */
 Edge_Pointer_Node *new_edge_pointer_node() {
-     Edge_Pointer_Node *node = (Edge_Pointer_Node *) malloc(sizeof(Edge_Pointer_Node));    
+    Edge_Pointer_Node *node = (Edge_Pointer_Node *) malloc(sizeof(Edge_Pointer_Node));    
     node->next_node = NULL;
+    node->visited = false;
     // printf("next node: %p\n", node->next_node);
     return node;
 }
