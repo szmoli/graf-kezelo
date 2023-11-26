@@ -24,3 +24,6 @@ void create_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from, int edge_
 void draw_edges(Edge_List *edges, SDL_Renderer *renderer);
 Edge_Node *get_edge(Edge_List *edges, Vertex_Node *to, Vertex_Node *from);
 void toggle_select_edges(Edge_List *edges, Vertex_Node *vertex_node, int edge_red, int edge_green, int edge_blue, int edge_alpha);
+void unvisit_vertices(Vertex_List *vertices);
+void depth_first_traverse(Vertex_List *vertices, Vertex_Node *vertex_node, Edge_List *edges, Vertex_Pointer_List *selection, int selected_red, int selected_green, int selected_blue, int selected_alpha);
+void breadth_first_traverse(Vertex_List *vertices, Vertex_Node *vertex_node, Edge_List *edges, Vertex_Pointer_List *selection, int selected_red, int selected_green, int selected_blue, int selected_alpha);

@@ -337,3 +337,115 @@ void toggle_select_edges(Edge_List *edges, Vertex_Node *vertex_node, int edge_re
         edges_iterator = edges_iterator->next_node;
     }
 }
+
+/**
+ * @brief A megadott lista összes elemének visited adatát false-ra állítja
+ * 
+ * @param vertices Gráf pontok listája
+ */
+void unvisit_vertices(Vertex_List *vertices) {
+    Vertex_Node *vertices_iterator = vertices->head;
+
+    while (vertices_iterator != NULL) {
+        vertices_iterator->vertex_data.visited = false;
+        vertices_iterator = vertices_iterator->next_node;
+    }
+}
+
+/**
+ * @brief Bejárja szélességileg a gráfot és kijelöli az összes elérhető pontot a megadott kezdőponttól
+ * 
+ * @param vertices Gráf pontok listája
+ * @param vertex_node Kezdő pont
+ * @param edges Gráf élek listája
+ * @param selection Kijelölt pontok listája
+ * @param selected_red Kijelölés piros
+ * @param selected_green Kijelölés zöld
+ * @param selected_blue Kijelölés kék
+ * @param selected_alpha Kijelölés átlátszóság
+ */
+void depth_first_traverse(Vertex_List *vertices, Vertex_Node *vertex_node, Edge_List *edges, Vertex_Pointer_List *selection, int selected_red, int selected_green, int selected_blue, int selected_alpha) {
+    Vertex_Pointer_List *unvisited_vertices = new_vertex_pointer_list();
+
+    vertex_node->vertex_data.visited = true;
+
+    bool traversing = true;
+
+    while (traversing) {
+        Edge_Node *edges_iterator = edges->head;
+        
+        while (edges_iterator != NULL) {
+            if (edges_iterator->edge.from == vertex_node && !(edges_iterator->edge.to->vertex_data.visited)) {
+                Vertex_Pointer_Node *unvisited_vertex_pointer = new_vertex_pointer_node();
+
+                unvisited_vertex_pointer->vertex_node = edges_iterator->edge.to;
+                vertex_pointer_list_push(unvisited_vertices, unvisited_vertex_pointer);
+            }
+            
+            edges_iterator = edges_iterator->next_node;
+        }
+
+        if (unvisited_vertices->head != NULL) {
+            vertex_node = unvisited_vertices->tail->vertex_node;
+            vertex_node->vertex_data.visited = true;
+            select_vertex(selection, vertex_node, selected_red, selected_green, selected_green, selected_alpha);
+            vertex_pointer_list_pop(unvisited_vertices, unvisited_vertices->tail);
+
+        } else {
+            traversing = false;
+        }
+    }
+
+    destroy_vertex_pointer_list(unvisited_vertices);
+
+    unvisit_vertices(vertices);
+}
+
+/**
+ * @brief Bejárja szélességileg a gráfot és kijelöli az összes elérhető pontot a megadott kezdőponttól
+ * 
+ * @param vertices Gráf pontok listája
+ * @param vertex_node Kezdő pont
+ * @param edges Gráf élek listája
+ * @param selection Kijelölt pontok listája
+ * @param selected_red Kijelölés piros
+ * @param selected_green Kijelölés zöld
+ * @param selected_blue Kijelölés kék
+ * @param selected_alpha Kijelölés átlátszóság
+ */
+void breadth_first_traverse(Vertex_List *vertices, Vertex_Node *vertex_node, Edge_List *edges, Vertex_Pointer_List *selection, int selected_red, int selected_green, int selected_blue, int selected_alpha) {
+    Vertex_Pointer_List *unvisited_vertices = new_vertex_pointer_list();
+
+    vertex_node->vertex_data.visited = true;
+
+    bool traversing = true;
+
+    while (traversing) {
+        Edge_Node *edges_iterator = edges->head;
+        
+        while (edges_iterator != NULL) {
+            if (edges_iterator->edge.from == vertex_node && !(edges_iterator->edge.to->vertex_data.visited)) {
+                Vertex_Pointer_Node *unvisited_vertex_pointer = new_vertex_pointer_node();
+
+                unvisited_vertex_pointer->vertex_node = edges_iterator->edge.to;
+                vertex_pointer_list_push(unvisited_vertices, unvisited_vertex_pointer);
+            }
+            
+            edges_iterator = edges_iterator->next_node;
+        }
+
+        if (unvisited_vertices->head != NULL) {
+            vertex_node = unvisited_vertices->head->vertex_node;
+            vertex_node->vertex_data.visited = true;
+            select_vertex(selection, vertex_node, selected_red, selected_green, selected_green, selected_alpha);
+            vertex_pointer_list_pop(unvisited_vertices, unvisited_vertices->head);
+
+        } else {
+            traversing = false;
+        }
+    }
+
+    destroy_vertex_pointer_list(unvisited_vertices);
+
+    unvisit_vertices(vertices);
+}
