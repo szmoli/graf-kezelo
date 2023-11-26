@@ -17,7 +17,7 @@ $(C_OBJECTS): | $(OBJ_DIR)
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
 
-# gcc main.c sdl_config.c -std=c99 -Wall -Werror -I .\includes\SDL2 -L .\libraries -l SDL2 -o gameszko.exe
+# gcc main.c sdl_config.c -std=c99 -Wall -Werror -I .\includes\SDL2 -L .\libraries -l SDL2 -o build.exe
 build: $(C_OBJECTS)
 	$(CC) $(C_FLAGS) $(C_OBJECTS) -o $(BIN)
 

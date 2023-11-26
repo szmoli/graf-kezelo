@@ -2,7 +2,7 @@
 
 setlocal
 
-set FILTER_ROOT_DIR=%~dp0..\docs\latex
+set FILTER_ROOT_DIR=%~dp0..\documentation\latex
 
 echo [FILTER] Removing all _source files...
 for /R "%FILTER_ROOT_DIR%" %%F IN (*_source.tex) DO (

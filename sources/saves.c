@@ -1,14 +1,5 @@
-/**
- * @brief Mentések kezeléséhez szükséges függvények
- */
-
 #include "saves.h"
 
-/**
- * @brief A hívás időpontjából csinál egy stringet
- * 
- * @return char* Idő és dátum string
- */
 char *get_date_time_str() {
     time_t raw_time;
     time(&raw_time);
@@ -25,13 +16,6 @@ char *get_date_time_str() {
     return buffer;
 }
 
-//! @todo create buffer with big enough size
-//! @todo megcsinalni ezt a functiont vegre
-/**
- * @brief 
- * 
- * @return char* Mentés fájl neve
- */
 char *get_save_file_path(char *saves_dir, char *extension, char *time_str) {
     char *save_path = (char *) malloc((strlen(saves_dir) + strlen(time_str) + strlen(extension) + 1) * sizeof(char));
 
@@ -42,11 +26,6 @@ char *get_save_file_path(char *saves_dir, char *extension, char *time_str) {
     return save_path;
 }
 
-/**
- * @brief Ellenőrzi, hogy van-e már a programnak mentések mappája, ha nincs akkor létrehozza
- * 
- * @param saves_dir Mappa elérési útvonala
- */
 void check_and_make_saves_dir(char *saves_dir) {
     struct stat st;
 
@@ -55,12 +34,6 @@ void check_and_make_saves_dir(char *saves_dir) {
     }
 }
 
-/**
- * @brief Elmenti a megadott listát a megadott helyre
- * 
- * @param list 
- * @param save_file 
- */
 void save_vertices_and_selection(Vertex_List *list, FILE *save_file) {
     Vertex_Node *iterator = list->head;
 
@@ -74,12 +47,6 @@ void save_vertices_and_selection(Vertex_List *list, FILE *save_file) {
     }
 }
 
-/**
- * @brief Elmenti a megadott listát a megadott helyre
- * 
- * @param list 
- * @param save_file 
- */
 void save_edges(Edge_List *list, FILE *save_file) {
     Edge_Node *iterator = list->head;
 
@@ -95,32 +62,6 @@ void save_edges(Edge_List *list, FILE *save_file) {
     }
 }
 
-/**
- * @brief Elmenti a megadott listát a megadott helyre
- * 
- * @param list 
- * @param save_file 
- */
-void save_vertex_pointer_list(Vertex_Pointer_List *list, FILE *save_file) {
-    Vertex_Pointer_Node *iterator = list->head;
-
-    while (iterator != NULL) {
-        Vertex_Data vd = iterator->vertex_node->vertex_data;
-        fprintf(save_file, "%d\n", vd.id);
-        iterator = iterator->next_node;
-    }    
-}
-
-/**
- * @brief Elmenti a teljes gráfot
- * 
- * @param vertices 
- * @param edges 
- * @param selection 
- * @param vertices_save_path 
- * @param edges_save_path 
- * @param selection_save_path 
- */
 void save_graph(Vertex_List *vertices, Edge_List *edges, char *vertices_save_path, char *edges_save_path, char *graph_save_path) {
     FILE *vertices_save_file = fopen(vertices_save_path, "w");
     FILE *edges_save_file = fopen(edges_save_path, "w");
@@ -134,38 +75,18 @@ void save_graph(Vertex_List *vertices, Edge_List *edges, char *vertices_save_pat
     fclose(graph_save_file);
 }
 
-/**
- * @brief Ellenőtzi, hogy megfelelő fájlt kapott-e a program
- * 
- * @param file_path Fájl elérési útvonala
- * @param graph_file_estension Helyes fájlkiterjesztés
- * @return true Ha a megadott fájl kiterjesztése egyezik a helyes kiterjesztéssel
- * @return false He nem egyeznek
- */
 bool is_valid_graph_file(char *file_path, char *graph_file_estension) {
     char *last = strrchr(file_path, '.');
     
     return (strcmp(last, graph_file_estension) == 0);
 }
 
-/**
- * @brief Kiveszi a dátumot és időt a megnyitott fájl elérési útvonalából
- * 
- * @param file_path Elérési útvonal
- * @return char* Dátum és idő string
- */
 char *get_date_time_str_from_file_path(char *file_path) {
     char *last = strrchr(file_path, '\\');
     char *token = strtok(last + 1, ".");
     return token;
 }
 
-/**
- * @brief Betölti a gráf pontokat
- * 
- * @param vertices Gráf pontok listája
- * @param file Gráf pontok mentés fájlja
- */
 void load_vertices_and_selection(Vertex_List *vertices, Vertex_Pointer_List *selection, FILE *file, int *max_id) {
     bool reading = true;
     
@@ -192,12 +113,6 @@ void load_vertices_and_selection(Vertex_List *vertices, Vertex_Pointer_List *sel
     }
 }
 
-/**
- * @brief Betölti a gráf éleket
- * 
- * @param edges Gráf élek listája
- * @param file Gráf élek mentés fájlja
- */
 void load_edges(Edge_List *edges, Vertex_List *vertices, FILE *file) {
     bool reading = true;
     
@@ -229,15 +144,6 @@ void load_edges(Edge_List *edges, Vertex_List *vertices, FILE *file) {
     }
 }
 
-/**
- * @brief Betölti az egész elmentett gráfot egy fájlból
- * 
- * @param vertices Gráf pontok listája
- * @param edges Gráf élek listája
- * @param selection Kijelölt pontok listája
- * @param vertices_save_path  Gráf pontok mentésének elérési útvonala
- * @param edges_save_path Gráf élek mentésének elérési útvonala
- */
 void load_graph(Vertex_List *vertices, Edge_List *edges, Vertex_Pointer_List *selection, char *vertices_save_path, char *edges_save_path, int *max_id) {
     FILE *vertices_save_file = fopen(vertices_save_path, "r");
     FILE *edges_save_file = fopen(edges_save_path, "r");
