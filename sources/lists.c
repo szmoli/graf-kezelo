@@ -24,7 +24,6 @@ Edge_Pointer_Node *new_edge_pointer_node() {
     Edge_Pointer_Node *node = (Edge_Pointer_Node *) malloc(sizeof(Edge_Pointer_Node));    
     node->next_node = NULL;
     node->visited = false;
-    // printf("next node: %p\n", node->next_node);
     return node;
 }
 
@@ -371,12 +370,10 @@ void vertex_list_pop(Vertex_List *list, Vertex_Node *node) {
         return;
     }
 
-    //if (iterator != NULL && previous != NULL) {
     if (previous != NULL) {
         previous->next_node = iterator->next_node;
     }
 
-    //if (iterator != NULL && previous == NULL) {
     if (previous == NULL) {
         list->head = iterator->next_node;
     }
@@ -411,12 +408,10 @@ void edge_pointer_list_pop(Edge_Pointer_List *list, Edge_Pointer_Node *node) {
         return;
     }
 
-    //if (iterator != NULL && previous != NULL) {
     if (previous != NULL) {
         previous->next_node = iterator->next_node;
     }
 
-    //if (iterator != NULL && previous == NULL) {
     if (previous == NULL) {
         list->head = iterator->next_node;
     }
@@ -451,12 +446,10 @@ void edge_list_pop(Edge_List *list, Edge_Node *node) {
         return;
     }
 
-    //if (iterator != NULL && previous != NULL) {
     if (previous != NULL) {
         previous->next_node = iterator->next_node;
     }
 
-    //if (iterator != NULL && previous == NULL) {
     if (previous == NULL) {
         list->head = iterator->next_node;
     }
@@ -491,12 +484,10 @@ void vertex_pointer_list_pop(Vertex_Pointer_List *list, Vertex_Pointer_Node *nod
         return;
     }
 
-    //if (iterator != NULL && previous != NULL) {
     if (previous != NULL) {
         previous->next_node = iterator->next_node;
     }
 
-    //if (iterator != NULL && previous == NULL) {
     if (previous == NULL) {
         list->head = iterator->next_node;
     }
@@ -584,12 +575,8 @@ void print_vertex_pointer_list(Vertex_Pointer_List *list) {
 Vertex_Pointer_Node *get_vertex_pointer_node(Vertex_Pointer_List *list, Vertex_Node *vertex_node) {
     Vertex_Pointer_Node *iterator = list->head;
 
-    printf("[%s] list: %p\n", __func__, list);
-    printf("[%s] list head: %p\n", __func__, list->head);
-
     while (iterator != NULL && iterator->vertex_node != vertex_node) {
         iterator = iterator->next_node;
-        printf("[%s] iterator: %p\n", __func__, iterator);
     }
 
     return iterator;

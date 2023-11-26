@@ -175,7 +175,7 @@ void load_vertices_and_selection(Vertex_List *vertices, Vertex_Pointer_List *sel
 
         int read_count = fscanf(file, "%d,%d,%d,%d,%d,%d,%d\n", &vd->id, &vd->selected, &vd->red, &vd->green, &vd->blue, &vd->alpha, &vd->radius);
         if (read_count == 7) {
-            if (*max_id < vd->id) *max_id = vd->id;
+            if (*max_id < vd->id) *max_id = vd->id + 1;
 
             vertex_list_push(vertices, node);
 
@@ -188,12 +188,6 @@ void load_vertices_and_selection(Vertex_List *vertices, Vertex_Pointer_List *sel
         } else if (read_count == EOF) {
             reading = false;
             free(node);
-
-            if (feof(file)) {
-                printf("EOF reached\n");
-            } else if (ferror(file)) {
-                printf("Error reading file.\n");
-            }
         }
     }
 }

@@ -13,7 +13,7 @@ bool config_sdl(SDL_Window **window, SDL_Surface **window_surface, SDL_Renderer 
 void quit_sdl(SDL_Window **window, SDL_Renderer **renderer, bool *loop);
 void transfrom_point(Point *point, SDL_Surface *window_surface);
 int get_max_size(SDL_Surface *window_surface);
-void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius, int vertex_red, int vertex_green, int vertex_blue, int vertex_alpha);
+void create_vertex(Vertex_List *vertices, int *vertex_id, int radius, int vertex_red, int vertex_green, int vertex_blue, int vertex_alpha);
 void set_vertices_coords(Vertex_List *vertices, SDL_Surface *window_surface, int max_size, double zoom_multiplier, int x_offset, int y_offset, double main_circle_radius_multiplier);
 int get_radius(int max_size, double mode_multiplier, double zoom_multiplier);
 void draw_vertices(Vertex_List *vertices, SDL_Renderer *renderer);

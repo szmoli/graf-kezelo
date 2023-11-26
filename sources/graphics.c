@@ -92,9 +92,9 @@ int get_max_size(SDL_Surface *window_surface) {
  * @param vertices Létező pontok listája
  * @param vertex_id Az azonosítókat követő változó
  */
-void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius, int vertex_red, int vertex_green, int vertex_blue, int vertex_alpha) {
+void create_vertex(Vertex_List *vertices, int *vertex_id, int radius, int vertex_red, int vertex_green, int vertex_blue, int vertex_alpha) {
     Vertex_Node *vertex_node = new_vertex_node();
-    vertex_node->vertex_data.id = vertex_id;
+    vertex_node->vertex_data.id = (*vertex_id)++;
     vertex_node->vertex_data.radius = radius;
     vertex_node->vertex_data.selected = 0;
     vertex_node->vertex_data.red = vertex_red;
@@ -102,7 +102,6 @@ void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius, int vert
     vertex_node->vertex_data.blue = vertex_blue;
     vertex_node->vertex_data.alpha = vertex_alpha;
     vertex_node->vertex_data.visited = false;
-    // printf("vertex node next: %p\n", vertex_node->next_node);
     vertex_list_push(vertices, vertex_node);
 }
 
@@ -121,11 +120,9 @@ void create_vertex(Vertex_List *vertices, size_t vertex_id, int radius, int vert
  * @param y_offset Y elmozdulás
  */
 void set_vertices_coords(Vertex_List *vertices, SDL_Surface *window_surface, int max_size, double zoom_multiplier, int x_offset, int y_offset, double main_circle_radius_multiplier) {
-    // printf("start\n");
     double degree = (2 * 3.14159265359) / vertices->size;
     size_t degree_multiplier = 1;
     Vertex_Node *iterator = vertices->head;
-    // printf("iterator: %p\n", iterator);
 
     while (iterator != NULL) {
         double double_x = cos(degree * degree_multiplier) * (max_size * main_circle_radius_multiplier * zoom_multiplier) + x_offset;
@@ -135,20 +132,11 @@ void set_vertices_coords(Vertex_List *vertices, SDL_Surface *window_surface, int
         iterator->vertex_data.center.x = x;
         iterator->vertex_data.center.y = y;
 
-        // printf("valtozok\n");
-
-
         transfrom_point(&(iterator->vertex_data.center), window_surface);
 
-        // printf("transform point\n");
-
         degree_multiplier++;
-        // printf("iterator next: %p\n", iterator->next_node);
         iterator = iterator->next_node;
-        // printf("new iterator: %p\n", iterator);
     }
-
-    // printf("coords set vege\n");
 }
 
 
@@ -180,7 +168,6 @@ void draw_vertices(Vertex_List *vertices, SDL_Renderer *renderer) {
         Vertex_Data vd = iterator->vertex_data;
 
         filledCircleRGBA(renderer, center.x, center.y, vd.radius, vd.red, vd.green, vd.blue, vd.alpha);
-        //circleRGBA(renderer, center.x, center.y, vd.radius, SHADING_R, SHADING_G, SHADING_B, SHADING_ALPHA);
         
         iterator = iterator->next_node;
     }

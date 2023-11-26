@@ -14,8 +14,6 @@
 int main(void) {
     const double VERTEX_CIRCLE_RADIUS_MULTIPLIER = 0.02;
     const double MAIN_CIRCLE_RADIUS_MULTIPLIER = 0.45;
-    const int MAIN_CIRCLE_X = 0;
-    const int MAIN_CIRCLE_Y = 0;
     const int VERTEX_R = 90;
     const int VERTEX_G = 114;
     const int VERTEX_B = 97;
@@ -35,9 +33,6 @@ int main(void) {
     const int EDGE_B = 121;
     const int EDGE_ALPHA = 185;
     const int EDGE_W = 3;
-    const int SELECTED_EDGE_R = 216;
-    const int SELECTED_EDGE_G = 157;
-    const int SELECTED_EDGE_B = 69;
     char *SAVES_DIR = "saves/";
     char *VERTEX_FILE_EXTENSION = ".vrx";
     char *EDGE_FILE_EXTENSION = ".edg";
@@ -91,7 +86,6 @@ int main(void) {
                     SDL_SetWindowTitle(window, graph_save_path);                    
 
                     load_graph(vertices, edges, selection,  vertices_save_path, edges_save_path, &vertex_id);
-                    vertex_id++;
                     set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset, MAIN_CIRCLE_RADIUS_MULTIPLIER);
 
                     free(vertices_save_path);
@@ -126,46 +120,22 @@ int main(void) {
                         Vertex_Node *clicked_node = get_clicked_node(&event, vertices);
 
                         if (clicked_node == NULL && selection->size != 0) { // kijelölés törlése
-                            printf("clicked nothing\n");
-                            printf("selection head: %p\n", selection->head);
-                            printf("selection tail: %p\n", selection->tail);
                             Vertex_Pointer_Node *iterator = selection->head;
                             Vertex_Pointer_Node *previous = NULL;
-                            printf("[loop elott] iterator: %p, previous: %p, iterator next: %p\n", iterator, previous, iterator == NULL ? NULL : iterator->next_node);
-                            printf("selection: ");
-                            print_vertex_pointer_list(selection);
 
                             while (iterator != NULL) {
-                                printf("[loopban] iterator next: %p\n", iterator->next_node);
-
-                                // toggle_select_edges(edges, iterator->vertex_node, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA);
-
                                 previous = iterator;
                                 iterator = iterator->next_node;
                                 
                                 unselect_vertex(selection, previous, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA);
-
-                                printf("[loopban] selection: ");
-                                print_vertex_pointer_list(selection);
-                                printf("\n\n");
                             }
 
                         } else if (clicked_node != NULL && !(clicked_node->vertex_data.selected)) { // kijelölés
                             select_vertex(selection, clicked_node, SELECTED_R, SELECTED_G, SELECTED_B, SELECTED_ALPHA);
-                            // toggle_select_edges(edges, clicked_node, SELECTED_EDGE_R, SELECTED_EDGE_G, SELECTED_EDGE_B, EDGE_ALPHA);
-
-                            printf("kijelolve: %p\n\n", clicked_node);
 
                         } else if (clicked_node != NULL && clicked_node->vertex_data.selected) { // kijelölés megszüntetése
-                            printf("clicked node: %p\n", clicked_node);
-
                             Vertex_Pointer_Node *vp = get_vertex_pointer_node(selection, clicked_node);
-
-                            printf("kijeloles megszuntetve: %p\n", clicked_node);
-                            printf("vertex pointer: %p\n\n", vp);
-
                             unselect_vertex(selection, vp, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA);
-                            // toggle_select_edges(edges, clicked_node, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA);
                         }
 
                         break;
@@ -178,7 +148,6 @@ int main(void) {
 
             case SDL_MOUSEWHEEL:
                 render = true;
-
 
                 if (event.wheel.y > 0) { // up
                     zoom_multiplier += ZOOM_STEP;
@@ -289,7 +258,6 @@ int main(void) {
                             if (get_edge(edges, to, from) == NULL) {
                                 create_edge(edges, to, from, EDGE_R, EDGE_G, EDGE_B, EDGE_ALPHA, EDGE_W);
                                 unselect_vertex(selection, selection->head->next_node, VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA);
-                                // toggle_select_edges(edges, selection->head->vertex_node, SELECTED_EDGE_R, SELECTED_EDGE_G, SELECTED_EDGE_B, EDGE_ALPHA);
                             }
 
                             break;
@@ -377,9 +345,7 @@ int main(void) {
                         break;
 
                     case SDLK_v: // vertex létrehozás
-                        create_vertex(vertices, vertex_id, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1), VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA);
-                        print_vertex_list(vertices);
-                        vertex_id++;
+                        create_vertex(vertices, &vertex_id, get_radius(max_size, VERTEX_CIRCLE_RADIUS_MULTIPLIER, 1), VERTEX_R, VERTEX_G, VERTEX_B, VERTEX_ALPHA);
                         set_vertices_coords(vertices, window_surface, max_size, zoom_multiplier, x_offset, y_offset, MAIN_CIRCLE_RADIUS_MULTIPLIER);
                         break;
 
