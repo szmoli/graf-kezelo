@@ -1,4 +1,6 @@
-libraries/**
-includes/**
 *.exe
 *.o
+documentation/**
+resources/**
+*/saves/**
+saves/**
