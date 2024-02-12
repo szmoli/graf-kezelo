@@ -1,7 +1,11 @@
-
 # Gráfkezelő program
 
-## Funkciók
+## ⚙️ Felhasznált technológiák
+
+- (SDL2 grafikai könyvtár)[https://www.libsdl.org/]
+- saját készítésű C kód
+
+## 🧑‍💻 Funkciók és billentyűkombinációk
 
 - `Bal egérgomb`: pont kiválasztása
 - `V`: gráf pont létrehozása
@@ -17,17 +21,18 @@
 - `Nyíl gombok`: munkafelület mozgatása
 - `R`: zoomolás és elmozgatás visszaállítása alaphelyzetbe
 
-## Leírás
+## 🏃‍♂️ Futtatás
 
-A program gráfok kezelésére alkalmas. A program megnyitását követően egy üres munkalap látható. Ezen a munkalapon fognak megjelenni a pontok és az élek, amik különböző billentyűkombinációkkal létrehozhatóak és törölhetőek.
+- töltsd le a `gcc`-t és `make`-t 
+- add hozzá őket a `PATH`-hoz
+- futtasd a `make build` parancsot a program mappájából
+- futtasd a `grafkezelo.exe` programot
 
-Az elkészített gráfot el lehet menteni, ilyenkor három fájl jön létre egy `saves` nevű mappában:
-- `.vrx` kiterjesztésű fájl: ebben a fájlban tárolódnak el a gráf pontjai és azok tulajdonságai
-- `.edg` kiterjesztésű fájl: ebben a fájlban tárolódnak el a gráf élei és azok tulajdonságai
-- `.grf` kiterjesztésű fájl: ezt a fájlt kell a programmal megnyitni, ha egy elmentett gráfot betölteni szeretnénk.
+## 📸 Példa
 
-Fontos, hogy a gráf betöltéséhez mind a három fájlra szükség van, de csak a `.grf` kiterjesztésű fájlt kell a munkaterületre behúzni egy mappából. Mind a három fájlt a mentés időpontjával nevez el a program, ez alapján lehet a mentéseket azonosítani.
+![Screenshot 2024-02-12 203832](https://github.com/szmoli/prog-nhf/assets/145291965/971278e7-997c-40ec-8c59-1d395b89e160)
 
-## Build
+## 💬 Megjegyzések
 
-Telepítsd a `make` programot, és futtasd a mappában a `make build` parancsot.
+- ez a program 2023/24-es tanév első félévében készült nagy házi feladatnak
+- a programot egyszer újra fogom dolgozni és sokkal királyabb megoldások lesznek a kezelésre
