@@ -2,7 +2,7 @@
 
 ## ⚙️ Felhasznált technológiák
 
-- (SDL2 grafikai könyvtár)[https://www.libsdl.org/]
+- [SDL2 grafikai könyvtár](https://www.libsdl.org/)
 - saját készítésű C kód
 
 ## 🧑‍💻 Funkciók és billentyűkombinációk
